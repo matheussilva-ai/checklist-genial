@@ -513,6 +513,9 @@ function bindGlobal(){
   document.getElementById("inp-responsavel").addEventListener("input",e=>{
     S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
   });
+  document.getElementById("sel-unidade").addEventListener("change",e=>{
+    S.unidade=e.target.value;atualizarBtnIniciar();
+  });
   document.getElementById("btn-iniciar").addEventListener("click",()=>{
     const rascunho = recuperarRascunho();
     if(rascunho && rascunho.unidade === S.unidade){
@@ -548,6 +551,7 @@ function bindGlobal(){
     const sBtn=e.target.closest(".sbt");
     if(sBtn){
       S.respostas[sBtn.dataset.chave]=sBtn.dataset.val;
+      salvarRascunho();
       // Re-render só o item afetado
       const prefix=sBtn.dataset.chave.replace(/__\d+$/,"__");
       const grupo=sBtn.dataset.chave.startsWith("sala")?
