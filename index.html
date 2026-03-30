@@ -643,9 +643,24 @@ function limparRascunho(){
 // ── INIT ──────────────────────────────────────────────────────────
 loadLocal();
 bindGlobal();
-// Preencher campos salvos
 document.getElementById("inp-responsavel").value=S.responsavel||"";
-// Mostrar tela correta
+
+// Verificar rascunho ao carregar
+const rascunhoInicial = recuperarRascunho();
+if(rascunhoInicial && Object.keys(rascunhoInicial.respostas||{}).length > 0){
+  const selUn = document.getElementById("sel-unidade");
+  if(selUn) selUn.value = rascunhoInicial.unidade;
+  S.unidade = rascunhoInicial.unidade;
+  const aviso = document.getElementById("aviso-rascunho");
+  if(aviso){
+    const total = Object.keys(rascunhoInicial.respostas).length;
+    aviso.style.display = "block";
+    aviso.innerHTML = "↩ <strong>Ronda em andamento:</strong> " + rascunhoInicial.unidade + " — " + total + " itens respondidos. Clique em Iniciar para continuar.";
+  }
+  const btnIniciar = document.getElementById("btn-iniciar");
+  if(btnIniciar){ btnIniciar.textContent = "Continuar ronda →"; btnIniciar.disabled = false; }
+}
+
 ir("inicio");
 atualizarBtnIniciar();
 </script>
