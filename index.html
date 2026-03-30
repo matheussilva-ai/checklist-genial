@@ -155,7 +155,8 @@ textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10p
         <input type="text" id="inp-responsavel" placeholder="Nome do responsável">
       </div>
       <div class="btn-stack">
-        <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
+        <div id="aviso-rascunho" style="display:none;background:#EEF6FF;border:1.5px solid #B0D4F1;border-radius:10px;padding:10px 14px;font-size:13px;color:#1e4d78;margin-bottom:10px"></div>
+      <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
         <button class="btn btn-ghost" id="btn-ver-hist-inicio">Ver histórico</button>
         <button class="btn btn-ghost" id="btn-config">⚙ Configurações</button>
       </div>
@@ -513,7 +514,20 @@ function bindGlobal(){
     S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
   });
   document.getElementById("btn-iniciar").addEventListener("click",()=>{
+    const rascunho = recuperarRascunho();
+    if(rascunho && rascunho.unidade === S.unidade){
+      const total = Object.keys(rascunho.respostas).length;
+      if(total > 0 && confirm(`Há uma ronda em andamento para ${rascunho.unidade} com ${total} itens respondidos. Deseja continuar de onde parou?`)){
+        S.respostas = rascunho.respostas;
+        S.observacoes = rascunho.observacoes;
+        S.rondaId = rascunho.rondaId;
+        S.expandido = null;
+        renderRonda();ir("ronda");
+        return;
+      }
+    }
     S.respostas={};S.observacoes={};S.expandido=null;S.rondaId=gerarId();
+    limparRascunho();
     renderRonda();ir("ronda");
   });
   document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
@@ -562,6 +576,7 @@ function bindGlobal(){
   document.getElementById("screen-ronda").addEventListener("input",e=>{
     if(e.target.tagName==="TEXTAREA"&&e.target.dataset.chave){
       S.observacoes[e.target.dataset.chave]=e.target.value;
+    salvarRascunho();
     }
   });
   ["btn-concluir-topo","btn-concluir-bottom"].forEach(id=>{
@@ -579,6 +594,50 @@ function bindGlobal(){
 
 function atualizarBtnIniciar(){
   document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
+  // Mostrar aviso de rascunho se existir para a unidade selecionada
+  const rascunho = recuperarRascunho();
+  const aviso = document.getElementById("aviso-rascunho");
+  if(aviso){
+    if(rascunho && rascunho.unidade === S.unidade && Object.keys(rascunho.respostas).length > 0){
+      const total = Object.keys(rascunho.respostas).length;
+      aviso.style.display = "block";
+      aviso.textContent = `↩ Ronda em andamento encontrada — ${total} itens respondidos. Clique em "Iniciar ronda" para continuar.`;
+    } else {
+      aviso.style.display = "none";
+    }
+  }
+}
+
+
+// ── RASCUNHO (salva progresso automaticamente) ──────────────────
+function salvarRascunho(){
+  try{
+    localStorage.setItem("ronda_rascunho", JSON.stringify({
+      unidade: S.unidade,
+      responsavel: S.responsavel,
+      rondaId: S.rondaId,
+      respostas: S.respostas,
+      observacoes: S.observacoes,
+      ts: Date.now()
+    }));
+  }catch{}
+}
+
+function recuperarRascunho(){
+  try{
+    const raw = localStorage.getItem("ronda_rascunho");
+    if(!raw) return false;
+    const r = JSON.parse(raw);
+    // Só recupera se for da mesma unidade e tiver menos de 24h
+    const idade = Date.now() - (r.ts || 0);
+    if(idade > 24 * 60 * 60 * 1000) return false;
+    if(!r.unidade || !r.respostas) return false;
+    return r;
+  }catch{ return false; }
+}
+
+function limparRascunho(){
+  try{ localStorage.removeItem("ronda_rascunho"); }catch{}
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
