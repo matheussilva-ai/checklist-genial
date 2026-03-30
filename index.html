@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -263,15 +262,16 @@ function fmtData(ts){return new Date(ts).toLocaleDateString("pt-BR",{day:"2-digi
 function gerarId(){return"ronda_"+Date.now()+"_"+Math.random().toString(36).slice(2,6)}
 
 // ── STATE ─────────────────────────────────────────────────────────
+const API_URL_FIXA="https://script.google.com/macros/s/AKfycbwKLfrXCw_n-zeuw8Z2Z5wAko_MaEnDnQpv1NA8PFNX0MGz-kmHsWL_KJbxmbTaDqRO-g/exec";
 const S={
   unidade:"",responsavel:"",respostas:{},observacoes:{},
-  expandido:null,historico:[],rondaId:null,apiUrl:""
+  expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA
 };
 
 function loadLocal(){
   try{
     const h=localStorage.getItem("rondas_hist");if(h)S.historico=JSON.parse(h);
-    const u=localStorage.getItem("rondas_api");if(u)S.apiUrl=u;
+    // URL fixa no código — não sobrescreve
     const resp=localStorage.getItem("rondas_responsavel");if(resp)S.responsavel=resp;
   }catch{}
 }
@@ -503,7 +503,7 @@ function bindGlobal(){
   });
   document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
   document.getElementById("btn-config").addEventListener("click",()=>{
-    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("config");
+    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("inicio");
   });
 
   // Ronda (delegação)
@@ -572,7 +572,7 @@ bindGlobal();
 // Preencher campos salvos
 document.getElementById("inp-responsavel").value=S.responsavel||"";
 // Mostrar tela correta
-if(!S.apiUrl){ir("config");}else{ir("inicio");}
+ir("inicio");
 atualizarBtnIniciar();
 </script>
 </body>
