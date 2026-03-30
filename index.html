@@ -7,7 +7,7 @@
 <style>
 /* ── RESET E BASE ───────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',system-ui,sans-serif;background:#f5f3ff;min-height:100vh;color:#1f2937;-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#F4F3FC;min-height:100vh;color:#1f2937;-webkit-font-smoothing:antialiased}
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
 /* ── LAYOUT ─────────────────────────────────────────────────────── */
@@ -16,7 +16,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f5f3ff;min-height:10
 .pad{padding:24px 16px}
 
 /* ── TIPOGRAFIA ─────────────────────────────────────────────────── */
-.title{font-size:22px;font-weight:800;color:#4b2d6f;margin:0 0 4px}
+.title{font-size:22px;font-weight:800;color:#6E69AD;margin:0 0 4px}
 .subtitle{font-size:14px;color:#6b7280;margin:0}
 .section-label{font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:0.08em;padding:0 16px;margin:20px 0 8px;display:block}
 
@@ -24,24 +24,24 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f5f3ff;min-height:10
 .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 8px rgba(0,0,0,0.06)}
 .btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:inherit;text-align:center}
 .btn:active{transform:scale(0.98)}
-.btn-primary{background:#4b2d6f;color:#fff}
+.btn-primary{background:#6E69AD;color:#fff}
 .btn-primary:disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;transform:none}
-.btn-outline{background:#fff;color:#4b2d6f;border:1.5px solid #4b2d6f}
+.btn-outline{background:#fff;color:#6E69AD;border:1.5px solid #6E69AD}
 .btn-ghost{background:#fff;color:#6b7280;border:1.5px solid #e5e7eb}
 .btn-sm{width:auto;padding:6px 14px;font-size:13px;font-weight:600;border-radius:8px}
 .btn-stack{display:flex;flex-direction:column;gap:10px}
 
 label{font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px}
 select,input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid #e5e7eb;font-size:15px;color:#1f2937;background:#fff;font-family:inherit;appearance:none;-webkit-appearance:none;outline:none}
-select:focus,input[type=text]:focus{border-color:#4b2d6f}
+select:focus,input[type=text]:focus{border-color:#6E69AD}
 textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10px;font-size:13px;color:#1f2937;background:#fff;resize:vertical;font-family:inherit;outline:none}
 
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700}
 
 /* ── HEADER STICKY ──────────────────────────────────────────────── */
-.sticky-header{position:sticky;top:0;z-index:100;background:#4b2d6f;padding:12px 16px}
+.sticky-header{position:sticky;top:0;z-index:100;background:#6E69AD;padding:12px 16px}
 .progress-track{height:6px;background:rgba(255,255,255,0.2);border-radius:99px;overflow:hidden;margin-top:6px}
-.progress-fill{height:100%;border-radius:99px;background:#a78bfa;transition:width 0.3s}
+.progress-fill{height:100%;border-radius:99px;background:#B0E0E4;transition:width 0.3s}
 .progress-fill.nc{background:#f97316}
 
 /* ── GRUPOS (salas / ambientes) ─────────────────────────────────── */
@@ -121,9 +121,23 @@ textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10p
   <div class="screen" id="screen-inicio">
     <div class="pad">
       <div style="text-align:center;margin-bottom:32px;padding-top:16px">
-        <div style="font-size:44px;margin-bottom:12px">🏥</div>
-        <h1 class="title">Ronda Mensal</h1>
-        <p class="subtitle">Genial Care — Facilities</p>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="277 297 1400 490" width="140" height="49" style="display:block;margin:0 auto 12px">
+  <style>.lp{fill:#6E69AD}.lt{fill:#B0E0E4}</style>
+  <path class="lt" d="M547.2,350.06c-30.56,0-58.27,12.21-78.53,32.01l40.06,40.06c10.09-9.37,23.61-15.1,38.46-15.1c31.24,0,56.57,25.33,56.57,56.57s-25.33,56.57-56.57,56.57c-14.92,0-28.49-5.79-38.6-15.23l-0.01,0.01l-0.21-0.21c-0.16-0.15-0.31-0.31-0.46-0.46c-0.53-0.51-1.05-1.03-1.56-1.56c-0.52-0.54-1.04-1.09-1.54-1.66l-77.06-79.5l0,0c-10.04-9.08-23.37-14.59-38.03-14.54c-31.24,0.11-56.57,25.33-56.57,56.57c0,31.24,25.33,56.57,56.57,56.57c15.64,0,29.77-6.34,39.99-16.6l33.58,33.58c20.58,23.08,50.53,37.62,83.89,37.62c62.05,0,112.36-50.3,112.36-112.36S609.25,350.06,547.2,350.06z"/>
+  <path class="lp" d="M547.2,407.03c-14.86,0-28.37,5.73-38.46,15.1l-38.02-38.02c-20.46-21.47-49.34-34.86-81.35-34.86c-62.05,0-112.36,50.3-112.36,112.36s50.3,112.36,112.36,112.36c30.62,0,58.37-12.25,78.64-32.12l-38.28-38.28c-10.23,10.25-24.36,16.6-39.99,16.6c-31.24,0-56.57-25.33-56.57-56.57c0-31.24,25.33-56.46,56.57-56.57c14.65-0.05,27.99,5.46,38.03,14.54l0,0l77.06,79.5c1.13,1.28,2.32,2.5,3.56,3.67l0.21,0.21l0.01-0.01c10.11,9.44,23.67,15.23,38.6,15.23c31.24,0,56.57-25.33,56.57-56.57S578.44,407.03,547.2,407.03z"/>
+  <path class="lp" d="M894.18,472.25c0-49.92-40.47-90.39-90.39-90.39c-49.88,0-90.39,40.51-90.39,90.39c0,49.92,40.47,90.39,90.39,90.39c14.97,0,29.09-3.64,41.53-10.09l0,0c-8.74,33.69-51.63,30.54-64.07,28.88c-1.8-0.24-3.39,1.16-3.39,2.97v39.93c0,1.67,1.36,3.02,3.03,3l31.1-0.36c80.59-11.93,82.18-83.45,82.18-83.45v-66.81l-0.12,0.18C894.14,475.37,894.18,473.81,894.18,472.25z M804.17,517.25c-24.89,0-45.07-20.18-45.07-45.07c0-24.89,20.18-45.07,45.07-45.07c24.89,0,45.07,20.18,45.07,45.07C849.24,497.07,829.06,517.25,804.17,517.25z"/>
+  <path class="lp" d="M1066.14,493.22H959.53c5.03,19.74,20.82,30.16,45.23,30.16c11.49,0,21.54-2.51,34.1-10.41c3.23-2.15,5.38-1.79,7.9,0.72l18.67,17.95c2.15,2.52,2.15,5.03-0.72,7.9c-16.87,16.87-39.85,26.92-65.33,26.92c-55.28,0-93.33-40.56-93.33-92.25s38.05-92.25,89.38-92.25c50.98,0,83.64,40.56,83.64,89.02C1079.06,485.68,1077.27,493.22,1066.14,493.22z M958.81,459.12h72.51c-3.23-21.54-17.95-31.95-35.54-31.95C977.83,427.17,962.76,437.58,958.81,459.12z"/>
+  <path class="lp" d="M1267.21,457.68v98.72c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38v-87.95c0-28.36-15.79-36.62-30.15-36.62c-24.05,0-34.1,23.69-34.1,32.31v92.25c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V391.27c0-3.23,2.15-5.38,5.38-5.38h41.64c3.23,0,5.03,2.15,5.38,5.38l1.43,22.25c11.13-18.3,29.08-31.59,54.2-31.59C1238.85,381.94,1267.21,410.66,1267.21,457.68z"/>
+  <path class="lp" d="M1297.36,326.3c0-16.15,12.92-29.08,29.08-29.08c15.79,0,28.72,12.92,28.72,29.08c0,15.79-12.92,28.72-28.72,28.72C1310.28,355.02,1297.36,342.09,1297.36,326.3z M1304.9,385.89h43.08c3.23,0,5.38,2.15,5.38,5.38V556.4c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V391.27C1299.51,388.04,1301.67,385.89,1304.9,385.89z"/>
+  <path class="lp" d="M1566.22,391.27V556.4c0,3.23-2.15,5.38-5.38,5.38h-39.13c-3.23,0-5.03-2.15-5.38-5.38l-1.08-12.92c-12.21,13.64-28.72,22.97-50.26,22.97c-48.82,0-84.72-40.92-84.72-92.25s35.9-92.25,84.72-92.25c20.82,0,37.69,9.69,50.26,24.05l1.08-14.72c0.36-3.23,2.15-5.38,5.38-5.38h39.13C1564.07,385.89,1566.22,388.04,1566.22,391.27z M1511.3,473.84c0-23.34-16.87-43.08-39.49-43.08c-22.97,0-39.84,18.67-39.84,43.08c0,24.77,16.87,43.43,39.84,43.43C1494.43,517.27,1511.3,497.17,1511.3,473.84z"/>
+  <path class="lp" d="M1603.19,299.73h43.08c3.23,0,5.38,2.15,5.38,5.38V556.4c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V305.12C1597.81,301.89,1599.96,299.73,1603.19,299.73z"/>
+  <path class="lp" d="M1163.34,747.34c2.79-2.79,5.23-2.44,7.68,0l5.58,4.89c2.09,2.09,2.44,4.88,0.35,7.33c-16.06,18.5-38.39,30.37-66.32,30.37c-49.21,0-85.52-39.44-85.52-89.7s36.3-89.7,85.52-89.7c27.23,0,49.22,11.87,65.27,30.37c2.09,2.44,1.74,5.24-0.35,7.33l-5.58,4.54c-2.44,2.45-4.89,2.79-7.68,0.35c-10.12-9.42-21.99-23.74-51.66-23.74c-38.39,0-65.27,30.37-65.27,70.86c0,40.49,26.88,70.86,65.27,70.86C1141,771.07,1153.57,757.46,1163.34,747.34z"/>
+  <path class="lp" d="M1364.74,619.58v160.56c0,3.14-2.09,5.24-5.24,5.24h-9.42c-3.14,0-4.89-2.09-5.23-5.24l-1.75-22.69c-13.26,19.55-34.9,32.11-62.48,32.11c-49.22,0-84.12-39.44-84.12-89.36s34.9-89.36,84.12-89.36c27.92,0,49.56,12.57,62.83,32.46l1.4-23.73c0.35-3.14,2.09-5.24,5.23-5.24h9.42C1362.64,614.35,1364.74,616.44,1364.74,619.58z M1345.19,714.88l0.7-14.66l-0.7-15.01c-5.93-31.42-30.72-55.5-63.18-55.5c-37.7,0-65.27,30.02-65.27,70.16c0,40.49,27.57,70.51,65.27,70.51C1314.47,770.37,1339.26,746.29,1345.19,714.88z"/>
+  <path class="lp" d="M1484.11,620.63l-4.19,8.73c-1.4,2.45-3.14,2.79-5.93,2.09c-3.14-0.7-6.28-1.74-13.61-1.74c-20.94,0-38.74,16.06-38.74,38.39v112.04c0,3.14-2.09,5.24-5.24,5.24h-10.47c-3.14,0-5.24-2.09-5.24-5.24V619.58c0-3.14,2.09-5.24,5.24-5.24h8.73c3.14,0,4.89,2.09,5.24,5.24l1.4,14.31c9.77-13.97,23.74-23.39,41.89-23.39c8.03,0,15.36,1.74,20.24,4.88C1485.15,616.44,1485.5,617.84,1484.11,620.63z"/>
+  <path class="lp" d="M1651.65,692.88c0,11.17-1.4,16.4-9.77,16.4h-132.99c3.84,34.56,28.97,61.78,67.72,61.78c23.04,0,38.39-8.73,49.21-18.5c2.44-2.09,4.54-3.49,7.33-1.05l4.54,4.19c2.79,2.79,3.14,5.24,0.35,8.03c-16.06,16.75-38.39,26.18-63.88,26.18c-50.26,0-85.86-39.44-85.86-89.7s34.21-89.7,83.42-89.7C1620.59,610.51,1651.65,649.95,1651.65,692.88z M1508.89,691.84h124.26c-0.7-33.86-25.83-62.48-61.78-62.48C1536.12,629.36,1512.03,656.58,1508.89,691.84z"/>
+</svg>
+        <h1 class="title" style="color:#6E69AD;margin-top:8px">Ronda Mensal</h1>
+        <p class="subtitle">Facilities</p>
       </div>
       <div class="card" style="margin-bottom:16px">
         <label>Unidade</label>
@@ -153,10 +167,10 @@ textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10p
     <div class="sticky-header">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div>
-          <div style="font-size:13px;font-weight:700;color:#e9d5ff" id="hdr-unidade"></div>
-          <div style="font-size:11px;color:#c4b5fd" id="hdr-responsavel"></div>
+          <div style="font-size:13px;font-weight:700;color:#EDE9F8" id="hdr-unidade"></div>
+          <div style="font-size:11px;color:#D4D2F0" id="hdr-responsavel"></div>
         </div>
-        <button class="btn btn-sm" id="btn-concluir-topo" style="background:#7c3aed;color:#fff;border:none">Concluir</button>
+        <button class="btn btn-sm" id="btn-concluir-topo" style="background:#6E69AD;color:#fff;border:none">Concluir</button>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:#e9d5ff;margin-bottom:4px">
         <span id="hdr-progresso">0/0 itens</span>
@@ -244,7 +258,7 @@ const IIS=[
   {t:"Armário fixado na parede sem folga ou risco de tombamento",c:true},
   {t:"Suportes de bola de pilates firmes e sem desgaste",c:true},
   {t:"Equipamentos suspensos de TO: ancoragem firme",c:true},
-  "Colchonetes/tatames inteiros, sem rasgos","Bolas de pilates e pneus sem danos visíveis",
+  "Colchonetes/tatames inteiros, sem rasgos","Bolas de pilates e pneus sem danos visíveis","Calibragem de bolas de pilates adequada (bomba disponível na unidade)","Calibragem de pneus adequada (bomba disponível na unidade)",
   "Brinquedos sem peças pequenas soltas","Armário com chave — sem trincas ou desnível","Lixeira com tampa e pedal funcionando",
 ];
 const AMBIENTES=[
@@ -254,6 +268,7 @@ const AMBIENTES=[
   {id:"reuniao",icon:"🤝",titulo:"Sala de Reunião",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Tomadas funcionando e com proteção","Cadeiras com rodízio e pistões funcionais","TV com imagem e som; controle remoto com pilhas","Ar-condicionado sem erros, sem odor","Lixeira com tampa e pedal"]},
   {id:"cabines",icon:"📞",titulo:"Cabines de Call",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Tomadas funcionando e com proteção","Cadeiras com rodízio e pistões funcionais","Bancadas firmes, sem parafusos soltos","Lixeira com tampa e pedal"]},
   {id:"depositos",icon:"📦",titulo:"Almoxarifado + DML",itens:["Iluminação do almoxarifado funcionando","Porta do almoxarifado sem esforço para abrir","Tranca e trinco do almoxarifado funcionando","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Prateleiras firmes, sem ferrugem ou risco de queda","Iluminação do DML funcionando","Torneira do DML sem gotejamento","Varal de parede do DML fixo e sem avarias","Porta do DML sem esforço para abrir","Tranca e trinco do DML funcionando"]},
+  {id:"copa",icon:"☕",titulo:"Copa / Cozinha",itens:["Iluminação funcionando sem oscilação","Tomadas funcionando e com proteção","Pia sem gotejamento ou vazamento","Pressão da água adequada","Sem manchas de infiltração ou mofo","Paredes e pisos sem trincas ou descolamento","Cafeteira funcionando e sem vazamento","Geladeira funcionando, vedando corretamente, sem odor","Micro-ondas funcionando e limpo (sem odor ou sujeira acumulada)","Armários e prateleiras firmes, sem risco de queda","Lixeira com saco plástico, tampa e pedal funcionando","Purificador/filtro de água funcionando, sem goteira (se houver)"]},
 ];
 
 function txt(i){return typeof i==="string"?i:i.t}
@@ -328,7 +343,7 @@ function renderRonda(){
   document.getElementById("hdr-responsavel").textContent=S.responsavel;
   atualizarHeader();
   renderGrupos("wrap-salas", salas.map(sala=>({
-    id:sala.id,label:sala.label,badge:sala.tipo==="IS"?'<span class="badge" style="color:#9a3412;background:#fff7ed;font-size:10px">IS ⚠️</span>':"",
+    id:sala.id,label:sala.label,badge:sala.tipo==="IS"?'<span class="badge" style="color:#2A7A7D;background:#E0F5F6;font-size:10px">IS ⚠</span>':"",
     prefix:`sala__${sala.id}__`,itens:sala.tipo==="IS"?IIS:IP
   })));
   renderGrupos("wrap-ambientes", AMBIENTES.map(amb=>({
@@ -392,7 +407,7 @@ function renderResumo(){
   document.getElementById("resumo-icon").textContent=res.naoConformes===0?"✅":"⚠️";
   document.getElementById("resumo-sub").textContent=`${S.unidade} · ${S.responsavel}`;
   document.getElementById("summary-grid").innerHTML=[
-    {l:"Respondidos",v:res.respondidos,c:"#4b2d6f"},
+    {l:"Respondidos",v:res.respondidos,c:"#6E69AD"},
     {l:"Não conformes",v:res.naoConformes,c:res.naoConformes>0?"#dc2626":"#16a34a"},
     {l:"Críticos NC",v:res.criticos,c:res.criticos>0?"#ea580c":"#16a34a"},
   ].map(x=>`<div class="summary-card"><div style="font-size:26px;font-weight:800;color:${x.c}">${x.v}</div><div style="font-size:11px;color:#6b7280;margin-top:2px">${x.l}</div></div>`).join("");
