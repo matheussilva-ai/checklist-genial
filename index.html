@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ronda Mensal — Genial Care Facilities</title>
+<style>
+/* ── RESET E BASE ───────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f5f3ff;min-height:100vh;color:#1f2937;-webkit-font-smoothing:antialiased}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.app{max-width:480px;margin:0 auto;padding:0 0 60px}
+.screen{display:none}.screen.active{display:block}
+.pad{padding:24px 16px}
+
+/* ── TIPOGRAFIA ─────────────────────────────────────────────────── */
+.title{font-size:22px;font-weight:800;color:#4b2d6f;margin:0 0 4px}
+.subtitle{font-size:14px;color:#6b7280;margin:0}
+.section-label{font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:0.08em;padding:0 16px;margin:20px 0 8px;display:block}
+
+/* ── COMPONENTES ────────────────────────────────────────────────── */
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 8px rgba(0,0,0,0.06)}
+.btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:inherit;text-align:center}
+.btn:active{transform:scale(0.98)}
+.btn-primary{background:#4b2d6f;color:#fff}
+.btn-primary:disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;transform:none}
+.btn-outline{background:#fff;color:#4b2d6f;border:1.5px solid #4b2d6f}
+.btn-ghost{background:#fff;color:#6b7280;border:1.5px solid #e5e7eb}
+.btn-sm{width:auto;padding:6px 14px;font-size:13px;font-weight:600;border-radius:8px}
+.btn-stack{display:flex;flex-direction:column;gap:10px}
+
+label{font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px}
+select,input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid #e5e7eb;font-size:15px;color:#1f2937;background:#fff;font-family:inherit;appearance:none;-webkit-appearance:none;outline:none}
+select:focus,input[type=text]:focus{border-color:#4b2d6f}
+textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10px;font-size:13px;color:#1f2937;background:#fff;resize:vertical;font-family:inherit;outline:none}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700}
+
+/* ── HEADER STICKY ──────────────────────────────────────────────── */
+.sticky-header{position:sticky;top:0;z-index:100;background:#4b2d6f;padding:12px 16px}
+.progress-track{height:6px;background:rgba(255,255,255,0.2);border-radius:99px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:99px;background:#a78bfa;transition:width 0.3s}
+.progress-fill.nc{background:#f97316}
+
+/* ── GRUPOS (salas / ambientes) ─────────────────────────────────── */
+.groups-wrap{padding:0 16px}
+.group-btn{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;text-align:left;transition:all 0.15s;margin-bottom:6px;font-family:inherit}
+.group-btn:active{transform:scale(0.99)}
+.group-btn.open{border-radius:10px 10px 0 0;margin-bottom:0}
+.group-btn.nc{border-color:#fca5a5;background:#fef2f2}
+.group-btn.done{border-color:#bbf7d0;background:#f0fdf4}
+.group-body{border:1.5px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;padding:12px;background:#fafafa;margin-bottom:6px;display:none}
+.group-body.open{display:block}
+
+/* ── ITEM CHECKLIST ─────────────────────────────────────────────── */
+.item-card{padding:12px 14px;border-radius:10px;margin-bottom:8px;background:#fafafa;border:1.5px solid #e5e7eb}
+.item-card.critico{background:#fff8f1;border-color:#fed7aa}
+.item-text{font-size:14px;color:#1f2937;line-height:1.4;margin-bottom:8px}
+.item-text.ct{color:#9a3412;font-weight:600}
+.status-row{display:flex;gap:6px;flex-wrap:wrap}
+.sbt{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.sbt:active{transform:scale(0.96)}
+.sbt.conforme.active{border-color:#16a34a;background:#f0fdf4;color:#16a34a}
+.sbt.nao_conforme.active{border-color:#dc2626;background:#fef2f2;color:#dc2626}
+.sbt.nao_aplica.active{border-color:#6b7280;background:#f9fafb;color:#6b7280}
+
+/* ── RESUMO ─────────────────────────────────────────────────────── */
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.summary-card{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.chamado-card{padding:10px 12px;background:#fff;border-radius:8px;margin-bottom:6px;border:1.5px solid #fecaca}
+.chamado-card.ct{border-color:#fed7aa}
+
+/* ── HISTÓRICO ──────────────────────────────────────────────────── */
+.hist-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border:1.5px solid #e5e7eb}
+
+/* ── TOAST ──────────────────────────────────────────────────────── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1f2937;color:#fff;padding:12px 20px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:#dc2626}
+.toast.success{background:#16a34a}
+
+/* ── CONFIG ─────────────────────────────────────────────────────── */
+.config-input{display:flex;gap:8px;margin-bottom:16px}
+.config-input input{flex:1}
+</style>
+</head>
+<body>
+
+<!-- ── TOAST ─────────────────────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── APP ───────────────────────────────────────────────────────── -->
+<div class="app">
+
+  <!-- TELA: Configuração (primeira vez) -->
+  <div class="screen active" id="screen-config">
+    <div class="pad">
+      <div style="text-align:center;margin-bottom:32px;padding-top:16px">
+        <div style="font-size:40px;margin-bottom:12px">⚙️</div>
+        <h1 class="title">Configuração inicial</h1>
+        <p class="subtitle">Cole a URL do Apps Script para conectar à planilha</p>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <label>URL do Apps Script (Web App)</label>
+        <div class="config-input">
+          <input type="text" id="inp-api-url" placeholder="https://script.google.com/macros/s/...">
+        </div>
+        <p style="font-size:12px;color:#9ca3af;margin-top:-8px">
+          Cole a URL gerada ao implantar o script como Web App.<br>
+          Se não configurar agora, as rondas são salvas só localmente.
+        </p>
+      </div>
+      <button class="btn btn-primary" id="btn-salvar-config" style="margin-bottom:10px">Salvar e continuar</button>
+      <button class="btn btn-ghost" id="btn-pular-config">Pular por enquanto (modo offline)</button>
+    </div>
+  </div>
+
+  <!-- TELA: Início -->
+  <div class="screen" id="screen-inicio">
+    <div class="pad">
+      <div style="text-align:center;margin-bottom:32px;padding-top:16px">
+        <div style="font-size:44px;margin-bottom:12px">🏥</div>
+        <h1 class="title">Ronda Mensal</h1>
+        <p class="subtitle">Genial Care — Facilities</p>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <label>Unidade</label>
+        <select id="sel-unidade" style="margin-bottom:16px">
+          <option value="">Selecione a CG...</option>
+          <option>CG Morumbi</option>
+          <option>CG Tatuapé</option>
+          <option>CG Pinheiros</option>
+          <option>CG Paraíso</option>
+          <option>CG Alphaville</option>
+          <option>CG Anália Franco</option>
+          <option>CG Santana</option>
+        </select>
+        <label>Seu nome</label>
+        <input type="text" id="inp-responsavel" placeholder="Nome do responsável">
+      </div>
+      <div class="btn-stack">
+        <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
+        <button class="btn btn-ghost" id="btn-ver-hist-inicio">Ver histórico</button>
+        <button class="btn btn-ghost" id="btn-config">⚙ Configurações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: Ronda -->
+  <div class="screen" id="screen-ronda">
+    <div class="sticky-header">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#e9d5ff" id="hdr-unidade"></div>
+          <div style="font-size:11px;color:#c4b5fd" id="hdr-responsavel"></div>
+        </div>
+        <button class="btn btn-sm" id="btn-concluir-topo" style="background:#7c3aed;color:#fff;border:none">Concluir</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#e9d5ff;margin-bottom:4px">
+        <span id="hdr-progresso">0/0 itens</span>
+        <span id="hdr-nc" style="font-weight:600">✓ Tudo ok</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <span class="section-label">SALAS DE ATENDIMENTO</span>
+    <div class="groups-wrap" id="wrap-salas"></div>
+
+    <span class="section-label">AMBIENTES FIXOS</span>
+    <div class="groups-wrap" id="wrap-ambientes"></div>
+
+    <div style="padding:16px">
+      <button class="btn btn-primary" id="btn-concluir-bottom">Concluir e salvar ronda →</button>
+    </div>
+  </div>
+
+  <!-- TELA: Resumo -->
+  <div class="screen" id="screen-resumo">
+    <div class="pad">
+      <div style="text-align:center;margin-bottom:24px;padding-top:8px">
+        <div style="font-size:44px;margin-bottom:10px" id="resumo-icon">✅</div>
+        <h2 class="title" style="margin-bottom:4px">Ronda concluída</h2>
+        <p class="subtitle" id="resumo-sub"></p>
+      </div>
+      <div class="summary-grid" id="summary-grid"></div>
+      <div id="chamados-wrap"></div>
+      <div class="btn-stack">
+        <button class="btn btn-outline" id="btn-exportar">⬇ Exportar relatório (.txt)</button>
+        <button class="btn btn-primary" id="btn-nova-ronda">Nova ronda</button>
+        <button class="btn btn-ghost" id="btn-ver-hist-resumo">Ver histórico</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: Histórico -->
+  <div class="screen" id="screen-historico">
+    <div class="pad">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:8px">
+        <button class="btn btn-ghost btn-sm" id="btn-voltar-hist">← Voltar</button>
+        <h2 class="title" style="font-size:18px">Histórico de rondas</h2>
+      </div>
+      <div id="hist-lista"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DADOS ────────────────────────────────────────────────────────────
+function gs(andar,total,is){
+  return Array.from({length:total},(_,i)=>{
+    const n=i+1,num=String(n).padStart(2,"0");
+    const label=andar?`${andar} — Sala ${num}`:`Sala ${num}`;
+    return{id:label,label,tipo:is.includes(n)?"IS":"padrao"};
+  });
+}
+const UNIDADES={
+  "CG Morumbi":[...gs("12° andar",18,[7,18]),...gs("14° andar",7,[7]),...gs("16° andar",16,[1,2])],
+  "CG Tatuapé":gs("",16,[11,15]),"CG Pinheiros":gs("",29,[11,13]),
+  "CG Paraíso":gs("",30,[4,26]),
+  "CG Alphaville":[...gs("3° andar",20,[19,20]),...gs("9° andar",7,[5])],
+  "CG Anália Franco":gs("",20,[11,19]),"CG Santana":gs("",34,[5,6,7]),
+};
+const IP=[
+  "Iluminação funcionando (sem queimadas ou oscilação)","Iluminação suficiente — tom neutro",
+  "Porta abrindo/fechando sem esforço, ruídos ou rangidos","Tranca e trinco funcionando",
+  "Paredes, pisos e rodapés sem trincas ou descolamento","Sem manchas de infiltração, mofo ou pintura descascando",
+  "Sem marcas de fita adesiva nas paredes","Tomadas funcionando e com proteção",
+  "Dispensers (papel toalha, álcool) fixados corretamente","Mobiliário estável, sem parafusos frouxos",
+  {t:"Cadeiras e mesas infantis sem instabilidade",c:true},
+  "Armário com chave — sem trincas ou desnível nas portas","Ar-condicionado funcionando sem erros, sem odor",
+  "Brinquedos sem peças pequenas soltas","Colchonetes/tatames inteiros, sem rasgos","Lixeira com tampa e pedal funcionando",
+];
+const IIS=[
+  "Iluminação funcionando (sem queimadas ou oscilação)","Iluminação suficiente — tom neutro",
+  "Porta abrindo/fechando sem esforço, ruídos ou rangidos","Tranca e trinco funcionando",
+  "Paredes, pisos e rodapés sem trincas ou descolamento","Sem manchas de infiltração, mofo ou pintura descascando",
+  "Tomadas funcionando e com proteção","Dispensers (papel toalha, álcool) fixados corretamente",
+  "Ar-condicionado funcionando sem erros, sem odor",
+  {t:"Ganchos de teto: firmes, sem folga, sem oxidação",c:true},
+  {t:"Ganchos de parede: firmes, sem folga, sem oxidação",c:true},
+  {t:"Armário fixado na parede sem folga ou risco de tombamento",c:true},
+  {t:"Suportes de bola de pilates firmes e sem desgaste",c:true},
+  {t:"Equipamentos suspensos de TO: ancoragem firme",c:true},
+  "Colchonetes/tatames inteiros, sem rasgos","Bolas de pilates e pneus sem danos visíveis",
+  "Brinquedos sem peças pequenas soltas","Armário com chave — sem trincas ou desnível","Lixeira com tampa e pedal funcionando",
+];
+const AMBIENTES=[
+  {id:"recepcao",icon:"🛋️",titulo:"Recepção / Sala de espera",itens:["Iluminação interna sem oscilação","Iluminação externa (refletores) funcionando","Porta principal abrindo/fechando sem esforço","Portão funcionando (se houver)","Paredes e pisos sem trincas ou descolamento","Sem manchas de infiltração ou mofo","Sem marcas de fita adesiva nas paredes","Tomadas funcionando e com proteção","Dispensers de álcool fixados","Ar-condicionado sem erros, sem odor","Cadeiras, poltronas e sofás em bom estado","Purificador de água funcionando, sem goteira","Corredor/circulação livre (sem objetos obstruindo)","Sinalização de rotas de fuga visível e sem obstrução","Câmeras posicionadas corretamente, lentes limpas","Lixeira com saco plástico, tampa e pedal"]},
+  {id:"banheiros",icon:"🚻",titulo:"Banheiros (Fem/Masc + PCD + Fraldário)",itens:["Tomadas funcionando e com proteção","Assentos sanitários em bom estado","Torneiras sem gotejamento ou vazamento","Pressão da água adequada","Descargas funcionando","Sem vazamentos visíveis","Portas abrindo/fechando sem esforço","Trancas sem chave solta","Iluminação funcionando sem oscilação","Exaustores ligados e sem ruído anormal","Azulejos, paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Barras de apoio PCD firmes","Fraldário firme e bem fixado","Ganchos de assento sanitário firmes","Redutores de assento disponíveis","Dispensers (papel toalha, higiênico, sabonete) fixados","Espelhos bem fixados, sem rachaduras","Lixeiras com saco plástico, tampa e pedal"]},
+  {id:"escritorios",icon:"💼",titulo:"Escritórios (Equipe + Família)",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Sem marcas de fita adesiva","Tomadas funcionando e com proteção","Dispensers fixados corretamente","Ar-condicionado sem erros, sem odor","Cadeiras com rodízio e pistões funcionais","Bancadas/mesas firmes, sem parafusos soltos","Sinal Wi-Fi estável","Lixeira com tampa e pedal"]},
+  {id:"reuniao",icon:"🤝",titulo:"Sala de Reunião",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Tomadas funcionando e com proteção","Cadeiras com rodízio e pistões funcionais","TV com imagem e som; controle remoto com pilhas","Ar-condicionado sem erros, sem odor","Lixeira com tampa e pedal"]},
+  {id:"cabines",icon:"📞",titulo:"Cabines de Call",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Tomadas funcionando e com proteção","Cadeiras com rodízio e pistões funcionais","Bancadas firmes, sem parafusos soltos","Lixeira com tampa e pedal"]},
+  {id:"depositos",icon:"📦",titulo:"Almoxarifado + DML",itens:["Iluminação do almoxarifado funcionando","Porta do almoxarifado sem esforço para abrir","Tranca e trinco do almoxarifado funcionando","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Prateleiras firmes, sem ferrugem ou risco de queda","Iluminação do DML funcionando","Torneira do DML sem gotejamento","Varal de parede do DML fixo e sem avarias","Porta do DML sem esforço para abrir","Tranca e trinco do DML funcionando"]},
+];
+
+function txt(i){return typeof i==="string"?i:i.t}
+function crit(i){return typeof i==="object"&&i.c}
+function fmtData(ts){return new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+function gerarId(){return"ronda_"+Date.now()+"_"+Math.random().toString(36).slice(2,6)}
+
+// ── STATE ─────────────────────────────────────────────────────────
+const S={
+  unidade:"",responsavel:"",respostas:{},observacoes:{},
+  expandido:null,historico:[],rondaId:null,apiUrl:""
+};
+
+function loadLocal(){
+  try{
+    const h=localStorage.getItem("rondas_hist");if(h)S.historico=JSON.parse(h);
+    const u=localStorage.getItem("rondas_api");if(u)S.apiUrl=u;
+    const resp=localStorage.getItem("rondas_responsavel");if(resp)S.responsavel=resp;
+  }catch{}
+}
+function saveHistorico(){try{localStorage.setItem("rondas_hist",JSON.stringify(S.historico));}catch{}}
+function saveApi(url){try{localStorage.setItem("rondas_api",url);S.apiUrl=url;}catch{}}
+function saveResponsavel(n){try{localStorage.setItem("rondas_responsavel",n);}catch{}}
+
+// ── NAVEGAÇÃO ──────────────────────────────────────────────────────
+function ir(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────
+function toast(msg,tipo=""){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.className="toast "+(tipo||"");
+  setTimeout(()=>t.classList.add("show"),10);
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+// ── CÁLCULOS ───────────────────────────────────────────────────────
+function todosItens(){
+  if(!S.unidade)return[];
+  const salas=UNIDADES[S.unidade]||[];
+  const iS=salas.flatMap(sala=>(sala.tipo==="IS"?IIS:IP).map((item,i)=>({
+    chave:`sala__${sala.id}__${i}`,texto:txt(item),critico:crit(item),grupo:sala.label
+  })));
+  const iA=AMBIENTES.flatMap(amb=>amb.itens.map((item,i)=>({
+    chave:`amb__${amb.id}__${i}`,texto:item,critico:false,grupo:amb.titulo
+  })));
+  return[...iS,...iA];
+}
+function contarGrupo(prefix){
+  const t=todosItens().filter(i=>i.chave.startsWith(prefix));
+  return{total:t.length,resp:t.filter(i=>S.respostas[i.chave]).length,nc:t.filter(i=>S.respostas[i.chave]==="nao_conforme").length};
+}
+function resumo(){
+  const t=todosItens();
+  return{total:t.length,respondidos:t.filter(i=>S.respostas[i.chave]).length,
+    naoConformes:t.filter(i=>S.respostas[i.chave]==="nao_conforme").length,
+    criticos:t.filter(i=>i.critico&&S.respostas[i.chave]==="nao_conforme").length};
+}
+function chamados(){
+  return todosItens().filter(i=>S.respostas[i.chave]==="nao_conforme")
+    .map(i=>({...i,obs:S.observacoes[i.chave]||""}));
+}
+
+// ── RENDER RONDA ──────────────────────────────────────────────────
+function renderRonda(){
+  const salas=UNIDADES[S.unidade]||[];
+  document.getElementById("hdr-unidade").textContent=S.unidade;
+  document.getElementById("hdr-responsavel").textContent=S.responsavel;
+  atualizarHeader();
+  renderGrupos("wrap-salas", salas.map(sala=>({
+    id:sala.id,label:sala.label,badge:sala.tipo==="IS"?'<span class="badge" style="color:#9a3412;background:#fff7ed;font-size:10px">IS ⚠️</span>':"",
+    prefix:`sala__${sala.id}__`,itens:sala.tipo==="IS"?IIS:IP
+  })));
+  renderGrupos("wrap-ambientes", AMBIENTES.map(amb=>({
+    id:amb.id,label:amb.titulo,badge:`<span style="font-size:18px;margin-right:4px">${amb.icon}</span>`,
+    prefix:`amb__${amb.id}__`,itens:amb.itens
+  })));
+}
+
+function renderGrupos(wrapId,grupos){
+  const wrap=document.getElementById(wrapId);
+  wrap.innerHTML=grupos.map(g=>{
+    const{total,resp,nc}=contarGrupo(g.prefix);
+    const cls=nc>0?"nc":resp===total&&total>0?"done":"";
+    const aberto=S.expandido===g.id;
+    const itensHtml=aberto?renderItens(g.itens,g.prefix):"";
+    return`<div>
+    <button class="group-btn ${cls} ${aberto?"open":""}" data-gid="${g.id}">
+      <div style="display:flex;align-items:center;gap:6px;overflow:hidden">
+        ${g.badge}<span style="font-size:14px;font-weight:600;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.label}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px">
+        <span style="font-size:12px;color:#6b7280">${resp}/${total}</span>
+        ${nc>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${nc} NC</span>`:""}
+        ${resp===total&&total>0&&nc===0?`<span style="color:#16a34a">✓</span>`:""}
+        <span style="color:#9ca3af;font-size:14px">${aberto?"▲":"▼"}</span>
+      </div>
+    </button>
+    <div class="group-body ${aberto?"open":""}" id="body_${g.id}">${itensHtml}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderItens(itens,prefix){
+  return itens.map((item,i)=>{
+    const chave=prefix+i;const v=S.respostas[chave]||"";const cr=crit(item);const texto=txt(item);
+    return`<div class="item-card ${cr?"critico":""}" id="ic_${chave.replace(/ /g,"_")}">
+    <div class="item-text ${cr?"ct":""}">${cr?"⚠️ ":""}${texto}</div>
+    <div class="status-row">
+      ${[["conforme","Conforme"],["nao_conforme","Não conforme"],["nao_aplica","N/A"]].map(([val,lbl])=>
+        `<button class="sbt ${val} ${v===val?"active":""}" data-chave="${chave}" data-val="${val}">${lbl}</button>`
+      ).join("")}
+    </div>
+    ${v==="nao_conforme"?`<textarea data-chave="${chave}" placeholder="Descreva o problema..." rows="2">${S.observacoes[chave]||""}</textarea>`:""}
+    </div>`;
+  }).join("");
+}
+
+function atualizarHeader(){
+  const res=resumo();const pct=res.total?Math.round(res.respondidos/res.total*100):0;
+  document.getElementById("hdr-progresso").textContent=`${res.respondidos}/${res.total} itens`;
+  const ncEl=document.getElementById("hdr-nc");
+  ncEl.textContent=res.naoConformes>0?`${res.naoConformes} não conforme(s)`:"✓ Tudo ok";
+  ncEl.style.color=res.naoConformes>0?"#fca5a5":"#86efac";
+  const fill=document.getElementById("progress-fill");
+  fill.style.width=pct+"%";fill.className="progress-fill"+(res.naoConformes>0?" nc":"");
+}
+
+// ── RENDER RESUMO ─────────────────────────────────────────────────
+function renderResumo(){
+  const res=resumo();const ch=chamados();
+  document.getElementById("resumo-icon").textContent=res.naoConformes===0?"✅":"⚠️";
+  document.getElementById("resumo-sub").textContent=`${S.unidade} · ${S.responsavel}`;
+  document.getElementById("summary-grid").innerHTML=[
+    {l:"Respondidos",v:res.respondidos,c:"#4b2d6f"},
+    {l:"Não conformes",v:res.naoConformes,c:res.naoConformes>0?"#dc2626":"#16a34a"},
+    {l:"Críticos NC",v:res.criticos,c:res.criticos>0?"#ea580c":"#16a34a"},
+  ].map(x=>`<div class="summary-card"><div style="font-size:26px;font-weight:800;color:${x.c}">${x.v}</div><div style="font-size:11px;color:#6b7280;margin-top:2px">${x.l}</div></div>`).join("");
+  const cw=document.getElementById("chamados-wrap");
+  if(ch.length>0){
+    cw.innerHTML=`<div style="background:#fef2f2;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #fca5a5">
+    <div style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${ch.length} chamado${ch.length>1?"s":""} a abrir no Zoho</div>
+    ${ch.map(c=>`<div class="chamado-card ${c.critico?"ct":""}">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:2px">${c.grupo}</div>
+      <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
+      ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:4px;font-style:italic">→ ${c.obs}</div>`:""}
+    </div>`).join("")}
+    </div>`;
+  } else {
+    cw.innerHTML=`<div style="background:#f0fdf4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #bbf7d0;text-align:center">
+    <div style="font-size:14px;font-weight:700;color:#16a34a">✓ Nenhum chamado necessário</div>
+    <div style="font-size:13px;color:#6b7280;margin-top:4px">Todos os itens respondidos estão conformes.</div>
+    </div>`;
+  }
+}
+
+// ── RENDER HISTÓRICO ──────────────────────────────────────────────
+function renderHistorico(){
+  const lista=document.getElementById("hist-lista");
+  if(S.historico.length===0){
+    lista.innerHTML=`<div style="text-align:center;padding:40px;color:#9ca3af;font-size:14px">Nenhuma ronda registrada ainda.</div>`;
+    return;
+  }
+  lista.innerHTML=S.historico.map(r=>`<div class="hist-card" style="border-color:${r.resumo.naoConformes>0?"#fca5a5":"#bbf7d0"}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#1f2937">${r.unidade}</div>
+        <div style="font-size:13px;color:#6b7280">${r.responsavel}</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:2px">${fmtData(r.data)}</div>
+      </div>
+      <div style="text-align:right">
+        ${r.resumo.naoConformes>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${r.resumo.naoConformes} NC</span>`:`<span class="badge" style="color:#16a34a;background:#f0fdf4">OK ✓</span>`}
+        <div style="font-size:12px;color:#9ca3af;margin-top:4px">${r.resumo.respondidos}/${r.resumo.total} itens</div>
+        <div style="font-size:11px;color:${r.salvoNaNuvem?"#16a34a":"#f59e0b"};margin-top:2px">${r.salvoNaNuvem?"☁ salvo":"📱 local"}</div>
+      </div>
+    </div>
+  </div>`).join("");
+}
+
+// ── EXPORTAR ──────────────────────────────────────────────────────
+function exportar(){
+  const ch=chamados();const res=resumo();
+  const linhas=[`RONDA MENSAL — ${S.unidade}`,`Responsável: ${S.responsavel}`,`Data: ${fmtData(Date.now())}`,``,
+    `RESUMO`,`Total de itens: ${res.total}`,`Respondidos: ${res.respondidos}`,`Não conformes: ${res.naoConformes}`,``,
+    ch.length>0?`CHAMADOS A ABRIR NO ZOHO (${ch.length})`:`NENHUM CHAMADO NECESSÁRIO`,
+    ...ch.map((c,i)=>`${i+1}. [${c.grupo}] ${c.texto}${c.obs?"\n   → "+c.obs:""}${c.critico?" ⚠ CRÍTICO":""}`)
+  ];
+  const blob=new Blob([linhas.join("\n")],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");
+  a.href=url;a.download=`ronda_${S.unidade.replace(/ /g,"_")}_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ── ENVIAR PARA SHEETS ────────────────────────────────────────────
+async function enviarParaSheets(ronda){
+  if(!S.apiUrl)return false;
+  try{
+    const res=await fetch(S.apiUrl,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(ronda)});
+    const data=await res.json();
+    return data.sucesso===true;
+  }catch{return false;}
+}
+
+// ── CONCLUIR RONDA ────────────────────────────────────────────────
+async function concluirRonda(){
+  const res=resumo();const ch=chamados();
+  const ronda={
+    id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
+    data:Date.now(),respostas:{...S.respostas},observacoes:{...S.observacoes},
+    resumo:res,chamados:ch,salvoNaNuvem:false,
+  };
+  toast("Salvando...");
+  const ok=await enviarParaSheets(ronda);
+  ronda.salvoNaNuvem=ok;
+  S.historico=[ronda,...S.historico].slice(0,100);
+  saveHistorico();
+  renderResumo();
+  ir("resumo");
+  if(ok) toast("✓ Salvo na planilha Google Sheets!","success");
+  else if(S.apiUrl) toast("Salvo localmente (sem conexão)","");
+  else toast("Salvo localmente","");
+}
+
+// ── EVENTOS ───────────────────────────────────────────────────────
+function bindGlobal(){
+  // Config
+  document.getElementById("btn-salvar-config").addEventListener("click",()=>{
+    const url=document.getElementById("inp-api-url").value.trim();
+    saveApi(url);toast("Configuração salva!","success");ir("inicio");
+  });
+  document.getElementById("btn-pular-config").addEventListener("click",()=>ir("inicio"));
+
+  // Início
+  document.getElementById("sel-unidade").addEventListener("change",e=>{
+    S.unidade=e.target.value;atualizarBtnIniciar();
+  });
+  document.getElementById("inp-responsavel").addEventListener("input",e=>{
+    S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
+  });
+  document.getElementById("btn-iniciar").addEventListener("click",()=>{
+    S.respostas={};S.observacoes={};S.expandido=null;S.rondaId=gerarId();
+    renderRonda();ir("ronda");
+  });
+  document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
+  document.getElementById("btn-config").addEventListener("click",()=>{
+    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("config");
+  });
+
+  // Ronda (delegação)
+  document.getElementById("screen-ronda").addEventListener("click",e=>{
+    const gBtn=e.target.closest("[data-gid]");
+    if(gBtn){
+      const id=gBtn.dataset.gid;
+      S.expandido=S.expandido===id?null:id;
+      renderRonda();
+      setTimeout(()=>gBtn.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
+      return;
+    }
+    const sBtn=e.target.closest(".sbt");
+    if(sBtn){
+      S.respostas[sBtn.dataset.chave]=sBtn.dataset.val;
+      // Re-render só o item afetado
+      const prefix=sBtn.dataset.chave.replace(/__\d+$/,"__");
+      const grupo=sBtn.dataset.chave.startsWith("sala")?
+        document.getElementById("wrap-salas"):document.getElementById("wrap-ambientes");
+      const gid=sBtn.dataset.chave.split("__")[1];
+      const body=document.getElementById("body_"+gid);
+      if(body&&body.classList.contains("open")){
+        const isIS=gid.includes("IS")||(UNIDADES[S.unidade]||[]).find(s=>s.id===gid)?.tipo==="IS";
+        const amb=AMBIENTES.find(a=>a.id===gid);
+        const itens=amb?amb.itens:(isIS?IIS:IP);
+        body.innerHTML=renderItens(itens,prefix);
+      }
+      // Atualiza badge do grupo
+      const{total,resp,nc}=contarGrupo(prefix);
+      const btn=document.querySelector(`[data-gid="${gid}"]`);
+      if(btn){
+        btn.className=`group-btn ${nc>0?"nc":resp===total&&total>0?"done":""} ${S.expandido===gid?"open":""}`;
+        const spans=btn.querySelectorAll("span");
+        const cntSpan=btn.querySelector('[style*="12px"]');
+        if(cntSpan)cntSpan.textContent=`${resp}/${total}`;
+      }
+      atualizarHeader();
+      return;
+    }
+  });
+  document.getElementById("screen-ronda").addEventListener("input",e=>{
+    if(e.target.tagName==="TEXTAREA"&&e.target.dataset.chave){
+      S.observacoes[e.target.dataset.chave]=e.target.value;
+    }
+  });
+  ["btn-concluir-topo","btn-concluir-bottom"].forEach(id=>{
+    document.getElementById(id).addEventListener("click",concluirRonda);
+  });
+
+  // Resumo
+  document.getElementById("btn-exportar").addEventListener("click",exportar);
+  document.getElementById("btn-nova-ronda").addEventListener("click",()=>ir("inicio"));
+  document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
+
+  // Histórico
+  document.getElementById("btn-voltar-hist").addEventListener("click",()=>ir("inicio"));
+}
+
+function atualizarBtnIniciar(){
+  document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+loadLocal();
+bindGlobal();
+// Preencher campos salvos
+document.getElementById("inp-responsavel").value=S.responsavel||"";
+// Mostrar tela correta
+if(!S.apiUrl){ir("config");}else{ir("inicio");}
+atualizarBtnIniciar();
+</script>
+</body>
+</html>
