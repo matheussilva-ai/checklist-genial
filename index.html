@@ -215,6 +215,26 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
   display:none;
 }
 
+
+/* ── FOTO ────────────────────────────────────────────────────────── */
+.foto-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:8px;padding:7px 14px;border-radius:99px;
+  border:1.5px dashed var(--border);background:var(--white);
+  color:var(--text-muted);font-size:12px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all 0.15s;
+}
+.foto-btn:active{transform:scale(0.97)}
+.foto-btn.tem-foto{border-color:var(--teal-dark);background:var(--teal-light);color:#2D6B70;border-style:solid}
+.foto-preview{
+  width:100%;max-height:160px;object-fit:cover;
+  border-radius:var(--radius-sm);margin-top:8px;
+  border:1px solid var(--border);display:block;
+}
+.foto-remove{
+  font-size:11px;color:var(--danger);background:none;border:none;
+  cursor:pointer;padding:2px 6px;margin-top:4px;font-family:inherit;
+}
 /* ── CONFIG ──────────────────────────────────────────────────────── */
 .config-input{display:flex;gap:8px;margin-bottom:16px}
 .config-input input{flex:1}
@@ -574,9 +594,11 @@ function gerarId(){return"ronda_"+Date.now()+"_"+Math.random().toString(36).slic
 
 // ── STATE ─────────────────────────────────────────────────────────
 const API_URL_FIXA="https://script.google.com/macros/s/AKfycbwKLfrXCw_n-zeuw8Z2Z5wAko_MaEnDnQpv1NA8PFNX0MGz-kmHsWL_KJbxmbTaDqRO-g/exec";
+const CHAVE_SECRETA="genial-facilities-2026";
 const S={
-  unidade:"",responsavel:"",respostas:{},observacoes:{},
-  expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA
+  unidade:"",responsavel:"",respostas:{},observacoes:{},fotos:{},
+  expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA,
+  horaInicio:null
 };
 
 function loadLocal(){
@@ -695,6 +717,7 @@ function renderItens(itens,prefix){
     // Status não conforme = qualquer um que não seja ok nem na
     const isNC = v==="chamado_normal"||v==="chamado_emergencial";
     const itemCls = v==="ok"?"item-ok":v==="chamado_normal"?"item-nc":v==="chamado_emergencial"?"item-emerg":"";
+    const fotoData=S.fotos[chave]||"";
     html+=`<div class="item-card ${cr?"critico":""} ${itemCls}">
     <div class="item-text ${cr?"ct":""}">${cr?"⚠️ ":""}${texto}</div>
     <div class="status-row">
@@ -703,6 +726,13 @@ function renderItens(itens,prefix){
       ).join("")}
     </div>
     ${isNC?`<textarea data-chave="${chave}" placeholder="Descreva o problema..." rows="2">${S.observacoes[chave]||""}</textarea>`:""}
+    ${isNC?`<div>
+      <button class="foto-btn ${fotoData?"tem-foto":""}" data-foto-chave="${chave}">
+        📷 ${fotoData?"Foto anexada — trocar":"Adicionar foto"}
+      </button>
+      <input type="file" accept="image/*" capture="environment" style="display:none" data-foto-input="${chave}">
+      ${fotoData?`<img src="${fotoData}" class="foto-preview" data-foto-preview="${chave}"><button class="foto-remove" data-foto-remove="${chave}">✕ Remover foto</button>`:""}
+    </div>`:""}
     </div>`;
   });
   return html;
@@ -817,8 +847,11 @@ async function concluirRonda(){
   const res=resumo();const ch=chamados();
   const ronda={
     id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
-    data:Date.now(),respostas:{...S.respostas},observacoes:{...S.observacoes},
-    resumo:res,chamados:ch,salvoNaNuvem:false,
+    data:Date.now(),horaInicio:S.horaInicio,horaFim:new Date().toISOString(),
+    respostas:{...S.respostas},observacoes:{...S.observacoes},
+    fotos:{...S.fotos},
+    resumo:res,chamados:ch.map(c=>({...c,emergencial:S.respostas[c.chave]==="chamado_emergencial"})),
+    salvoNaNuvem:false,chave:CHAVE_SECRETA,
   };
   toast("Salvando...");
   const ok=await enviarParaSheets(ronda);
@@ -864,7 +897,8 @@ function bindGlobal(){
         return;
       }
     }
-    S.respostas={};S.observacoes={};S.expandido=null;S.rondaId=gerarId();
+    S.respostas={};S.observacoes={};S.fotos={};S.expandido=null;S.rondaId=gerarId();
+    S.horaInicio=new Date().toISOString();
     limparRascunho();
     renderRonda();ir("ronda");
   });
@@ -950,6 +984,70 @@ function bindGlobal(){
 
   // Histórico
   document.getElementById("btn-voltar-hist").addEventListener("click",()=>ir("inicio"));
+
+  // Handler foto — botão abrir e remover
+  document.getElementById("screen-ronda").addEventListener("click",function(e){
+    var fotoBtn=e.target.closest ? e.target.closest("[data-foto-chave]") : null;
+    var removeBtn=e.target.closest ? e.target.closest("[data-foto-remove]") : null;
+    if(removeBtn){
+      var chave=removeBtn.getAttribute("data-foto-remove");
+      delete S.fotos[chave];
+      salvarRascunho();
+      var gid=chave.split("__")[1];
+      var body=document.getElementById("body_"+gid);
+      if(body&&body.classList.contains("open")){
+        var prefix=chave.replace(/__[0-9]+$/,"__");
+        var sala=(UNIDADES[S.unidade]||[]).find(function(s){return s.id===gid;});
+        var amb=AMBIENTES.find(function(a){return a.id===gid;});
+        var itens=amb?amb.itens:(sala&&sala.tipo==="IS"?IIS:IP);
+        body.innerHTML=renderItens(itens,prefix);
+      }
+      return;
+    }
+    if(fotoBtn){
+      var chave2=fotoBtn.getAttribute("data-foto-chave");
+      var input=document.querySelector("[data-foto-input=\""+chave2+"\"]");
+      if(input) input.click();
+    }
+  },true);
+
+  // Handler foto — input file com compressão
+  document.getElementById("screen-ronda").addEventListener("change",function(e){
+    var fotoInput=e.target.getAttribute("data-foto-input");
+    if(fotoInput){
+      var chave=fotoInput;
+      var file=e.target.files[0];
+      if(!file) return;
+      var reader=new FileReader();
+      reader.onload=function(ev){
+        var img=new Image();
+        img.onload=function(){
+          var canvas=document.createElement("canvas");
+          var MAX=1200;
+          var w=img.width,h=img.height;
+          if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+          if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+          canvas.width=w;canvas.height=h;
+          canvas.getContext("2d").drawImage(img,0,0,w,h);
+          var base64=canvas.toDataURL("image/jpeg",0.75);
+          S.fotos[chave]=base64;
+          salvarRascunho();
+          var gid=chave.split("__")[1];
+          var body=document.getElementById("body_"+gid);
+          if(body&&body.classList.contains("open")){
+            var prefix=chave.replace(/__[0-9]+$/,"__");
+            var sala=(UNIDADES[S.unidade]||[]).find(function(s){return s.id===gid;});
+            var amb=AMBIENTES.find(function(a){return a.id===gid;});
+            var itens=amb?amb.itens:(sala&&sala.tipo==="IS"?IIS:IP);
+            body.innerHTML=renderItens(itens,prefix);
+          }
+          atualizarHeader();
+        };
+        img.src=ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 }
 
 function atualizarBtnIniciar(){
@@ -978,6 +1076,8 @@ function salvarRascunho(){
       rondaId: S.rondaId,
       respostas: S.respostas,
       observacoes: S.observacoes,
+      fotos: S.fotos,
+      horaInicio: S.horaInicio,
       ts: Date.now()
     }));
   }catch{}
@@ -1014,6 +1114,8 @@ if(rascunhoInicial && Object.keys(rascunhoInicial.respostas||{}).length > 0){
   S.rondaId = rascunhoInicial.rondaId;
   S.respostas = rascunhoInicial.respostas;
   S.observacoes = rascunhoInicial.observacoes || {};
+  S.fotos = rascunhoInicial.fotos || {};
+  S.horaInicio = rascunhoInicial.horaInicio || new Date().toISOString();
   S.expandido = null;
   // Atualizar campo de nome se necessário
   document.getElementById("inp-responsavel").value = S.responsavel||"";
