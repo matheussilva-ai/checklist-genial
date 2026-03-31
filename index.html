@@ -62,8 +62,9 @@ textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10p
 .status-row{display:flex;gap:6px;flex-wrap:wrap}
 .sbt{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;transition:all 0.15s;font-family:inherit}
 .sbt:active{transform:scale(0.96)}
-.sbt.conforme.active{border-color:#16a34a;background:#f0fdf4;color:#16a34a}
-.sbt.nao_conforme.active{border-color:#dc2626;background:#fef2f2;color:#dc2626}
+.sbt.ok.active{border-color:#16a34a;background:#f0fdf4;color:#16a34a}
+.sbt.chamado_normal.active{border-color:#854d0e;background:#fefce8;color:#854d0e}
+.sbt.chamado_emergencial.active{border-color:#dc2626;background:#fef2f2;color:#dc2626}
 .sbt.nao_aplica.active{border-color:#6b7280;background:#f9fafb;color:#6b7280}
 
 /* ── RESUMO ─────────────────────────────────────────────────────── */
@@ -171,7 +172,10 @@ textarea{width:100%;border-radius:8px;border:1.5px solid #fca5a5;padding:8px 10p
           <div style="font-size:13px;font-weight:700;color:#EDE9F8" id="hdr-unidade"></div>
           <div style="font-size:11px;color:#D4D2F0" id="hdr-responsavel"></div>
         </div>
+        <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" id="btn-voltar-ronda" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.3)">← Voltar</button>
         <button class="btn btn-sm" id="btn-concluir-topo" style="background:#6E69AD;color:#fff;border:none">Concluir</button>
+      </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:#e9d5ff;margin-bottom:4px">
         <span id="hdr-progresso">0/0 itens</span>
@@ -239,41 +243,190 @@ const UNIDADES={
   "CG Anália Franco":gs("",20,[11,19]),"CG Santana":gs("",34,[5,6,7]),
 };
 const IP=[
-  "Iluminação funcionando (sem queimadas ou oscilação)","Iluminação suficiente — tom neutro",
-  "Porta abrindo/fechando sem esforço, ruídos ou rangidos","Tranca e trinco funcionando",
-  "Paredes, pisos e rodapés sem trincas ou descolamento","Sem manchas de infiltração, mofo ou pintura descascando",
-  "Sem marcas de fita adesiva nas paredes","Tomadas funcionando e com proteção",
-  "Dispensers (papel toalha, álcool) fixados corretamente","Mobiliário estável, sem parafusos frouxos",
-  {t:"Cadeiras e mesas infantis sem instabilidade",c:true},
-  "Armário com chave — sem trincas ou desnível nas portas","Ar-condicionado funcionando sem erros, sem odor",
-  "Brinquedos sem peças pequenas soltas","Colchonetes/tatames inteiros, sem rasgos","Lixeira com tampa e pedal funcionando",
+  {t:"Iluminação funcionando normalmente",sub:"infra"},
+  {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+  {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+  {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+  {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
+  {t:"Vedação das janelas sem danos",sub:"infra"},
+  {t:"Persianas funcionando normalmente",sub:"infra"},
+  {t:"Mesa e cadeira infantil funcionando normalmente",sub:"mob"},
+  {t:"Armários com dobradiças e puxadores funcionando",sub:"mob"},
+  {t:"Suportes de acrílico firmes na parede",sub:"mob"},
+  {t:"Tatames limpos",sub:"limpeza"},
+  {t:"Dispensers abastecidos",sub:"limpeza"},
+  {t:"Sala limpa",sub:"limpeza"},
 ];
 const IIS=[
-  "Iluminação funcionando (sem queimadas ou oscilação)","Iluminação suficiente — tom neutro",
-  "Porta abrindo/fechando sem esforço, ruídos ou rangidos","Tranca e trinco funcionando",
-  "Paredes, pisos e rodapés sem trincas ou descolamento","Sem manchas de infiltração, mofo ou pintura descascando",
-  "Tomadas funcionando e com proteção","Dispensers (papel toalha, álcool) fixados corretamente",
-  "Ar-condicionado funcionando sem erros, sem odor",
-  {t:"Ganchos de teto: firmes, sem folga, sem oxidação",c:true},
-  {t:"Ganchos de parede: firmes, sem folga, sem oxidação",c:true},
-  {t:"Armário fixado na parede sem folga ou risco de tombamento",c:true},
-  {t:"Suportes de bola de pilates firmes e sem desgaste",c:true},
-  {t:"Equipamentos suspensos de TO: ancoragem firme",c:true},
-  "Colchonetes/tatames inteiros, sem rasgos","Bolas de pilates e pneus sem danos visíveis","Calibragem de bolas de pilates adequada (bomba disponível na unidade)","Calibragem de pneus adequada (bomba disponível na unidade)",
-  "Brinquedos sem peças pequenas soltas","Armário com chave — sem trincas ou desnível","Lixeira com tampa e pedal funcionando",
+  {t:"Iluminação funcionando normalmente",sub:"infra"},
+  {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+  {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+  {t:"Vedação das janelas sem danos",sub:"infra"},
+  {t:"Persianas funcionando normalmente",sub:"infra"},
+  {t:"Ganchos de teto sem folga, oxidação ou afastamento da estrutura",sub:"infra",c:true},
+  {t:"Suportes de bola sem folga ou sinais de deslocamento",sub:"infra",c:true},
+  {t:"Ganchos de parede firmes e sem sinais de deslocamento",sub:"infra",c:true},
+  {t:"Suportes de acrílico firmes na parede",sub:"infra"},
+  {t:"Bolas de pilates e pneus sem deformações, rachaduras ou desgaste",sub:"mob"},
+  {t:"Tatames limpos",sub:"limpeza"},
+  {t:"Almofadões e redes de lycra limpos",sub:"limpeza"},
+  {t:"Dispensers abastecidos",sub:"limpeza"},
+  {t:"Sala limpa",sub:"limpeza"},
 ];
 const AMBIENTES=[
-  {id:"recepcao",icon:"🛋️",titulo:"Recepção / Sala de espera",itens:["Iluminação interna sem oscilação","Iluminação externa (refletores) funcionando","Porta principal abrindo/fechando sem esforço","Portão funcionando (se houver)","Paredes e pisos sem trincas ou descolamento","Sem manchas de infiltração ou mofo","Sem marcas de fita adesiva nas paredes","Tomadas funcionando e com proteção","Dispensers de álcool fixados","Ar-condicionado sem erros, sem odor","Cadeiras, poltronas e sofás em bom estado","Purificador de água funcionando, sem goteira","Corredor/circulação livre (sem objetos obstruindo)","Sinalização de rotas de fuga visível e sem obstrução","Câmeras posicionadas corretamente, lentes limpas","Lixeira com saco plástico, tampa e pedal"]},
-  {id:"banheiros",icon:"🚻",titulo:"Banheiros (Fem/Masc + PCD + Fraldário)",itens:["Tomadas funcionando e com proteção","Assentos sanitários em bom estado","Torneiras sem gotejamento ou vazamento","Pressão da água adequada","Descargas funcionando","Sem vazamentos visíveis","Portas abrindo/fechando sem esforço","Trancas sem chave solta","Iluminação funcionando sem oscilação","Exaustores ligados e sem ruído anormal","Azulejos, paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Barras de apoio PCD firmes","Fraldário firme e bem fixado","Ganchos de assento sanitário firmes","Redutores de assento disponíveis","Dispensers (papel toalha, higiênico, sabonete) fixados","Espelhos bem fixados, sem rachaduras","Lixeiras com saco plástico, tampa e pedal"]},
-  {id:"escritorios",icon:"💼",titulo:"Escritórios (Equipe + Família)",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Sem marcas de fita adesiva","Tomadas funcionando e com proteção","Dispensers fixados corretamente","Ar-condicionado sem erros, sem odor","Cadeiras com rodízio e pistões funcionais","Bancadas/mesas firmes, sem parafusos soltos","Sinal Wi-Fi estável","Lixeira com tampa e pedal"]},
-  {id:"reuniao",icon:"🤝",titulo:"Sala de Reunião",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Tomadas funcionando e com proteção","Cadeiras com rodízio e pistões funcionais","TV com imagem e som; controle remoto com pilhas","Ar-condicionado sem erros, sem odor","Lixeira com tampa e pedal"]},
-  {id:"cabines",icon:"📞",titulo:"Cabines de Call",itens:["Iluminação funcionando sem oscilação","Porta abrindo/fechando sem esforço","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Tomadas funcionando e com proteção","Cadeiras com rodízio e pistões funcionais","Bancadas firmes, sem parafusos soltos","Lixeira com tampa e pedal"]},
-  {id:"depositos",icon:"📦",titulo:"Almoxarifado + DML",itens:["Iluminação do almoxarifado funcionando","Porta do almoxarifado sem esforço para abrir","Tranca e trinco do almoxarifado funcionando","Paredes e pisos sem trincas","Sem manchas de infiltração ou mofo","Prateleiras firmes, sem ferrugem ou risco de queda","Iluminação do DML funcionando","Torneira do DML sem gotejamento","Varal de parede do DML fixo e sem avarias","Porta do DML sem esforço para abrir","Tranca e trinco do DML funcionando"]},
-  {id:"copa",icon:"☕",titulo:"Copa / Cozinha",itens:["Iluminação funcionando sem oscilação","Tomadas funcionando e com proteção","Pia sem gotejamento ou vazamento","Pressão da água adequada","Sem manchas de infiltração ou mofo","Paredes e pisos sem trincas ou descolamento","Cafeteira funcionando e sem vazamento","Geladeira funcionando, vedando corretamente, sem odor","Micro-ondas funcionando e limpo (sem odor ou sujeira acumulada)","Armários e prateleiras firmes, sem risco de queda","Lixeira com saco plástico, tampa e pedal funcionando","Purificador/filtro de água funcionando, sem goteira (se houver)"]},
+  {id:"geral",icon:"🏢",titulo:"Geral da unidade",itens:[
+    {t:"Internet funcionando normalmente",sub:"infra"},
+    {t:"Licenças regulatórias afixadas e certificado de dedetização válido",sub:"infra"},
+    {t:"Comunicação visual da unidade íntegra e atualizada",sub:"infra"},
+    {t:"Equipamentos de segurança presentes e em condições de uso",sub:"infra"},
+    {t:"Alarme funcionando e ativando normalmente",sub:"infra"},
+  ]},
+  {id:"recepcao",icon:"🛋️",titulo:"Recepção e sala de espera",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Pisos e rodapés sem danos",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"Painel sensorial sem peças soltas, danificadas ou faltando",sub:"mob"},
+    {t:"Purificador de água funcionando e filtro na validade",sub:"mob"},
+    {t:"Câmeras de segurança funcionando normalmente",sub:"mob"},
+    {t:"Espaço do café limpo, organizado e com insumos",sub:"limpeza"},
+    {t:"Estofados limpos e sem danos",sub:"limpeza"},
+    {t:"Ambiente limpo",sub:"limpeza"},
+  ]},
+  {id:"banheiros",icon:"🚻",titulo:"Banheiros",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Torneiras sem vazamentos",sub:"infra"},
+    {t:"Descargas funcionando corretamente",sub:"infra"},
+    {t:"Ralos escoando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Pisos e rodapés sem danos",sub:"infra"},
+    {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
+    {t:"Fraldário sem danos",sub:"mob"},
+    {t:"Lixeiras presentes e funcionando",sub:"mob"},
+    {t:"Dispensers abastecidos (sabonete, papel toalha, papel higiênico e descarte absorventes)",sub:"limpeza"},
+    {t:"Ausência de sinais de mofo ou odor persistente",sub:"limpeza"},
+    {t:"Ambiente limpo",sub:"limpeza"},
+  ]},
+  {id:"copa_equipe",icon:"☕",titulo:"Copa da equipe",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Torneira e pia sem vazamentos",sub:"infra"},
+    {t:"Ralo escoando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"Purificador de água funcionando e filtro na validade",sub:"mob"},
+    {t:"Cafeteira e chaleira funcionando normalmente",sub:"mob"},
+    {t:"Insumos abastecidos (café, chá, açúcar, etc.)",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"copa_familia",icon:"🍵",titulo:"Copa da família",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Torneira e pia sem vazamentos",sub:"infra"},
+    {t:"Ralo escoando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"Purificador de água funcionando e filtro na validade",sub:"mob"},
+    {t:"Cafeteira e chaleira funcionando normalmente",sub:"mob"},
+    {t:"Insumos abastecidos (café, chá, açúcar, etc.)",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"escritorio_equipe",icon:"💼",titulo:"Escritório da equipe",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Quadro elétrico sem disjuntores desarmados",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"Impressora e plastificadora funcionando normalmente",sub:"mob"},
+    {t:"Cabines de atendimento em bom estado",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"escritorio_familia",icon:"👨‍👩‍👧",titulo:"Escritório da família",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"reuniao",icon:"🤝",titulo:"Sala de reunião",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"TV funcionando normalmente",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"brinquedos",icon:"🧸",titulo:"Sala de brinquedos",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Pisos e rodapés sem danos",sub:"infra"},
+    {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário funcionando normalmente",sub:"mob"},
+    {t:"Prateleiras fixas na parede e estáveis",sub:"mob"},
+    {t:"Câmeras de segurança funcionando normalmente",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"corredores",icon:"🚶",titulo:"Corredores e áreas de circulação",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Pisos e rodapés sem danos",sub:"infra"},
+    {t:"Equipamentos de incêndio presentes e em condições de uso",sub:"mob",c:true},
+    {t:"Rota de fuga sinalizada e desobstruída",sub:"mob",c:true},
+    {t:"Câmeras de segurança funcionando normalmente",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"almoxarifado",icon:"📦",titulo:"Almoxarifado",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Porta abrindo e fechando corretamente",sub:"infra"},
+    {t:"Prateleiras fixas na parede e estáveis",sub:"mob"},
+    {t:"Câmeras de segurança funcionando normalmente",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"dml",icon:"🧹",titulo:"DML",itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ralo escoando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Porta abrindo e fechando corretamente",sub:"infra"},
+    {t:"Prateleiras fixas na parede e estáveis",sub:"mob"},
+    {t:"Espaço limpo",sub:"limpeza"},
+  ]},
+  {id:"elevador",icon:"🛗",titulo:"Elevador (unidades de rua)",itens:[
+    {t:"Elevador funcionando normalmente",sub:"infra"},
+    {t:"Portas abrindo e fechando corretamente",sub:"infra"},
+    {t:"Iluminação interna funcionando normalmente",sub:"infra"},
+    {t:"Botões e painel interno funcionando",sub:"infra"},
+    {t:"Botão de emergência funcionando",sub:"infra",c:true},
+  ]},
+  {id:"fachada",icon:"🏠",titulo:"Fachada e área externa (unidades de rua)",itens:[
+    {t:"Iluminação externa funcionando normalmente",sub:"infra"},
+    {t:"Calçada e acesso sem trincas ou risco de queda",sub:"infra",c:true},
+    {t:"Porta de entrada abrindo e fechando corretamente",sub:"infra"},
+  ]},
 ];
+const STATUS_OPTS=[
+  {val:"ok",label:"✅ OK",color:"#16a34a",bg:"#f0fdf4"},
+  {val:"chamado_normal",label:"🟡 Normal",color:"#854d0e",bg:"#fefce8"},
+  {val:"chamado_emergencial",label:"🔴 Emergencial",color:"#dc2626",bg:"#fef2f2"},
+  {val:"nao_aplica",label:"— N/A",color:"#6b7280",bg:"#f9fafb"},
+];
+
 
 function txt(i){return typeof i==="string"?i:i.t}
 function crit(i){return typeof i==="object"&&i.c}
+function sub(i){return typeof i==="object"&&i.sub?i.sub:null}
 function fmtData(ts){return new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function gerarId(){return"ronda_"+Date.now()+"_"+Math.random().toString(36).slice(2,6)}
 
@@ -311,29 +464,34 @@ function toast(msg,tipo=""){
 }
 
 // ── CÁLCULOS ───────────────────────────────────────────────────────
+const CGs_RUA=["CG Tatuapé","CG Anália Franco"];
 function todosItens(){
   if(!S.unidade)return[];
   const salas=UNIDADES[S.unidade]||[];
   const iS=salas.flatMap(sala=>(sala.tipo==="IS"?IIS:IP).map((item,i)=>({
     chave:`sala__${sala.id}__${i}`,texto:txt(item),critico:crit(item),grupo:sala.label
   })));
-  const iA=AMBIENTES.flatMap(amb=>amb.itens.map((item,i)=>({
-    chave:`amb__${amb.id}__${i}`,texto:item,critico:false,grupo:amb.titulo
+  const ambsFiltrados=AMBIENTES.filter(amb=>{
+    if(amb.id==="elevador"||amb.id==="fachada") return CGs_RUA.includes(S.unidade);
+    return true;
+  });
+  const iA=ambsFiltrados.flatMap(amb=>amb.itens.map((item,i)=>({
+    chave:`amb__${amb.id}__${i}`,texto:txt(item),critico:crit(item),grupo:amb.titulo
   })));
   return[...iS,...iA];
 }
 function contarGrupo(prefix){
   const t=todosItens().filter(i=>i.chave.startsWith(prefix));
-  return{total:t.length,resp:t.filter(i=>S.respostas[i.chave]).length,nc:t.filter(i=>S.respostas[i.chave]==="nao_conforme").length};
+  return{total:t.length,resp:t.filter(i=>S.respostas[i.chave]).length,nc:t.filter(i=>S.respostas[i.chave]==="chamado_normal"||S.respostas[i.chave]==="chamado_emergencial").length};
 }
 function resumo(){
   const t=todosItens();
   return{total:t.length,respondidos:t.filter(i=>S.respostas[i.chave]).length,
-    naoConformes:t.filter(i=>S.respostas[i.chave]==="nao_conforme").length,
-    criticos:t.filter(i=>i.critico&&S.respostas[i.chave]==="nao_conforme").length};
+    naoConformes:t.filter(i=>S.respostas[i.chave]==="chamado_normal"||S.respostas[i.chave]==="chamado_emergencial").length,
+    criticos:t.filter(i=>S.respostas[i.chave]==="chamado_emergencial").length};
 }
 function chamados(){
-  return todosItens().filter(i=>S.respostas[i.chave]==="nao_conforme")
+  return todosItens().filter(i=>S.respostas[i.chave]==="chamado_normal"||S.respostas[i.chave]==="chamado_emergencial")
     .map(i=>({...i,obs:S.observacoes[i.chave]||""}));
 }
 
@@ -347,7 +505,11 @@ function renderRonda(){
     id:sala.id,label:sala.label,badge:sala.tipo==="IS"?'<span class="badge" style="color:#2A7A7D;background:#E0F5F6;font-size:10px">IS ⚠</span>':"",
     prefix:`sala__${sala.id}__`,itens:sala.tipo==="IS"?IIS:IP
   })));
-  renderGrupos("wrap-ambientes", AMBIENTES.map(amb=>({
+  const ambientesFiltrados=AMBIENTES.filter(amb=>{
+    if(amb.id==="elevador"||amb.id==="fachada") return CGs_RUA.includes(S.unidade);
+    return true;
+  });
+  renderGrupos("wrap-ambientes", ambientesFiltrados.map(amb=>({
     id:amb.id,label:amb.titulo,badge:`<span style="font-size:18px;margin-right:4px">${amb.icon}</span>`,
     prefix:`amb__${amb.id}__`,itens:amb.itens
   })));
@@ -377,19 +539,30 @@ function renderGrupos(wrapId,grupos){
   }).join("");
 }
 
+const SUB_LABELS={"infra":"🔧 Infraestrutura","mob":"🪑 Mobiliário e equipamentos","limpeza":"🧼 Limpeza"};
 function renderItens(itens,prefix){
-  return itens.map((item,i)=>{
+  let html="";let lastSub=null;
+  itens.forEach((item,i)=>{
     const chave=prefix+i;const v=S.respostas[chave]||"";const cr=crit(item);const texto=txt(item);
-    return`<div class="item-card ${cr?"critico":""}" id="ic_${chave.replace(/ /g,"_")}">
+    const s=sub(item);
+    // Separador de subcategoria
+    if(s && s!==lastSub){
+      lastSub=s;
+      html+=`<div style="font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:0.06em;padding:10px 4px 4px;margin-top:${i>0?8:0}px">${SUB_LABELS[s]||s}</div>`;
+    }
+    // Status não conforme = qualquer um que não seja ok nem na
+    const isNC = v==="chamado_normal"||v==="chamado_emergencial";
+    html+=`<div class="item-card ${cr?"critico":""}">
     <div class="item-text ${cr?"ct":""}">${cr?"⚠️ ":""}${texto}</div>
     <div class="status-row">
-      ${[["conforme","Conforme"],["nao_conforme","Não conforme"],["nao_aplica","N/A"]].map(([val,lbl])=>
-        `<button class="sbt ${val} ${v===val?"active":""}" data-chave="${chave}" data-val="${val}">${lbl}</button>`
+      ${STATUS_OPTS.map(opt=>
+        `<button class="sbt ${opt.val} ${v===opt.val?"active":""}" data-chave="${chave}" data-val="${opt.val}" style="${v===opt.val?`border-color:${opt.color};background:${opt.bg};color:${opt.color}`:""}">${opt.label}</button>`
       ).join("")}
     </div>
-    ${v==="nao_conforme"?`<textarea data-chave="${chave}" placeholder="Descreva o problema..." rows="2">${S.observacoes[chave]||""}</textarea>`:""}
+    ${isNC?`<textarea data-chave="${chave}" placeholder="Descreva o problema..." rows="2">${S.observacoes[chave]||""}</textarea>`:""}
     </div>`;
-  }).join("");
+  });
+  return html;
 }
 
 function atualizarHeader(){
@@ -458,216 +631,4 @@ function exportar(){
   const ch=chamados();const res=resumo();
   const linhas=[`RONDA MENSAL — ${S.unidade}`,`Responsável: ${S.responsavel}`,`Data: ${fmtData(Date.now())}`,``,
     `RESUMO`,`Total de itens: ${res.total}`,`Respondidos: ${res.respondidos}`,`Não conformes: ${res.naoConformes}`,``,
-    ch.length>0?`CHAMADOS A ABRIR NO ZOHO (${ch.length})`:`NENHUM CHAMADO NECESSÁRIO`,
-    ...ch.map((c,i)=>`${i+1}. [${c.grupo}] ${c.texto}${c.obs?"\n   → "+c.obs:""}${c.critico?" ⚠ CRÍTICO":""}`)
-  ];
-  const blob=new Blob([linhas.join("\n")],{type:"text/plain;charset=utf-8"});
-  const url=URL.createObjectURL(blob);const a=document.createElement("a");
-  a.href=url;a.download=`ronda_${S.unidade.replace(/ /g,"_")}_${new Date().toISOString().slice(0,10)}.txt`;
-  a.click();URL.revokeObjectURL(url);
-}
-
-// ── ENVIAR PARA SHEETS ────────────────────────────────────────────
-async function enviarParaSheets(ronda){
-  if(!S.apiUrl)return false;
-  try{
-    const res=await fetch(S.apiUrl,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(ronda)});
-    const data=await res.json();
-    return data.sucesso===true;
-  }catch{return false;}
-}
-
-// ── CONCLUIR RONDA ────────────────────────────────────────────────
-async function concluirRonda(){
-  const res=resumo();const ch=chamados();
-  const ronda={
-    id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
-    data:Date.now(),respostas:{...S.respostas},observacoes:{...S.observacoes},
-    resumo:res,chamados:ch,salvoNaNuvem:false,
-  };
-  toast("Salvando...");
-  const ok=await enviarParaSheets(ronda);
-  ronda.salvoNaNuvem=ok;
-  S.historico=[ronda,...S.historico].slice(0,100);
-  saveHistorico();
-  renderResumo();
-  ir("resumo");
-  if(ok) toast("✓ Salvo na planilha Google Sheets!","success");
-  else if(S.apiUrl) toast("Salvo localmente (sem conexão)","");
-  else toast("Salvo localmente","");
-}
-
-// ── EVENTOS ───────────────────────────────────────────────────────
-function bindGlobal(){
-  // Config
-  document.getElementById("btn-salvar-config").addEventListener("click",()=>{
-    const url=document.getElementById("inp-api-url").value.trim();
-    saveApi(url);toast("Configuração salva!","success");ir("inicio");
-  });
-  document.getElementById("btn-pular-config").addEventListener("click",()=>ir("inicio"));
-
-  // Início
-  document.getElementById("sel-unidade").addEventListener("change",e=>{
-    S.unidade=e.target.value;atualizarBtnIniciar();
-  });
-  document.getElementById("inp-responsavel").addEventListener("input",e=>{
-    S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
-  });
-  document.getElementById("sel-unidade").addEventListener("change",e=>{
-    S.unidade=e.target.value;atualizarBtnIniciar();
-  });
-  document.getElementById("btn-iniciar").addEventListener("click",()=>{
-    const rascunho = recuperarRascunho();
-    if(rascunho && rascunho.unidade === S.unidade){
-      const total = Object.keys(rascunho.respostas).length;
-      if(total > 0 && confirm(`Há uma ronda em andamento para ${rascunho.unidade} com ${total} itens respondidos. Deseja continuar de onde parou?`)){
-        S.respostas = rascunho.respostas;
-        S.observacoes = rascunho.observacoes;
-        S.rondaId = rascunho.rondaId;
-        S.expandido = null;
-        renderRonda();ir("ronda");
-        return;
-      }
-    }
-    S.respostas={};S.observacoes={};S.expandido=null;S.rondaId=gerarId();
-    limparRascunho();
-    renderRonda();ir("ronda");
-  });
-  document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
-  document.getElementById("btn-config").addEventListener("click",()=>{
-    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("inicio");
-  });
-
-  // Ronda (delegação)
-  document.getElementById("screen-ronda").addEventListener("click",e=>{
-    const gBtn=e.target.closest("[data-gid]");
-    if(gBtn){
-      const id=gBtn.dataset.gid;
-      S.expandido=S.expandido===id?null:id;
-      renderRonda();
-      setTimeout(()=>gBtn.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
-      return;
-    }
-    const sBtn=e.target.closest(".sbt");
-    if(sBtn){
-      S.respostas[sBtn.dataset.chave]=sBtn.dataset.val;
-      salvarRascunho();
-      // Re-render só o item afetado
-      const prefix=sBtn.dataset.chave.replace(/__\d+$/,"__");
-      const grupo=sBtn.dataset.chave.startsWith("sala")?
-        document.getElementById("wrap-salas"):document.getElementById("wrap-ambientes");
-      const gid=sBtn.dataset.chave.split("__")[1];
-      const body=document.getElementById("body_"+gid);
-      if(body&&body.classList.contains("open")){
-        const isIS=gid.includes("IS")||(UNIDADES[S.unidade]||[]).find(s=>s.id===gid)?.tipo==="IS";
-        const amb=AMBIENTES.find(a=>a.id===gid);
-        const itens=amb?amb.itens:(isIS?IIS:IP);
-        body.innerHTML=renderItens(itens,prefix);
-      }
-      // Atualiza badge do grupo
-      const{total,resp,nc}=contarGrupo(prefix);
-      const btn=document.querySelector(`[data-gid="${gid}"]`);
-      if(btn){
-        btn.className=`group-btn ${nc>0?"nc":resp===total&&total>0?"done":""} ${S.expandido===gid?"open":""}`;
-        const spans=btn.querySelectorAll("span");
-        const cntSpan=btn.querySelector('[style*="12px"]');
-        if(cntSpan)cntSpan.textContent=`${resp}/${total}`;
-      }
-      atualizarHeader();
-      return;
-    }
-  });
-  document.getElementById("screen-ronda").addEventListener("input",e=>{
-    if(e.target.tagName==="TEXTAREA"&&e.target.dataset.chave){
-      S.observacoes[e.target.dataset.chave]=e.target.value;
-    salvarRascunho();
-    }
-  });
-  ["btn-concluir-topo","btn-concluir-bottom"].forEach(id=>{
-    document.getElementById(id).addEventListener("click",concluirRonda);
-  });
-
-  // Resumo
-  document.getElementById("btn-exportar").addEventListener("click",exportar);
-  document.getElementById("btn-nova-ronda").addEventListener("click",()=>ir("inicio"));
-  document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
-
-  // Histórico
-  document.getElementById("btn-voltar-hist").addEventListener("click",()=>ir("inicio"));
-}
-
-function atualizarBtnIniciar(){
-  document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
-  // Mostrar aviso de rascunho se existir para a unidade selecionada
-  const rascunho = recuperarRascunho();
-  const aviso = document.getElementById("aviso-rascunho");
-  if(aviso){
-    if(rascunho && rascunho.unidade === S.unidade && Object.keys(rascunho.respostas).length > 0){
-      const total = Object.keys(rascunho.respostas).length;
-      aviso.style.display = "block";
-      aviso.textContent = `↩ Ronda em andamento encontrada — ${total} itens respondidos. Clique em "Iniciar ronda" para continuar.`;
-    } else {
-      aviso.style.display = "none";
-    }
-  }
-}
-
-
-// ── RASCUNHO (salva progresso automaticamente) ──────────────────
-function salvarRascunho(){
-  try{
-    localStorage.setItem("ronda_rascunho", JSON.stringify({
-      unidade: S.unidade,
-      responsavel: S.responsavel,
-      rondaId: S.rondaId,
-      respostas: S.respostas,
-      observacoes: S.observacoes,
-      ts: Date.now()
-    }));
-  }catch{}
-}
-
-function recuperarRascunho(){
-  try{
-    const raw = localStorage.getItem("ronda_rascunho");
-    if(!raw) return false;
-    const r = JSON.parse(raw);
-    // Só recupera se for da mesma unidade e tiver menos de 24h
-    const idade = Date.now() - (r.ts || 0);
-    if(idade > 24 * 60 * 60 * 1000) return false;
-    if(!r.unidade || !r.respostas) return false;
-    return r;
-  }catch{ return false; }
-}
-
-function limparRascunho(){
-  try{ localStorage.removeItem("ronda_rascunho"); }catch{}
-}
-
-// ── INIT ──────────────────────────────────────────────────────────
-loadLocal();
-bindGlobal();
-document.getElementById("inp-responsavel").value=S.responsavel||"";
-
-// Se há rascunho salvo, restaurar estado e ir direto para a ronda
-const rascunhoInicial = recuperarRascunho();
-if(rascunhoInicial && Object.keys(rascunhoInicial.respostas||{}).length > 0){
-  // Restaurar estado completo
-  S.unidade = rascunhoInicial.unidade;
-  S.responsavel = rascunhoInicial.responsavel || S.responsavel;
-  S.rondaId = rascunhoInicial.rondaId;
-  S.respostas = rascunhoInicial.respostas;
-  S.observacoes = rascunhoInicial.observacoes || {};
-  S.expandido = null;
-  // Atualizar campo de nome se necessário
-  document.getElementById("inp-responsavel").value = S.responsavel||"";
-  // Ir direto para a ronda sem passar pela tela inicial
-  renderRonda();
-  ir("ronda");
-} else {
-  ir("inicio");
-  atualizarBtnIniciar();
-}
-</script>
-</body>
-</html>
+    ch.length>0?`CHAMADOS A ABRIR NO ZOHO (${ch.length})`:`NENHUM CHAMA
