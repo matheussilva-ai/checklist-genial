@@ -139,16 +139,16 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 
 /* ── SUBCAT LABEL ────────────────────────────────────────────────── */
 .subcat-label{
-  font-size:10px;font-weight:700;color:var(--roxo);
-  letter-spacing:0.08em;text-transform:uppercase;
-  padding:8px 4px 4px;display:flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:700;color:var(--roxo);
+  letter-spacing:0.03em;
+  padding:12px 4px 6px;display:flex;align-items:center;gap:8px;
 }
-.subcat-label::after{content:'';flex:1;height:1px;background:var(--roxo-light)}
+.subcat-label::after{content:'';flex:1;height:1.5px;background:var(--roxo-light)}
 
 /* ── ITEM CHECKLIST ──────────────────────────────────────────────── */
 .item-card{
-  padding:11px 12px;border-radius:var(--radius-sm);
-  margin-bottom:6px;background:var(--white);
+  padding:13px 14px;border-radius:var(--radius-sm);
+  margin-bottom:8px;background:var(--white);
   border:1px solid var(--border);
   transition:border-color 0.15s,background 0.15s;
 }
@@ -156,13 +156,14 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 .item-card.item-ok{background:var(--teal-light);border-color:var(--teal-dark)}
 .item-card.item-nc{background:#fff5f5;border-color:#fca5a5}
 .item-card.item-emerg{background:var(--danger-light);border-color:#fca5a5}
-.item-text{font-size:14px;color:var(--text);line-height:1.45;margin-bottom:8px}
+.item-text{font-size:14px;color:var(--text);line-height:1.5;margin-bottom:10px}
 .item-text.ct{color:#9a3412;font-weight:600}
-.status-row{display:flex;gap:5px;flex-wrap:wrap}
+.status-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
 .sbt{
-  padding:5px 10px;border-radius:99px;font-size:11.5px;font-weight:600;
+  padding:9px 14px;border-radius:99px;font-size:13px;font-weight:600;
   border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);
   cursor:pointer;transition:all 0.15s;font-family:inherit;white-space:nowrap;
+  min-height:40px;display:inline-flex;align-items:center;
 }
 .sbt:active{transform:scale(0.95)}
 .sbt.ok.active{border-color:var(--success);background:var(--success-light);color:var(--success)}
@@ -707,11 +708,30 @@ function renderItens(itens,prefix){
   return html;
 }
 
+function contarGruposCompletos(){
+  const salas=UNIDADES[S.unidade]||[];
+  const ambsFiltrados=AMBIENTES.filter(amb=>{
+    if(amb.id==="elevador"||amb.id==="fachada") return CGs_RUA.includes(S.unidade);
+    return true;
+  });
+  const grupos=[
+    ...salas.map(sala=>({prefix:`sala__${sala.id}__`,total:(sala.tipo==="IS"?IIS:IP).length})),
+    ...ambsFiltrados.map(amb=>({prefix:`amb__${amb.id}__`,total:amb.itens.length}))
+  ];
+  const total=grupos.length;
+  const completos=grupos.filter(g=>{
+    const itens=todosItens().filter(i=>i.chave.startsWith(g.prefix));
+    return itens.length>0&&itens.every(i=>S.respostas[i.chave]);
+  }).length;
+  return{total,completos};
+}
+
 function atualizarHeader(){
   const res=resumo();const pct=res.total?Math.round(res.respondidos/res.total*100):0;
-  document.getElementById("hdr-progresso").textContent=`${res.respondidos}/${res.total} itens`;
+  const grp=contarGruposCompletos();
+  document.getElementById("hdr-progresso").textContent=`${grp.completos}/${grp.total} ambientes · ${res.respondidos}/${res.total} itens`;
   const ncEl=document.getElementById("hdr-nc");
-  ncEl.textContent=res.naoConformes>0?`${res.naoConformes} não conforme(s)`:"✓ Tudo ok";
+  ncEl.textContent=res.naoConformes>0?`${res.naoConformes} NC`:"✓ Tudo ok";
   ncEl.style.color=res.naoConformes>0?"#fca5a5":"#86efac";
   const fill=document.getElementById("progress-fill");
   fill.style.width=pct+"%";fill.className="progress-fill"+(res.naoConformes>0?" nc":"");
