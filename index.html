@@ -225,16 +225,38 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
   cursor:pointer;font-family:inherit;transition:all 0.15s;
 }
 .foto-btn:active{transform:scale(0.97)}
-.foto-btn.tem-foto{border-color:var(--teal-dark);background:var(--teal-light);color:#2D6B70;border-style:solid}
+.foto-btn.tem-foto{border-color:var(--teal-dark);background:var(--teal-light);color:#2D6B70;border-style:solid;font-weight:700}
 .foto-preview{
-  width:100%;max-height:160px;object-fit:cover;
+  width:100%;max-height:200px;object-fit:contain;
   border-radius:var(--radius-sm);margin-top:8px;
-  border:1px solid var(--border);display:block;
+  border:1px solid var(--teal-dark);display:block;
+  background:#f0fafa;
 }
 .foto-remove{
   font-size:11px;color:var(--danger);background:none;border:none;
   cursor:pointer;padding:2px 6px;margin-top:4px;font-family:inherit;
 }
+/* ── LOADING ENVIO ───────────────────────────────────────────────── */
+.loading-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(26,26,46,0.85);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;display:none;
+}
+.loading-overlay.show{display:flex}
+.loading-card{
+  background:var(--white);border-radius:var(--radius-xl);
+  padding:32px 28px;text-align:center;max-width:280px;width:90%;
+  box-shadow:var(--shadow-md);
+}
+.loading-spinner{
+  width:48px;height:48px;border:4px solid var(--roxo-light);
+  border-top-color:var(--roxo);border-radius:50%;
+  animation:spin 0.8s linear infinite;margin:0 auto 16px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-bar-track{height:8px;background:var(--roxo-light);border-radius:99px;overflow:hidden;margin:12px 0 8px}
+.loading-bar-fill{height:100%;background:var(--roxo);border-radius:99px;transition:width 0.3s;width:0%}
 /* ── CONFIG ──────────────────────────────────────────────────────── */
 .config-input{display:flex;gap:8px;margin-bottom:16px}
 .config-input input{flex:1}
@@ -251,6 +273,17 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 
 <!-- ── TOAST ─────────────────────────────────────────────────────── -->
 <div class="toast" id="toast"></div>
+
+<!-- ── LOADING OVERLAY ───────────────────────────────────────────── -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-card">
+    <div class="loading-spinner"></div>
+    <div style="font-size:15px;font-weight:700;color:var(--roxo);margin-bottom:4px">Enviando ronda...</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" id="loading-status">Preparando dados</div>
+    <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
+    <div style="font-size:12px;color:var(--text-light)" id="loading-pct">0%</div>
+  </div>
+</div>
 
 <!-- ── APP ───────────────────────────────────────────────────────── -->
 <div class="app">
@@ -833,13 +866,46 @@ function exportar(){
 }
 
 // ── ENVIAR PARA SHEETS ────────────────────────────────────────────
+function setLoading(show,status,pct){
+  const overlay=document.getElementById("loading-overlay");
+  const statusEl=document.getElementById("loading-status");
+  const bar=document.getElementById("loading-bar");
+  const pctEl=document.getElementById("loading-pct");
+  if(overlay) overlay.className="loading-overlay"+(show?" show":"");
+  if(statusEl&&status) statusEl.textContent=status;
+  if(bar) bar.style.width=(pct||0)+"%";
+  if(pctEl) pctEl.textContent=(pct||0)+"%";
+}
+
 async function enviarParaSheets(ronda){
   if(!S.apiUrl)return false;
   try{
-    const res=await fetch(S.apiUrl,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(ronda)});
+    const totalFotos=Object.keys(ronda.fotos||{}).length;
+    setLoading(true,"Preparando dados...",10);
+    await new Promise(r=>setTimeout(r,300));
+
+    if(totalFotos>0){
+      setLoading(true,`Enviando ${totalFotos} foto(s)...`,30);
+      await new Promise(r=>setTimeout(r,200));
+    }
+
+    setLoading(true,"Salvando na planilha...",60);
+    const res=await fetch(S.apiUrl,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify(ronda)
+    });
+
+    setLoading(true,"Finalizando...",90);
+    await new Promise(r=>setTimeout(r,300));
+
     const data=await res.json();
+    setLoading(false);
     return data.sucesso===true;
-  }catch{return false;}
+  }catch(err){
+    setLoading(false);
+    return false;
+  }
 }
 
 // ── CONCLUIR RONDA ────────────────────────────────────────────────
@@ -866,6 +932,19 @@ async function concluirRonda(){
 }
 
 // ── EVENTOS ───────────────────────────────────────────────────────
+function atualizarGrupoFoto(chave){
+  var gid=chave.split("__")[1];
+  var body=document.getElementById("body_"+gid);
+  if(body&&body.classList.contains("open")){
+    var prefix=chave.replace(/__[0-9]+$/,"__");
+    var sala=(UNIDADES[S.unidade]||[]).find(function(s){return s.id===gid;});
+    var amb=AMBIENTES.find(function(a){return a.id===gid;});
+    var itens=amb?amb.itens:(sala&&sala.tipo==="IS"?IIS:IP);
+    body.innerHTML=renderItens(itens,prefix);
+  }
+  atualizarHeader();
+}
+
 function bindGlobal(){
   // Config
   document.getElementById("btn-salvar-config").addEventListener("click",()=>{
@@ -1050,7 +1129,7 @@ function bindGlobal(){
                 if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
                 else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
                 canvas.width=w;canvas.height=h;
-                canvas.getContext("2d").drawImage(img,0,0,w,h);
+                var ctx2=canvas.getContext("2d");ctx2.fillStyle="#FFFFFF";ctx2.fillRect(0,0,w,h);ctx2.drawImage(img,0,0,w,h);
                 var compressed=canvas.toDataURL("image/jpeg",0.55);
                 canvas.width=1;canvas.height=1;
                 img.src="";
