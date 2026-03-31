@@ -1019,45 +1019,61 @@ function bindGlobal(){
       var file=e.target.files[0];
       if(!file) return;
       var reader=new FileReader();
-      // Usar createObjectURL para não carregar tudo em memória de uma vez
-      var url=URL.createObjectURL(file);
-      var img=new Image();
-      img.onload=function(){
+      // Limitar tamanho: max 3MB
+      if(file.size > 3*1024*1024){
+        alert("Foto muito grande. Por favor tire a foto diretamente pela câmera (não da galeria) ou reduza a resolução da câmera nas configurações.");
+        e.target.value="";
+        return;
+      }
+      // Ler como base64 diretamente — funciona melhor em celulares com pouca memória
+      var reader=new FileReader();
+      reader.onerror=function(){
+        alert("Erro ao ler a foto. Tente novamente.");
+      };
+      reader.onload=function(ev){
         try{
-          var canvas=document.createElement("canvas");
-          var MAX=800; // menor para economizar memória
-          var w=img.width,h=img.height;
-          if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
-          else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
-          canvas.width=w;canvas.height=h;
-          var ctx=canvas.getContext("2d");
-          ctx.drawImage(img,0,0,w,h);
-          var base64=canvas.toDataURL("image/jpeg",0.65);
-          URL.revokeObjectURL(url); // liberar memória
-          img.src=""; // liberar memória
-          canvas.width=1;canvas.height=1; // liberar canvas
-          S.fotos[chave]=base64;
-          salvarRascunho();
-          var gid=chave.split("__")[1];
-          var body=document.getElementById("body_"+gid);
-          if(body&&body.classList.contains("open")){
-            var prefix=chave.replace(/__[0-9]+$/,"__");
-            var sala=(UNIDADES[S.unidade]||[]).find(function(s){return s.id===gid;});
-            var amb=AMBIENTES.find(function(a){return a.id===gid;});
-            var itens=amb?amb.itens:(sala&&sala.tipo==="IS"?IIS:IP);
-            body.innerHTML=renderItens(itens,prefix);
+          var base64=ev.target.result;
+          // Compressão leve via canvas apenas se o arquivo for maior que 500KB
+          if(file.size > 500*1024){
+            var img=new Image();
+            img.onerror=function(){
+              // Se falhar, salvar sem comprimir
+              S.fotos[chave]=base64;
+              salvarRascunho();
+              atualizarGrupoFoto(chave);
+            };
+            img.onload=function(){
+              try{
+                var canvas=document.createElement("canvas");
+                var MAX=600;
+                var w=img.width,h=img.height;
+                if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
+                else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+                canvas.width=w;canvas.height=h;
+                canvas.getContext("2d").drawImage(img,0,0,w,h);
+                var compressed=canvas.toDataURL("image/jpeg",0.55);
+                canvas.width=1;canvas.height=1;
+                img.src="";
+                S.fotos[chave]=compressed;
+              }catch(err){
+                // Se canvas falhar, usar original
+                S.fotos[chave]=base64;
+              }
+              salvarRascunho();
+              atualizarGrupoFoto(chave);
+            };
+            img.src=base64;
+          } else {
+            // Arquivo pequeno — usar direto
+            S.fotos[chave]=base64;
+            salvarRascunho();
+            atualizarGrupoFoto(chave);
           }
-          atualizarHeader();
         }catch(err){
-          URL.revokeObjectURL(url);
-          alert("Não foi possível processar a foto. Tente tirar uma foto com menor resolução ou use a câmera diretamente.");
+          alert("Não foi possível processar a foto. Tente novamente.");
         }
       };
-      img.onerror=function(){
-        URL.revokeObjectURL(url);
-        alert("Erro ao carregar a imagem. Tente novamente.");
-      };
-      img.src=url;
+      reader.readAsDataURL(file);
     }
   });
 }
