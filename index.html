@@ -39,6 +39,79 @@
   --shadow-md:0 4px 16px rgba(110,105,173,0.12);
 }
 
+
+/* ── MODO ESCURO ─────────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root{
+    --roxo:#8B87C8;
+    --roxo-escuro:#7A76B8;
+    --roxo-light:#2A2845;
+    --roxo-xlight:#1E1D35;
+    --teal:#7BC4CA;
+    --teal-dark:#5AADB4;
+    --teal-light:#1A3335;
+    --text:#E8E7F5;
+    --text-muted:#9B99C4;
+    --text-light:#6B6999;
+    --border:#2E2C4A;
+    --white:#1C1B30;
+    --bg:#13122A;
+    --success:#4ade80;
+    --success-light:#052e16;
+    --warning:#fbbf24;
+    --warning-light:#1c1400;
+    --danger:#f87171;
+    --danger-light:#2d0000;
+    --orange:#fb923c;
+    --orange-light:#1f1000;
+    --shadow-sm:0 1px 4px rgba(0,0,0,0.3);
+    --shadow-md:0 4px 16px rgba(0,0,0,0.4);
+  }
+  body{background:var(--bg)}
+  .card{background:var(--white);border-color:var(--border)}
+  select,input[type=text]{background:var(--white);color:var(--text);border-color:var(--border)}
+  .group-btn{background:var(--white);border-color:var(--border)}
+  .group-btn.done{background:var(--teal-light);border-color:var(--teal-dark)}
+  .group-btn.nc{background:var(--danger-light);border-color:var(--danger)}
+  .group-body{background:#161528;border-color:var(--border)}
+  .item-card{background:#1C1B30;border-color:var(--border)}
+  .item-card.item-ok{background:var(--success-light);border-color:#166534}
+  .item-card.item-nc{background:var(--warning-light);border-color:#92400e}
+  .item-card.item-emerg{background:var(--danger-light);border-color:#991b1b}
+  .item-card.critico{background:var(--orange-light);border-color:#9a3412}
+  .sbt{background:#1C1B30;border-color:var(--border);color:var(--text-muted)}
+  .summary-card{background:var(--white);border-color:var(--border)}
+  .chamado-card{background:var(--white)}
+  .hist-card{background:var(--white);border-color:var(--border)}
+  .aviso-rascunho-box{background:var(--teal-light);border-color:var(--teal-dark);color:var(--teal)}
+  textarea{background:#1C1B30;color:var(--text)}
+  .sticky-header{background:#1E1D38}
+  .hero-card{background:linear-gradient(135deg,#2A2845 0%,#1E1D38 100%)}
+}
+
+/* Toggle manual modo escuro */
+body.dark-mode{
+  --roxo:#8B87C8;--roxo-escuro:#7A76B8;--roxo-light:#2A2845;--roxo-xlight:#1E1D35;
+  --teal:#7BC4CA;--teal-dark:#5AADB4;--teal-light:#1A3335;
+  --text:#E8E7F5;--text-muted:#9B99C4;--text-light:#6B6999;
+  --border:#2E2C4A;--white:#1C1B30;--bg:#13122A;
+  --success:#4ade80;--success-light:#052e16;
+  --warning:#fbbf24;--warning-light:#1c1400;
+  --danger:#f87171;--danger-light:#2d0000;
+  --orange:#fb923c;--orange-light:#1f1000;
+}
+body.dark-mode .card,body.dark-mode .group-btn,body.dark-mode .item-card,
+body.dark-mode .summary-card,.dark-mode .hist-card,.dark-mode .chamado-card{background:var(--white);border-color:var(--border)}
+body.dark-mode select,body.dark-mode input[type=text],body.dark-mode textarea{background:var(--white);color:var(--text);border-color:var(--border)}
+body.dark-mode .group-body{background:#161528;border-color:var(--border)}
+body.dark-mode .sbt{background:#1C1B30;border-color:var(--border);color:var(--text-muted)}
+body.dark-mode .sticky-header{background:#1E1D38}
+body.dark-mode .aviso-rascunho-box{background:var(--teal-light);border-color:var(--teal-dark);color:var(--teal)}
+body.dark-mode .item-card.item-ok{background:var(--success-light);border-color:#166534}
+body.dark-mode .item-card.item-nc{background:var(--warning-light);border-color:#92400e}
+body.dark-mode .item-card.item-emerg{background:var(--danger-light);border-color:#991b1b}
+body.dark-mode .item-card.critico{background:var(--orange-light);border-color:#9a3412}
+
 /* ── RESET ───────────────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
@@ -282,6 +355,17 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
       </div>
     </div>
     <div class="pad" style="padding-top:24px">
+      <!-- Saudação quando nome está salvo -->
+      <div id="saudacao-box" style="display:none;margin-bottom:16px">
+        <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px">
+          <div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:2px">Olá,</div>
+            <div style="font-size:17px;font-weight:700;color:var(--roxo)" id="saudacao-nome"></div>
+          </div>
+          <button id="btn-trocar-nome" style="font-size:12px;color:var(--text-muted);background:none;border:1px solid var(--border);border-radius:99px;padding:4px 12px;cursor:pointer;font-family:inherit">Trocar</button>
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:16px">
         <label>Unidade</label>
         <select id="sel-unidade" style="margin-bottom:16px">
@@ -294,14 +378,20 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
           <option>CG Anália Franco</option>
           <option>CG Santana</option>
         </select>
-        <label>Seu nome</label>
-        <input type="text" id="inp-responsavel" placeholder="Nome do responsável">
+        <!-- Campo de nome — oculto quando nome já está salvo -->
+        <div id="nome-field">
+          <label>Seu nome</label>
+          <input type="text" id="inp-responsavel" placeholder="Nome do responsável">
+        </div>
       </div>
       <div class="btn-stack">
         <div id="aviso-rascunho" style="display:none;background:#EEF6FF;border:1.5px solid #B0D4F1;border-radius:10px;padding:10px 14px;font-size:13px;color:#1e4d78;margin-bottom:10px"></div>
       <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
         <button class="btn btn-ghost" id="btn-ver-hist-inicio">Ver histórico</button>
         <button class="btn btn-ghost" id="btn-config">⚙ Configurações</button>
+        <button class="btn btn-ghost" id="btn-dark-mode" style="display:flex;align-items:center;justify-content:center;gap:8px">
+          <span id="dark-icon">🌙</span> <span id="dark-label">Modo escuro</span>
+        </button>
       </div>
     </div>
   </div>
@@ -576,7 +666,8 @@ function gerarId(){return"ronda_"+Date.now()+"_"+Math.random().toString(36).slic
 const API_URL_FIXA="https://script.google.com/macros/s/AKfycbwKLfrXCw_n-zeuw8Z2Z5wAko_MaEnDnQpv1NA8PFNX0MGz-kmHsWL_KJbxmbTaDqRO-g/exec";
 const S={
   unidade:"",responsavel:"",respostas:{},observacoes:{},
-  expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA
+  expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA,
+  horaInicio:null,horaFim:null
 };
 
 function loadLocal(){
@@ -741,7 +832,9 @@ function atualizarHeader(){
 function renderResumo(){
   const res=resumo();const ch=chamados();
   document.getElementById("resumo-icon").textContent=res.naoConformes===0?"✅":"⚠️";
-  document.getElementById("resumo-sub").textContent=`${S.unidade} · ${S.responsavel}`;
+  const durMin=S.horaInicio?Math.round((Date.now()-new Date(S.horaInicio))/60000):null;
+  const durTxt=durMin?` · ${durMin} min`:"";
+  document.getElementById("resumo-sub").textContent=`${S.unidade} · ${S.responsavel}${durTxt}`;
   document.getElementById("summary-grid").innerHTML=[
     {l:"Respondidos",v:res.respondidos,c:"#6E69AD"},
     {l:"Não conformes",v:res.naoConformes,c:res.naoConformes>0?"#dc2626":"#16a34a"},
@@ -814,10 +907,13 @@ async function enviarParaSheets(ronda){
 
 // ── CONCLUIR RONDA ────────────────────────────────────────────────
 async function concluirRonda(){
+  S.horaFim=new Date().toISOString();
   const res=resumo();const ch=chamados();
+  const durMin=S.horaInicio?Math.round((new Date(S.horaFim)-new Date(S.horaInicio))/60000):null;
   const ronda={
     id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
-    data:Date.now(),respostas:{...S.respostas},observacoes:{...S.observacoes},
+    data:Date.now(),horaInicio:S.horaInicio,horaFim:S.horaFim,duracaoMin:durMin,
+    respostas:{...S.respostas},observacoes:{...S.observacoes},
     resumo:res,chamados:ch,salvoNaNuvem:false,
   };
   toast("Salvando...");
@@ -833,6 +929,14 @@ async function concluirRonda(){
 }
 
 // ── EVENTOS ───────────────────────────────────────────────────────
+function atualizarIconeDark(){
+  const isDark=document.body.classList.contains("dark-mode");
+  const icon=document.getElementById("dark-icon");
+  const label=document.getElementById("dark-label");
+  if(icon) icon.textContent=isDark?"☀️":"🌙";
+  if(label) label.textContent=isDark?"Modo claro":"Modo escuro";
+}
+
 function bindGlobal(){
   // Config
   document.getElementById("btn-salvar-config").addEventListener("click",()=>{
@@ -845,11 +949,27 @@ function bindGlobal(){
   document.getElementById("sel-unidade").addEventListener("change",e=>{
     S.unidade=e.target.value;atualizarBtnIniciar();
   });
+  const btnTrocarNome=document.getElementById("btn-trocar-nome");
+  if(btnTrocarNome) btnTrocarNome.addEventListener("click",()=>{
+    S.responsavel="";
+    saveResponsavel("");
+    document.getElementById("inp-responsavel").value="";
+    atualizarBtnIniciar();
+    document.getElementById("inp-responsavel").focus();
+  });
   document.getElementById("inp-responsavel").addEventListener("input",e=>{
     S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
   });
   document.getElementById("sel-unidade").addEventListener("change",e=>{
     S.unidade=e.target.value;atualizarBtnIniciar();
+  });
+  const btnTrocarNome=document.getElementById("btn-trocar-nome");
+  if(btnTrocarNome) btnTrocarNome.addEventListener("click",()=>{
+    S.responsavel="";
+    saveResponsavel("");
+    document.getElementById("inp-responsavel").value="";
+    atualizarBtnIniciar();
+    document.getElementById("inp-responsavel").focus();
   });
   document.getElementById("btn-iniciar").addEventListener("click",()=>{
     const rascunho = recuperarRascunho();
@@ -865,6 +985,7 @@ function bindGlobal(){
       }
     }
     S.respostas={};S.observacoes={};S.expandido=null;S.rondaId=gerarId();
+    S.horaInicio=new Date().toISOString();S.horaFim=null;
     limparRascunho();
     renderRonda();ir("ronda");
   });
@@ -954,16 +1075,28 @@ function bindGlobal(){
 
 function atualizarBtnIniciar(){
   document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
-  // Mostrar aviso de rascunho se existir para a unidade selecionada
-  const rascunho = recuperarRascunho();
-  const aviso = document.getElementById("aviso-rascunho");
+  // Mostrar/ocultar saudação
+  const saudacaoBox=document.getElementById("saudacao-box");
+  const nomeField=document.getElementById("nome-field");
+  const saudacaoNome=document.getElementById("saudacao-nome");
+  if(S.responsavel.trim()){
+    if(saudacaoBox){saudacaoBox.style.display="block";}
+    if(nomeField){nomeField.style.display="none";}
+    if(saudacaoNome){saudacaoNome.textContent=S.responsavel.trim();}
+  } else {
+    if(saudacaoBox){saudacaoBox.style.display="none";}
+    if(nomeField){nomeField.style.display="block";}
+  }
+  // Mostrar aviso de rascunho
+  const rascunho=recuperarRascunho();
+  const aviso=document.getElementById("aviso-rascunho");
   if(aviso){
-    if(rascunho && rascunho.unidade === S.unidade && Object.keys(rascunho.respostas).length > 0){
-      const total = Object.keys(rascunho.respostas).length;
-      aviso.style.display = "block";
-      aviso.textContent = `↩ Ronda em andamento encontrada — ${total} itens respondidos. Clique em "Iniciar ronda" para continuar.`;
+    if(rascunho&&rascunho.unidade===S.unidade&&Object.keys(rascunho.respostas).length>0){
+      const total=Object.keys(rascunho.respostas).length;
+      aviso.style.display="block";
+      aviso.textContent=`↩ Ronda em andamento — ${total} itens respondidos. Clique em Iniciar para continuar.`;
     } else {
-      aviso.style.display = "none";
+      aviso.style.display="none";
     }
   }
 }
@@ -1017,10 +1150,14 @@ if(rascunhoInicial && Object.keys(rascunhoInicial.respostas||{}).length > 0){
   S.expandido = null;
   // Atualizar campo de nome se necessário
   document.getElementById("inp-responsavel").value = S.responsavel||"";
+  // Aplicar dark mode salvo
+  if(localStorage.getItem("dark_mode")==="1") document.body.classList.add("dark-mode");
   // Ir direto para a ronda sem passar pela tela inicial
   renderRonda();
   ir("ronda");
 } else {
+  // Aplicar dark mode salvo
+  if(localStorage.getItem("dark_mode")==="1") document.body.classList.add("dark-mode");
   ir("inicio");
   atualizarBtnIniciar();
 }
