@@ -235,7 +235,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 <div class="app">
 
   <!-- TELA: Configuração (primeira vez) -->
-  <div class="screen active" id="screen-config">
+  <div class="screen" id="screen-config">
     <div class="pad">
       <div style="text-align:center;margin-bottom:32px;padding-top:16px">
         <div style="font-size:40px;margin-bottom:12px">⚙️</div>
@@ -258,10 +258,9 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
   </div>
 
   <!-- TELA: Início -->
-  <div class="screen" id="screen-inicio">
-    <!-- Hero -->
-    <div class="hero-card">
-      <div style="text-align:center">
+  <div class="screen active" id="screen-inicio">
+    <div style="background:#fff;padding:32px 24px 24px;text-align:center;border-bottom:1px solid var(--border)">
+      <div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="277 297 1400 490" width="140" height="49" style="display:block;margin:0 auto 12px">
   <style>.lp{fill:#6E69AD}.lt{fill:#B0E0E4}</style>
   <path class="lt" d="M547.2,350.06c-30.56,0-58.27,12.21-78.53,32.01l40.06,40.06c10.09-9.37,23.61-15.1,38.46-15.1c31.24,0,56.57,25.33,56.57,56.57s-25.33,56.57-56.57,56.57c-14.92,0-28.49-5.79-38.6-15.23l-0.01,0.01l-0.21-0.21c-0.16-0.15-0.31-0.31-0.46-0.46c-0.53-0.51-1.05-1.03-1.56-1.56c-0.52-0.54-1.04-1.09-1.54-1.66l-77.06-79.5l0,0c-10.04-9.08-23.37-14.59-38.03-14.54c-31.24,0.11-56.57,25.33-56.57,56.57c0,31.24,25.33,56.57,56.57,56.57c15.64,0,29.77-6.34,39.99-16.6l33.58,33.58c20.58,23.08,50.53,37.62,83.89,37.62c62.05,0,112.36-50.3,112.36-112.36S609.25,350.06,547.2,350.06z"/>
@@ -277,11 +276,11 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
   <path class="lp" d="M1484.11,620.63l-4.19,8.73c-1.4,2.45-3.14,2.79-5.93,2.09c-3.14-0.7-6.28-1.74-13.61-1.74c-20.94,0-38.74,16.06-38.74,38.39v112.04c0,3.14-2.09,5.24-5.24,5.24h-10.47c-3.14,0-5.24-2.09-5.24-5.24V619.58c0-3.14,2.09-5.24,5.24-5.24h8.73c3.14,0,4.89,2.09,5.24,5.24l1.4,14.31c9.77-13.97,23.74-23.39,41.89-23.39c8.03,0,15.36,1.74,20.24,4.88C1485.15,616.44,1485.5,617.84,1484.11,620.63z"/>
   <path class="lp" d="M1651.65,692.88c0,11.17-1.4,16.4-9.77,16.4h-132.99c3.84,34.56,28.97,61.78,67.72,61.78c23.04,0,38.39-8.73,49.21-18.5c2.44-2.09,4.54-3.49,7.33-1.05l4.54,4.19c2.79,2.79,3.14,5.24,0.35,8.03c-16.06,16.75-38.39,26.18-63.88,26.18c-50.26,0-85.86-39.44-85.86-89.7s34.21-89.7,83.42-89.7C1620.59,610.51,1651.65,649.95,1651.65,692.88z M1508.89,691.84h124.26c-0.7-33.86-25.83-62.48-61.78-62.48C1536.12,629.36,1512.03,656.58,1508.89,691.84z"/>
 </svg>
-        <h1 style="font-size:22px;font-weight:800;color:#fff;margin-top:10px 0 4px">Ronda Mensal</h1>
-        <p style="font-size:14px;color:rgba(255,255,255,0.75);margin:0">Genial Care · Facilities</p>
+        <h1 style="font-size:20px;font-weight:800;color:var(--roxo);margin:10px 0 4px">Ronda Mensal</h1>
+        <p style="font-size:13px;color:var(--text-muted);margin:0">Genial Care · Facilities</p>
       </div>
     </div>
-    <div class="pad" style="padding-top:32px">
+    <div class="pad" style="padding-top:24px">
       <div class="card" style="margin-bottom:16px">
         <label>Unidade</label>
         <select id="sel-unidade" style="margin-bottom:16px">
