@@ -734,4 +734,277 @@ function renderResumo(){
     <div style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${ch.length} chamado${ch.length>1?"s":""} a abrir no Zoho</div>
     ${ch.map(c=>`<div class="chamado-card ${c.critico?"ct":""} ${S.respostas[c.chave]==="chamado_emergencial"?"emerg":""}">
       <div style="font-size:11px;color:#6b7280;margin-bottom:2px">${c.grupo}</div>
-      <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.criti
+      <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
+      ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:4px;font-style:italic">→ ${c.obs}</div>`:""}
+    </div>`).join("")}
+    </div>`;
+  } else {
+    cw.innerHTML=`<div style="background:#f0fdf4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #bbf7d0;text-align:center">
+    <div style="font-size:14px;font-weight:700;color:#16a34a">✓ Nenhum chamado necessário</div>
+    <div style="font-size:13px;color:#6b7280;margin-top:4px">Todos os itens respondidos estão conformes.</div>
+    </div>`;
+  }
+}
+
+// ── RENDER HISTÓRICO ──────────────────────────────────────────────
+function renderHistorico(){
+  const lista=document.getElementById("hist-lista");
+  if(S.historico.length===0){
+    lista.innerHTML=`<div style="text-align:center;padding:40px;color:#9ca3af;font-size:14px">Nenhuma ronda registrada ainda.</div>`;
+    return;
+  }
+  lista.innerHTML=S.historico.map(r=>`<div class="hist-card" style="border-color:${r.resumo.naoConformes>0?"#fca5a5":"#bbf7d0"}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#1f2937">${r.unidade}</div>
+        <div style="font-size:13px;color:#6b7280">${r.responsavel}</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:2px">${fmtData(r.data)}</div>
+      </div>
+      <div style="text-align:right">
+        ${r.resumo.naoConformes>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${r.resumo.naoConformes} NC</span>`:`<span class="badge" style="color:#16a34a;background:#f0fdf4">OK ✓</span>`}
+        <div style="font-size:12px;color:#9ca3af;margin-top:4px">${r.resumo.respondidos}/${r.resumo.total} itens</div>
+        <div style="font-size:11px;color:${r.salvoNaNuvem?"#16a34a":"#f59e0b"};margin-top:2px">${r.salvoNaNuvem?"☁ salvo":"📱 local"}</div>
+      </div>
+    </div>
+  </div>`).join("");
+}
+
+// ── EXPORTAR ──────────────────────────────────────────────────────
+function exportar(){
+  const ch=chamados();const res=resumo();
+  const linhas=[`RONDA MENSAL — ${S.unidade}`,`Responsável: ${S.responsavel}`,`Data: ${fmtData(Date.now())}`,``,
+    `RESUMO`,`Total de itens: ${res.total}`,`Respondidos: ${res.respondidos}`,`Não conformes: ${res.naoConformes}`,``,
+    ch.length>0?`CHAMADOS A ABRIR NO ZOHO (${ch.length})`:`NENHUM CHAMADO NECESSÁRIO`,
+    ...ch.map((c,i)=>`${i+1}. [${c.grupo}] ${c.texto}${c.obs?"\n   → "+c.obs:""}${c.critico?" ⚠ CRÍTICO":""}`)
+  ];
+  const blob=new Blob([linhas.join("\n")],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");
+  a.href=url;a.download=`ronda_${S.unidade.replace(/ /g,"_")}_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// ── ENVIAR PARA SHEETS ────────────────────────────────────────────
+async function enviarParaSheets(ronda){
+  if(!S.apiUrl)return false;
+  try{
+    const res=await fetch(S.apiUrl,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(ronda)});
+    const data=await res.json();
+    return data.sucesso===true;
+  }catch{return false;}
+}
+
+// ── CONCLUIR RONDA ────────────────────────────────────────────────
+async function concluirRonda(){
+  const res=resumo();const ch=chamados();
+  const ronda={
+    id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
+    data:Date.now(),respostas:{...S.respostas},observacoes:{...S.observacoes},
+    resumo:res,chamados:ch,salvoNaNuvem:false,
+  };
+  toast("Salvando...");
+  const ok=await enviarParaSheets(ronda);
+  ronda.salvoNaNuvem=ok;
+  S.historico=[ronda,...S.historico].slice(0,100);
+  saveHistorico();
+  renderResumo();
+  ir("resumo");
+  if(ok) toast("✓ Salvo na planilha Google Sheets!","success");
+  else if(S.apiUrl) toast("Salvo localmente (sem conexão)","");
+  else toast("Salvo localmente","");
+}
+
+// ── EVENTOS ───────────────────────────────────────────────────────
+function bindGlobal(){
+  // Config
+  document.getElementById("btn-salvar-config").addEventListener("click",()=>{
+    const url=document.getElementById("inp-api-url").value.trim();
+    saveApi(url);toast("Configuração salva!","success");ir("inicio");
+  });
+  document.getElementById("btn-pular-config").addEventListener("click",()=>ir("inicio"));
+
+  // Início
+  document.getElementById("sel-unidade").addEventListener("change",e=>{
+    S.unidade=e.target.value;atualizarBtnIniciar();
+  });
+  document.getElementById("inp-responsavel").addEventListener("input",e=>{
+    S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
+  });
+  document.getElementById("sel-unidade").addEventListener("change",e=>{
+    S.unidade=e.target.value;atualizarBtnIniciar();
+  });
+  document.getElementById("btn-iniciar").addEventListener("click",()=>{
+    const rascunho = recuperarRascunho();
+    if(rascunho && rascunho.unidade === S.unidade){
+      const total = Object.keys(rascunho.respostas).length;
+      if(total > 0 && confirm(`Há uma ronda em andamento para ${rascunho.unidade} com ${total} itens respondidos. Deseja continuar de onde parou?`)){
+        S.respostas = rascunho.respostas;
+        S.observacoes = rascunho.observacoes;
+        S.rondaId = rascunho.rondaId;
+        S.expandido = null;
+        renderRonda();ir("ronda");
+        return;
+      }
+    }
+    S.respostas={};S.observacoes={};S.expandido=null;S.rondaId=gerarId();
+    limparRascunho();
+    renderRonda();ir("ronda");
+  });
+  document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
+  document.getElementById("btn-config").addEventListener("click",()=>{
+    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("inicio");
+  });
+
+  // Ronda (delegação)
+  document.getElementById("screen-ronda").addEventListener("click",e=>{
+    const gBtn=e.target.closest("[data-gid]");
+    if(gBtn){
+      const id=gBtn.dataset.gid;
+      S.expandido=S.expandido===id?null:id;
+      renderRonda();
+      setTimeout(()=>gBtn.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
+      return;
+    }
+    const sBtn=e.target.closest(".sbt");
+    if(sBtn){
+      S.respostas[sBtn.dataset.chave]=sBtn.dataset.val;
+      salvarRascunho();
+      // Re-render só o item afetado
+      const prefix=sBtn.dataset.chave.replace(/__\d+$/,"__");
+      const grupo=sBtn.dataset.chave.startsWith("sala")?
+        document.getElementById("wrap-salas"):document.getElementById("wrap-ambientes");
+      const gid=sBtn.dataset.chave.split("__")[1];
+      const body=document.getElementById("body_"+gid);
+      if(body&&body.classList.contains("open")){
+        const isIS=gid.includes("IS")||(UNIDADES[S.unidade]||[]).find(s=>s.id===gid)?.tipo==="IS";
+        const amb=AMBIENTES.find(a=>a.id===gid);
+        const itens=amb?amb.itens:(isIS?IIS:IP);
+        body.innerHTML=renderItens(itens,prefix);
+      }
+      // Atualiza badge do grupo
+      const{total,resp,nc}=contarGrupo(prefix);
+      const btn=document.querySelector(`[data-gid="${gid}"]`);
+      if(btn){
+        btn.className=`group-btn ${nc>0?"nc":resp===total&&total>0?"done":""} ${S.expandido===gid?"open":""}`;
+        const spans=btn.querySelectorAll("span");
+        const cntSpan=btn.querySelector('[style*="12px"]');
+        if(cntSpan)cntSpan.textContent=`${resp}/${total}`;
+      }
+      atualizarHeader();
+      return;
+    }
+  });
+  document.getElementById("screen-ronda").addEventListener("input",e=>{
+    if(e.target.tagName==="TEXTAREA"&&e.target.dataset.chave){
+      S.observacoes[e.target.dataset.chave]=e.target.value;
+    salvarRascunho();
+    }
+  });
+  ["btn-concluir-topo","btn-concluir-bottom"].forEach(id=>{
+    document.getElementById(id).addEventListener("click",()=>{
+      const res=resumo();
+      if(res.respondidos===0){concluirRonda();return;}
+      if(confirm("Você respondeu "+res.respondidos+" itens. Tem certeza que deseja concluir a ronda?")){
+        concluirRonda();
+      }
+    });
+  });
+
+  // Botão voltar da ronda
+  document.getElementById("btn-voltar-ronda").addEventListener("click",()=>{
+    const res=resumo();
+    if(res.respondidos===0){
+      limparRascunho();
+      S.respostas={};S.observacoes={};S.unidade="";S.expandido=null;
+      document.getElementById("sel-unidade").value="";
+      ir("inicio");atualizarBtnIniciar();
+      return;
+    }
+    if(confirm("Você já preencheu "+res.respondidos+" itens. O rascunho será mantido — você pode continuar depois. Deseja voltar ao início?")){
+      ir("inicio");atualizarBtnIniciar();
+    }
+  });
+
+  // Resumo
+  document.getElementById("btn-exportar").addEventListener("click",exportar);
+  document.getElementById("btn-nova-ronda").addEventListener("click",()=>ir("inicio"));
+  document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
+
+  // Histórico
+  document.getElementById("btn-voltar-hist").addEventListener("click",()=>ir("inicio"));
+}
+
+function atualizarBtnIniciar(){
+  document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
+  // Mostrar aviso de rascunho se existir para a unidade selecionada
+  const rascunho = recuperarRascunho();
+  const aviso = document.getElementById("aviso-rascunho");
+  if(aviso){
+    if(rascunho && rascunho.unidade === S.unidade && Object.keys(rascunho.respostas).length > 0){
+      const total = Object.keys(rascunho.respostas).length;
+      aviso.style.display = "block";
+      aviso.textContent = `↩ Ronda em andamento encontrada — ${total} itens respondidos. Clique em "Iniciar ronda" para continuar.`;
+    } else {
+      aviso.style.display = "none";
+    }
+  }
+}
+
+
+// ── RASCUNHO (salva progresso automaticamente) ──────────────────
+function salvarRascunho(){
+  try{
+    localStorage.setItem("ronda_rascunho", JSON.stringify({
+      unidade: S.unidade,
+      responsavel: S.responsavel,
+      rondaId: S.rondaId,
+      respostas: S.respostas,
+      observacoes: S.observacoes,
+      ts: Date.now()
+    }));
+  }catch{}
+}
+
+function recuperarRascunho(){
+  try{
+    const raw = localStorage.getItem("ronda_rascunho");
+    if(!raw) return false;
+    const r = JSON.parse(raw);
+    // Só recupera se for da mesma unidade e tiver menos de 24h
+    const idade = Date.now() - (r.ts || 0);
+    if(idade > 24 * 60 * 60 * 1000) return false;
+    if(!r.unidade || !r.respostas) return false;
+    return r;
+  }catch{ return false; }
+}
+
+function limparRascunho(){
+  try{ localStorage.removeItem("ronda_rascunho"); }catch{}
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+loadLocal();
+bindGlobal();
+document.getElementById("inp-responsavel").value=S.responsavel||"";
+
+// Se há rascunho salvo, restaurar estado e ir direto para a ronda
+const rascunhoInicial = recuperarRascunho();
+if(rascunhoInicial && Object.keys(rascunhoInicial.respostas||{}).length > 0){
+  // Restaurar estado completo
+  S.unidade = rascunhoInicial.unidade;
+  S.responsavel = rascunhoInicial.responsavel || S.responsavel;
+  S.rondaId = rascunhoInicial.rondaId;
+  S.respostas = rascunhoInicial.respostas;
+  S.observacoes = rascunhoInicial.observacoes || {};
+  S.expandido = null;
+  // Atualizar campo de nome se necessário
+  document.getElementById("inp-responsavel").value = S.responsavel||"";
+  // Ir direto para a ronda sem passar pela tela inicial
+  renderRonda();
+  ir("ronda");
+} else {
+  ir("inicio");
+  atualizarBtnIniciar();
+}
+</script>
+</body>
+</html>
