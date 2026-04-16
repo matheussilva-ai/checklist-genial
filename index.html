@@ -269,6 +269,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
   border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 </head>
 <body>
 
@@ -318,6 +319,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
       <div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="277 297 1400 490" width="140" height="49" style="display:block;margin:0 auto 12px">
   <style>.lp{fill:#6E69AD}.lt{fill:#B0E0E4}</style>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
   <path class="lt" d="M547.2,350.06c-30.56,0-58.27,12.21-78.53,32.01l40.06,40.06c10.09-9.37,23.61-15.1,38.46-15.1c31.24,0,56.57,25.33,56.57,56.57s-25.33,56.57-56.57,56.57c-14.92,0-28.49-5.79-38.6-15.23l-0.01,0.01l-0.21-0.21c-0.16-0.15-0.31-0.31-0.46-0.46c-0.53-0.51-1.05-1.03-1.56-1.56c-0.52-0.54-1.04-1.09-1.54-1.66l-77.06-79.5l0,0c-10.04-9.08-23.37-14.59-38.03-14.54c-31.24,0.11-56.57,25.33-56.57,56.57c0,31.24,25.33,56.57,56.57,56.57c15.64,0,29.77-6.34,39.99-16.6l33.58,33.58c20.58,23.08,50.53,37.62,83.89,37.62c62.05,0,112.36-50.3,112.36-112.36S609.25,350.06,547.2,350.06z"/>
   <path class="lp" d="M547.2,407.03c-14.86,0-28.37,5.73-38.46,15.1l-38.02-38.02c-20.46-21.47-49.34-34.86-81.35-34.86c-62.05,0-112.36,50.3-112.36,112.36s50.3,112.36,112.36,112.36c30.62,0,58.37-12.25,78.64-32.12l-38.28-38.28c-10.23,10.25-24.36,16.6-39.99,16.6c-31.24,0-56.57-25.33-56.57-56.57c0-31.24,25.33-56.46,56.57-56.57c14.65-0.05,27.99,5.46,38.03,14.54l0,0l77.06,79.5c1.13,1.28,2.32,2.5,3.56,3.67l0.21,0.21l0.01-0.01c10.11,9.44,23.67,15.23,38.6,15.23c31.24,0,56.57-25.33,56.57-56.57S578.44,407.03,547.2,407.03z"/>
   <path class="lp" d="M894.18,472.25c0-49.92-40.47-90.39-90.39-90.39c-49.88,0-90.39,40.51-90.39,90.39c0,49.92,40.47,90.39,90.39,90.39c14.97,0,29.09-3.64,41.53-10.09l0,0c-8.74,33.69-51.63,30.54-64.07,28.88c-1.8-0.24-3.39,1.16-3.39,2.97v39.93c0,1.67,1.36,3.02,3.03,3l31.1-0.36c80.59-11.93,82.18-83.45,82.18-83.45v-66.81l-0.12,0.18C894.14,475.37,894.18,473.81,894.18,472.25z M804.17,517.25c-24.89,0-45.07-20.18-45.07-45.07c0-24.89,20.18-45.07,45.07-45.07c24.89,0,45.07,20.18,45.07,45.07C849.24,497.07,829.06,517.25,804.17,517.25z"/>
@@ -948,6 +950,57 @@ async function concluirRonda(){
 }
 
 // ── EVENTOS ───────────────────────────────────────────────────────
+function processarFoto(fileOrBlob, chave, base64Override){
+  if(base64Override){
+    // Já temos o base64 — comprimir via canvas
+    comprimirBase64(base64Override, chave);
+    return;
+  }
+  // Ler o blob (resultado do heic2any)
+  var reader2=new FileReader();
+  reader2.onerror=function(){alert("Erro ao processar foto. Tente novamente.");};
+  reader2.onload=function(ev){
+    comprimirBase64(ev.target.result, chave);
+  };
+  reader2.readAsDataURL(fileOrBlob);
+}
+
+function comprimirBase64(base64, chave){
+  try{
+    var img=new Image();
+    img.onerror=function(){
+      S.fotos[chave]=base64;
+      salvarRascunho();
+      atualizarGrupoFoto(chave);
+    };
+    img.onload=function(){
+      try{
+        var canvas=document.createElement("canvas");
+        var MAX=800;
+        var w=img.width,h=img.height;
+        if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
+        else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+        canvas.width=w;canvas.height=h;
+        var ctx=canvas.getContext("2d");
+        ctx.fillStyle="#FFFFFF";ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        var compressed=canvas.toDataURL("image/jpeg",0.65);
+        canvas.width=1;canvas.height=1;img.src="";
+        S.fotos[chave]=compressed;
+      }catch(err){
+        S.fotos[chave]=base64;
+      }
+      salvarRascunho();
+      atualizarGrupoFoto(chave);
+    };
+    img.src=base64;
+  }catch(err){
+    S.fotos[chave]=base64;
+    salvarRascunho();
+    atualizarGrupoFoto(chave);
+  }
+}
+
 function atualizarGrupoFoto(chave){
   var gid=chave.split("__")[1];
   var body=document.getElementById("body_"+gid);
@@ -1114,22 +1167,35 @@ function bindGlobal(){
       var file=e.target.files[0];
       if(!file) return;
       var reader=new FileReader();
-      // Limitar tamanho: max 5MB (iPhone tira fotos maiores)
-      if(file.size > 5*1024*1024){
-        alert("Foto muito grande (máx. 5MB). Tente reduzir a resolução da câmera nas configurações do iPhone em Câmera → Formatos → Mais Compatível.");
+      // Limitar tamanho: max 8MB
+      if(file.size > 8*1024*1024){
+        alert("Foto muito grande (máx. 8MB). Tente uma foto com menor resolução.");
         e.target.value="";
         return;
       }
-      // iPhone: converter HEIC para JPEG via canvas
-      var isHeic = file.type === "image/heic" || file.type === "image/heif" || file.name.toLowerCase().endsWith(".heic") || file.name.toLowerCase().endsWith(".heif");
+      // Detectar HEIC (iPhone)
+      var isHeic = file.type === "image/heic" || file.type === "image/heif" 
+        || file.name.toLowerCase().endsWith(".heic") 
+        || file.name.toLowerCase().endsWith(".heif")
+        || file.type === "";
+
+      // Se HEIC, converter para JPEG primeiro
+      if(isHeic && typeof heic2any !== "undefined"){
+        heic2any({blob: file, toType:"image/jpeg", quality:0.7})
+          .then(function(jpegBlob){
+            processarFoto(jpegBlob, chave);
+          })
+          .catch(function(){
+            // Se heic2any falhar, tentar direto
+            processarFoto(file, chave);
+          });
+        return;
+      }
+
       // Ler como base64
       var reader=new FileReader();
       reader.onerror=function(){
-        if(isHeic){
-          alert("iPhone: para fotos funcionarem, vá em Configurações → Câmera → Formatos → selecione 'Mais Compatível'. Isso salva as fotos em JPEG.");
-        } else {
-          alert("Erro ao ler a foto. Tente novamente.");
-        }
+        alert("Erro ao ler a foto. Tente novamente.");
       };
       reader.onload=function(ev){
         try{
