@@ -139,11 +139,12 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 
 /* ── SUBCAT LABEL ────────────────────────────────────────────────── */
 .subcat-label{
-  font-size:13px;font-weight:700;color:var(--roxo);
-  letter-spacing:0.03em;
-  padding:12px 4px 6px;display:flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:800;color:var(--white);
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:6px 12px;margin:12px 0 6px;
+  background:var(--roxo);border-radius:var(--radius-sm);
+  display:inline-flex;align-items:center;gap:6px;
 }
-.subcat-label::after{content:'';flex:1;height:1.5px;background:var(--roxo-light)}
 
 /* ── ITEM CHECKLIST ──────────────────────────────────────────────── */
 .item-card{
@@ -451,6 +452,7 @@ const IP=[
   {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
   {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
   {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+  {t:"Pintura das paredes em bom estado",sub:"infra"},
   {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
   {t:"Vedação das janelas sem danos",sub:"infra"},
   {t:"Persianas funcionando normalmente",sub:"infra"},
@@ -465,6 +467,7 @@ const IIS=[
   {t:"Iluminação funcionando normalmente",sub:"infra"},
   {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
   {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+  {t:"Pintura das paredes em bom estado",sub:"infra"},
   {t:"Vedação das janelas sem danos",sub:"infra"},
   {t:"Persianas funcionando normalmente",sub:"infra"},
   {t:"Ganchos de teto sem folga, oxidação ou afastamento da estrutura",sub:"infra",c:true},
@@ -746,7 +749,7 @@ function renderGrupos(wrapId,grupos){
   }).join("");
 }
 
-const SUB_LABELS={"infra":"🔧 Infraestrutura","mob":"🪑 Mobiliário e equipamentos","limpeza":"🧼 Limpeza"};
+const SUB_LABELS={"infra":"🔧 Infraestrutura","mob":"🪑 Mobiliário","limpeza":"🧼 Limpeza"};
 function renderItens(itens,prefix){
   let html="";let lastSub=null;
   itens.forEach((item,i)=>{
@@ -755,7 +758,7 @@ function renderItens(itens,prefix){
     // Separador de subcategoria
     if(s && s!==lastSub){
       lastSub=s;
-      html+=`<div style="font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:0.06em;padding:10px 4px 4px;margin-top:${i>0?8:0}px">${SUB_LABELS[s]||s}</div>`;
+      html+=`<div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#fff;letter-spacing:0.08em;text-transform:uppercase;background:#5B57A0;border-radius:6px;padding:5px 12px;margin:${i>0?14:6}px 0 8px">${SUB_LABELS[s]||s}</div>`;
     }
     // Status não conforme = qualquer um que não seja ok nem na
     const isNC = v==="chamado_normal"||v==="chamado_emergencial";
