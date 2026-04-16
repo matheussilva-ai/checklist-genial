@@ -984,8 +984,11 @@ function comprimirBase64(base64, chave){
         var ctx=canvas.getContext("2d");
         ctx.fillStyle="#FFFFFF";ctx.fillRect(0,0,w,h);
         ctx.drawImage(img,0,0,w,h);
-        var compressed=canvas.toDataURL("image/jpeg",0.65);
-        canvas.width=1;canvas.height=1;img.src="";
+        var compressed=canvas.toDataURL("image/jpeg",0.55);
+        // Liberar memória imediatamente
+        ctx.clearRect(0,0,w,h);
+        canvas.width=1;canvas.height=1;
+        img.src="";img.onload=null;img.onerror=null;
         S.fotos[chave]=compressed;
       }catch(err){
         S.fotos[chave]=base64;
@@ -1265,16 +1268,32 @@ function atualizarBtnIniciar(){
 // ── RASCUNHO (salva progresso automaticamente) ──────────────────
 function salvarRascunho(){
   try{
+    // Salvar rascunho sem fotos (mais leve)
     localStorage.setItem("ronda_rascunho", JSON.stringify({
       unidade: S.unidade,
       responsavel: S.responsavel,
       rondaId: S.rondaId,
       respostas: S.respostas,
       observacoes: S.observacoes,
-      fotos: S.fotos,
       horaInicio: S.horaInicio,
       ts: Date.now()
     }));
+  }catch{}
+  // Salvar cada foto separadamente para não estourar memória
+  try{
+    var chavesFotos = Object.keys(S.fotos);
+    localStorage.setItem("ronda_fotos_keys", JSON.stringify(chavesFotos));
+    chavesFotos.forEach(function(k){
+      try{ localStorage.setItem("ronda_foto_"+k, S.fotos[k]); }catch(e){}
+    });
+  }catch{}
+}
+
+function limparFotosRascunho(){
+  try{
+    var keys = JSON.parse(localStorage.getItem("ronda_fotos_keys")||"[]");
+    keys.forEach(function(k){ localStorage.removeItem("ronda_foto_"+k); });
+    localStorage.removeItem("ronda_fotos_keys");
   }catch{}
 }
 
@@ -1283,16 +1302,26 @@ function recuperarRascunho(){
     const raw = localStorage.getItem("ronda_rascunho");
     if(!raw) return false;
     const r = JSON.parse(raw);
-    // Só recupera se for da mesma unidade e tiver menos de 24h
     const idade = Date.now() - (r.ts || 0);
     if(idade > 24 * 60 * 60 * 1000) return false;
     if(!r.unidade || !r.respostas) return false;
+    // Restaurar fotos salvas separadamente
+    var fotos = {};
+    try{
+      var keys = JSON.parse(localStorage.getItem("ronda_fotos_keys")||"[]");
+      keys.forEach(function(k){
+        var f = localStorage.getItem("ronda_foto_"+k);
+        if(f) fotos[k] = f;
+      });
+    }catch{}
+    r.fotos = fotos;
     return r;
   }catch{ return false; }
 }
 
 function limparRascunho(){
   try{ localStorage.removeItem("ronda_rascunho"); }catch{}
+  limparFotosRascunho();
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
