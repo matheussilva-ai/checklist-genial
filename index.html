@@ -966,42 +966,59 @@ function processarFoto(fileOrBlob, chave, base64Override){
 }
 
 function comprimirBase64(base64, chave){
-  try{
-    var img=new Image();
-    img.onerror=function(){
-      S.fotos[chave]=base64;
-      salvarRascunho();
-      atualizarGrupoFoto(chave);
-    };
-    img.onload=function(){
-      try{
-        var canvas=document.createElement("canvas");
-        var MAX=800;
-        var w=img.width,h=img.height;
-        if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
-        else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
-        canvas.width=w;canvas.height=h;
-        var ctx=canvas.getContext("2d");
-        ctx.fillStyle="#FFFFFF";ctx.fillRect(0,0,w,h);
-        ctx.drawImage(img,0,0,w,h);
-        var compressed=canvas.toDataURL("image/jpeg",0.55);
-        // Liberar memória imediatamente
-        ctx.clearRect(0,0,w,h);
-        canvas.width=1;canvas.height=1;
-        img.src="";img.onload=null;img.onerror=null;
-        S.fotos[chave]=compressed;
-      }catch(err){
-        S.fotos[chave]=base64;
-      }
-      salvarRascunho();
-      atualizarGrupoFoto(chave);
-    };
-    img.src=base64;
-  }catch(err){
+  // Verificar tamanho aproximado do base64 (cada char = ~0.75 bytes)
+  var tamanhoKB = Math.round(base64.length * 0.75 / 1024);
+  
+  // Se já for pequeno (<400KB), não precisa comprimir — salvar direto
+  if(tamanhoKB < 400){
     S.fotos[chave]=base64;
     salvarRascunho();
     atualizarGrupoFoto(chave);
+    return;
   }
+
+  // Tentar comprimir via canvas — com timeout para liberar memória entre fotos
+  setTimeout(function(){
+    try{
+      var img=new Image();
+      img.onerror=function(){
+        img=null;
+        S.fotos[chave]=base64;
+        salvarRascunho();
+        atualizarGrupoFoto(chave);
+      };
+      img.onload=function(){
+        try{
+          var canvas=document.createElement("canvas");
+          var MAX=700;
+          var w=img.width,h=img.height;
+          if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
+          else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+          canvas.width=w;canvas.height=h;
+          var ctx=canvas.getContext("2d");
+          ctx.fillStyle="#FFF";ctx.fillRect(0,0,w,h);
+          ctx.drawImage(img,0,0,w,h);
+          var compressed=canvas.toDataURL("image/jpeg",0.5);
+          // Liberar tudo imediatamente
+          ctx.clearRect(0,0,w,h);
+          canvas.width=1;canvas.height=1;
+          ctx=null;canvas=null;
+          img.src="";img.onload=null;img.onerror=null;img=null;
+          S.fotos[chave]=compressed;
+        }catch(canvasErr){
+          // Canvas falhou — usar original sem comprimir
+          S.fotos[chave]=base64;
+        }
+        salvarRascunho();
+        atualizarGrupoFoto(chave);
+      };
+      img.src=base64;
+    }catch(err){
+      S.fotos[chave]=base64;
+      salvarRascunho();
+      atualizarGrupoFoto(chave);
+    }
+  }, 100); // pequeno delay para o GC liberar memória da foto anterior
 }
 
 function atualizarGrupoFoto(chave){
