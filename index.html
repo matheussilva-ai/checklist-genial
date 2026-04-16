@@ -385,7 +385,16 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
     <span class="section-label" style="color:var(--roxo)">🔍 AMBIENTES FIXOS</span>
     <div class="groups-wrap" id="wrap-ambientes"></div>
 
-    <div style="padding:16px">
+    <div style="padding:0 16px 16px">
+      <div class="section-label" style="color:var(--roxo);padding:0;margin:20px 0 8px">📝 OBSERVAÇÕES GERAIS</div>
+      <div class="card" style="padding:14px">
+        <label style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;display:block">
+          Alguma observação geral sobre a unidade? (claviculário, comunicados, situações não cobertas acima)
+        </label>
+        <textarea id="obs-geral" rows="3" placeholder="Ex: Não havia claviculário na unidade. Comunicado desatualizado na recepção..." style="width:100%;border-radius:var(--radius-sm);border:1.5px solid var(--border);padding:10px 12px;font-size:14px;color:var(--text);background:var(--white);resize:vertical;font-family:inherit;outline:none;box-sizing:border-box"></textarea>
+      </div>
+    </div>
+    <div style="padding:0 16px 16px">
       <button class="btn btn-primary" id="btn-concluir-bottom">Concluir e salvar ronda →</button>
     </div>
   </div>
@@ -577,6 +586,7 @@ const AMBIENTES=[
     {t:"Iluminação funcionando normalmente",sub:"infra"},
     {t:"Sem indícios de infiltração e umidade",sub:"infra"},
     {t:"Pisos e rodapés sem danos",sub:"infra"},
+    {t:"Pintura das paredes em bom estado (sem descascamento ou manchas)",sub:"infra"},
     {t:"Equipamentos de incêndio presentes e em condições de uso",sub:"mob",c:true},
     {t:"Rota de fuga sinalizada e desobstruída",sub:"mob",c:true},
     {t:"Câmeras de segurança funcionando normalmente",sub:"mob"},
@@ -631,7 +641,7 @@ const CHAVE_SECRETA="genial-facilities-2026";
 const S={
   unidade:"",responsavel:"",respostas:{},observacoes:{},fotos:{},
   expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA,
-  horaInicio:null
+  horaInicio:null,obsGeral:""
 };
 
 function loadLocal(){
@@ -763,7 +773,7 @@ function renderItens(itens,prefix){
       <button class="foto-btn ${fotoData?"tem-foto":""}" data-foto-chave="${chave}">
         📷 ${fotoData?"Foto anexada — trocar":"Adicionar foto"}
       </button>
-      <input type="file" accept="image/*" capture="environment" style="display:none" data-foto-input="${chave}">
+      <input type="file" accept="image/*,image/heic,image/heif" capture="environment" style="display:none" data-foto-input="${chave}">
       ${fotoData?`<img src="${fotoData}" class="foto-preview" data-foto-preview="${chave}"><button class="foto-remove" data-foto-remove="${chave}">✕ Remover foto</button>`:""}
     </div>`:""}
     </div>`;
@@ -916,6 +926,7 @@ async function concluirRonda(){
     data:Date.now(),horaInicio:S.horaInicio,horaFim:new Date().toISOString(),
     respostas:{...S.respostas},observacoes:{...S.observacoes},
     fotos:{...S.fotos},
+    obsGeral:S.obsGeral||"",
     resumo:res,chamados:ch.map(c=>({...c,emergencial:S.respostas[c.chave]==="chamado_emergencial"})),
     salvoNaNuvem:false,chave:CHAVE_SECRETA,
   };
@@ -976,7 +987,7 @@ function bindGlobal(){
         return;
       }
     }
-    S.respostas={};S.observacoes={};S.fotos={};S.expandido=null;S.rondaId=gerarId();
+    S.respostas={};S.observacoes={};S.fotos={};S.obsGeral="";S.expandido=null;S.rondaId=gerarId();
     S.horaInicio=new Date().toISOString();
     limparRascunho();
     renderRonda();ir("ronda");
@@ -1098,16 +1109,22 @@ function bindGlobal(){
       var file=e.target.files[0];
       if(!file) return;
       var reader=new FileReader();
-      // Limitar tamanho: max 3MB
-      if(file.size > 3*1024*1024){
-        alert("Foto muito grande. Por favor tire a foto diretamente pela câmera (não da galeria) ou reduza a resolução da câmera nas configurações.");
+      // Limitar tamanho: max 5MB (iPhone tira fotos maiores)
+      if(file.size > 5*1024*1024){
+        alert("Foto muito grande (máx. 5MB). Tente reduzir a resolução da câmera nas configurações do iPhone em Câmera → Formatos → Mais Compatível.");
         e.target.value="";
         return;
       }
-      // Ler como base64 diretamente — funciona melhor em celulares com pouca memória
+      // iPhone: converter HEIC para JPEG via canvas
+      var isHeic = file.type === "image/heic" || file.type === "image/heif" || file.name.toLowerCase().endsWith(".heic") || file.name.toLowerCase().endsWith(".heif");
+      // Ler como base64
       var reader=new FileReader();
       reader.onerror=function(){
-        alert("Erro ao ler a foto. Tente novamente.");
+        if(isHeic){
+          alert("iPhone: para fotos funcionarem, vá em Configurações → Câmera → Formatos → selecione 'Mais Compatível'. Isso salva as fotos em JPEG.");
+        } else {
+          alert("Erro ao ler a foto. Tente novamente.");
+        }
       };
       reader.onload=function(ev){
         try{
