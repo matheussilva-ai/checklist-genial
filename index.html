@@ -970,7 +970,7 @@ function comprimirBase64(base64, chave){
   var tamanhoKB = Math.round(base64.length * 0.75 / 1024);
   
   // Se já for pequeno (<400KB), não precisa comprimir — salvar direto
-  if(tamanhoKB < 400){
+  if(tamanhoKB < 600){
     S.fotos[chave]=base64;
     salvarRascunho();
     atualizarGrupoFoto(chave);
@@ -990,7 +990,7 @@ function comprimirBase64(base64, chave){
       img.onload=function(){
         try{
           var canvas=document.createElement("canvas");
-          var MAX=700;
+          var MAX=500;
           var w=img.width,h=img.height;
           if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
           else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
@@ -1018,7 +1018,7 @@ function comprimirBase64(base64, chave){
       salvarRascunho();
       atualizarGrupoFoto(chave);
     }
-  }, 100); // pequeno delay para o GC liberar memória da foto anterior
+  }, 300); // delay para o GC liberar memória da foto anterior
 }
 
 function atualizarGrupoFoto(chave){
