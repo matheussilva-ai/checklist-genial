@@ -923,6 +923,8 @@ async function enviarParaSheets(ronda){
 
 // ── CONCLUIR RONDA ────────────────────────────────────────────────
 async function concluirRonda(){
+  const obsGeralEl=document.getElementById("obs-geral");
+  if(obsGeralEl) S.obsGeral=obsGeralEl.value||"";
   const res=resumo();const ch=chamados();
   const ronda={
     id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
