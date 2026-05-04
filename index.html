@@ -143,6 +143,16 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 /* ── CONFIG ── */
 .config-input{display:flex;gap:8px;margin-bottom:16px}
 .config-input input{flex:1}
+
+/* ── MODAL ZOHO ── */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,26,46,0.7);z-index:9998;display:flex;align-items:flex-end;justify-content:center}
+.modal-box{background:var(--white);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:24px 16px 32px;width:100%;max-width:480px;box-shadow:var(--shadow-md)}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+.modal-option{width:100%;padding:12px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:var(--white);text-align:left;font-size:14px;font-family:inherit;cursor:pointer;margin-bottom:8px;transition:all 0.15s}
+.modal-option:active{transform:scale(0.98)}
+.modal-option:hover{border-color:var(--roxo);background:var(--roxo-xlight)}
+.modal-cancel{width:100%;padding:12px;border-radius:var(--radius-md);border:none;background:none;color:var(--text-muted);font-size:14px;font-family:inherit;cursor:pointer;margin-top:4px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 </head>
@@ -324,6 +334,23 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <h2 class="title" style="font-size:18px">Histórico de salas</h2>
       </div>
       <div id="hist-lista"></div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: Categoria Limpeza ── -->
+  <div id="modal-limpeza" style="display:none" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">🧼 Categoria de Limpeza</div>
+      <div class="modal-sub" id="modal-limpeza-item"></div>
+      <button class="modal-option" onclick="confirmarTicketZoho('Reportar problema com a limpeza da unidade')">Reportar problema com a limpeza da unidade</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Reportar problema com a equipe')">Reportar problema com a equipe</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Solicitar troca da equipe terceira')">Solicitar troca da equipe terceira</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Solicitar visita da supervisão de limpeza')">Solicitar visita da supervisão de limpeza</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Solicitar limpeza pontual')">Solicitar limpeza pontual</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Solicitar limpeza pontual de estofado')">Solicitar limpeza pontual de estofado</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Solicitar limpezapontual de equipamentos de TO')">Solicitar limpeza pontual de equipamentos de TO</button>
+      <button class="modal-option" onclick="confirmarTicketZoho('Tirar dúvidas sobre Limpeza')">Tirar dúvidas sobre Limpeza</button>
+      <button class="modal-cancel" onclick="fecharModalLimpeza()">Cancelar</button>
     </div>
   </div>
 
@@ -656,7 +683,7 @@ const SUB_LABELS={"infra":"🔧 Infraestrutura","mob":"🪑 Mobiliário","limpez
 // ════════════════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════════════════
-const API_URL_FIXA="https://script.google.com/macros/s/AKfycbzlCR_J7UPsnD_9bwOlkcHdurEHfSOx3GHAkx-ZSgZ6Hdg19v8d8nx4eghiPLLPRMORAQ/exec";
+const API_URL_FIXA="https://script.google.com/macros/s/AKfycbxPlrRZodhX3mk0OH9qgIQFGcoEbW_tOvjs9z0VHULBFm23Y8Jc_xTjwE2tyvF8PrYAhQ/exec";
 const CHAVE_SECRETA="genial-facilities-2026";
 const POLL_INTERVAL=15000; // 15 segundos
 
@@ -1092,10 +1119,15 @@ function renderResumoFinal(){
   if(todosChamados.length>0){
     cwEl.innerHTML=`<div style="background:#fef2f2;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #fca5a5">
       <div style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${todosChamados.length} chamado(s) para abrir no Zoho</div>
-      ${todosChamados.map(c=>`<div class="chamado-card ${c.emergencial?"emerg":""}">
+      ${todosChamados.map((c,ci)=>`<div class="chamado-card ${c.emergencial?"emerg":""}" id="chamado-card-${ci}">
         <div style="font-size:11px;color:#6b7280;margin-bottom:2px">${c.salaLabel}</div>
         <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
         ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:4px;font-style:italic">→ ${c.obs}</div>`:""}
+        <div style="margin-top:8px" id="zoho-btn-${ci}">
+          <button onclick="abrirTicketZoho(${ci})" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1.5px solid #e0e0e0;background:#fff;font-size:12px;font-weight:600;color:#444;cursor:pointer;font-family:inherit">
+            🎫 Abrir ticket no Zoho
+          </button>
+        </div>
       </div>`).join("")}
     </div>`;
   } else {
@@ -1123,6 +1155,77 @@ function exportar(){
   const url=URL.createObjectURL(blob);const a=document.createElement("a");
   a.href=url;a.download=`ronda_${S.unidade.replace(/ /g,"_")}_${new Date().toISOString().slice(0,10)}.txt`;
   a.click();URL.revokeObjectURL(url);
+}
+
+// ════════════════════════════════════════════════════════════════
+// ZOHO DESK
+// ════════════════════════════════════════════════════════════════
+// Índice do chamado atual para o modal de limpeza
+let _zohoIdxPendente = null;
+
+function fecharModalLimpeza(){
+  document.getElementById("modal-limpeza").style.display="none";
+  _zohoIdxPendente=null;
+}
+
+async function confirmarTicketZoho(categoriaLimpeza){
+  document.getElementById("modal-limpeza").style.display="none";
+  if(_zohoIdxPendente===null) return;
+  await _criarTicketComCategoria(_zohoIdxPendente, categoriaLimpeza);
+  _zohoIdxPendente=null;
+}
+
+async function abrirTicketZoho(idx){
+  const todosChamados=S.salasConcluidas.flatMap(s=>s.chamados.map(c=>({...c,salaLabel:s.label,responsavel:s.responsavel})));
+  const c=todosChamados[idx];
+  if(!c) return;
+
+  // Se for limpeza, mostrar modal de categoria
+  if(c.subcategoria==="🧼 Limpeza"){
+    _zohoIdxPendente=idx;
+    const modal=document.getElementById("modal-limpeza");
+    const sub=document.getElementById("modal-limpeza-item");
+    if(sub) sub.textContent=c.salaLabel+" — "+c.texto;
+    if(modal) modal.style.display="flex";
+    return;
+  }
+
+  await _criarTicketComCategoria(idx, null);
+}
+
+async function _criarTicketComCategoria(idx, categoriaLimpezaSelecionada){
+  const todosChamados=S.salasConcluidas.flatMap(s=>s.chamados.map(c=>({...c,salaLabel:s.label,responsavel:s.responsavel})));
+  const c=todosChamados[idx];
+  if(!c) return;
+
+  const btnWrap=document.getElementById("zoho-btn-"+idx);
+  if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#6b7280">⏳ Criando ticket...</span>`;
+
+  const res=await api({
+    acao:"criarTicket",
+    unidade:S.unidade,
+    salaLabel:c.salaLabel,
+    itemTexto:c.texto,
+    subcategoria:c.subcategoria||"",
+    obs:c.obs||"",
+    emergencial:c.emergencial||false,
+    critico:c.critico||false,
+    responsavel:c.responsavel||S.responsavel,
+    categoriaLimpeza:categoriaLimpezaSelecionada||"",
+  });
+
+  if(res.sucesso){
+    if(btnWrap) btnWrap.innerHTML=`
+      <a href="${res.ticketUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#f0fdf4;border:1.5px solid #86efac;font-size:12px;font-weight:700;color:#16a34a;text-decoration:none">
+        ✅ Ticket #${res.ticketNum} criado → Ver no Zoho
+      </a>`;
+    toast("✅ Ticket criado no Zoho!","success");
+  } else {
+    if(btnWrap) btnWrap.innerHTML=`
+      <span style="font-size:12px;color:#dc2626">❌ Erro ao criar ticket — tente novamente</span>
+      <button onclick="abrirTicketZoho(${idx})" style="margin-left:8px;font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;text-decoration:underline">Tentar novamente</button>`;
+    toast("Erro ao criar ticket","error");
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
