@@ -153,6 +153,16 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 .modal-option:active{transform:scale(0.98)}
 .modal-option:hover{border-color:var(--roxo);background:var(--roxo-xlight)}
 .modal-cancel{width:100%;padding:12px;border-radius:var(--radius-md);border:none;background:none;color:var(--text-muted);font-size:14px;font-family:inherit;cursor:pointer;margin-top:4px}
+
+/* ── MODAL ZOHO ── */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,26,46,0.7);z-index:9998;display:flex;align-items:flex-end;justify-content:center}
+.modal-box{background:var(--white);border-radius:var(--radius-xl) var(--radius-xl) 0 0;padding:24px 16px 32px;width:100%;max-width:480px;box-shadow:var(--shadow-md)}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text-muted);margin-bottom:16px}
+.modal-option{width:100%;padding:12px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:var(--white);text-align:left;font-size:14px;font-family:inherit;cursor:pointer;margin-bottom:8px;transition:all 0.15s}
+.modal-option:active{transform:scale(0.98)}
+.modal-option:hover{border-color:var(--roxo);background:var(--roxo-xlight)}
+.modal-cancel{width:100%;padding:12px;border-radius:var(--radius-md);border:none;background:none;color:var(--text-muted);font-size:14px;font-family:inherit;cursor:pointer;margin-top:4px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 </head>
@@ -304,6 +314,23 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
     </div>
     <div style="padding:0 16px 24px">
       <button class="btn btn-success" id="btn-concluir-sala-bottom">✓ Concluir esta sala e salvar →</button>
+    </div>
+  </div>
+
+  <!-- ── TELA: Conclusão da sala (tickets) ── -->
+  <div class="screen" id="screen-conclusao-sala">
+    <div style="background:#fff;padding:20px 16px 16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:18px;font-weight:800;color:var(--roxo);margin-bottom:2px" id="conclusao-sala-titulo"></div>
+      <div style="font-size:13px;color:var(--text-muted)" id="conclusao-sala-sub"></div>
+    </div>
+    <div class="pad" style="padding-top:16px">
+      <div id="conclusao-nc-wrap"></div>
+      <div id="conclusao-sem-nc" style="display:none;background:var(--teal-light);border:1.5px solid var(--teal-dark);border-radius:var(--radius-md);padding:14px;text-align:center;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:#2D6B70">✅ Tudo conforme nesta sala!</div>
+      </div>
+      <div class="btn-stack" style="margin-top:8px">
+        <button class="btn btn-primary" id="btn-salvar-ir-proxima">Próxima sala →</button>
+      </div>
     </div>
   </div>
 
@@ -1065,19 +1092,15 @@ Os itens sem resposta serão ignorados.`)) return;
   // Atualizar estado colaborativo local
   S.statusSalas[S.salaAtual.id]={status:"concluida",responsavel:S.responsavel};
 
+  // Guardar dados da sala concluída para a tela de conclusão
+  const salaConcluida = S.salasConcluidas[S.salasConcluidas.length - 1];
+
   S.salaAtual=null;
   S.respostas={};S.observacoes={};S.fotos={};
 
-  // Banner de confirmação persistente no topo da lista
-  S.ultimaSalaConcluidaLabel = S.salaAtual ? S.salaAtual.label : "";
-  S.ultimaSalaConcluidaNC = nc.length;
-
-  if(ok.sucesso) toast("✓ Sala salva na planilha!","success");
-  else toast("Sala salva localmente","");
-
-  renderListaSalas();
-  mostrarBannerConclusao(S.ultimaSalaConcluidaLabel, S.ultimaSalaConcluidaNC);
-  ir("lista");
+  // Mostrar tela de conclusão com tickets
+  renderTelaConclusaoSala(salaConcluida, ok.sucesso);
+  ir("conclusao-sala");
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1163,16 +1186,92 @@ function exportar(){
 // Índice do chamado atual para o modal de limpeza
 let _zohoIdxPendente = null;
 
+let _salaTicketIdx = null;
+
 function fecharModalLimpeza(){
   document.getElementById("modal-limpeza").style.display="none";
   _zohoIdxPendente=null;
+  _salaTicketIdx=null;
 }
 
 async function confirmarTicketZoho(categoriaLimpeza){
   document.getElementById("modal-limpeza").style.display="none";
-  if(_zohoIdxPendente===null) return;
-  await _criarTicketComCategoria(_zohoIdxPendente, categoriaLimpeza);
-  _zohoIdxPendente=null;
+  if(_salaTicketIdx !== null){
+    await _criarTicketSala(_salaTicketIdx, categoriaLimpeza);
+    _salaTicketIdx=null;
+  } else if(_zohoIdxPendente !== null){
+    await _criarTicketComCategoria(_zohoIdxPendente, categoriaLimpeza);
+    _zohoIdxPendente=null;
+  }
+}
+
+// ── Ticket da tela de conclusão de sala ──────────────────────────
+async function abrirTicketSala(idx){
+  const sala=S.salasConcluidas[S.salasConcluidas.length-1];
+  if(!sala||!sala.chamados[idx]) return;
+  const c=sala.chamados[idx];
+  if(c.subcategoria==="🧼 Limpeza"){
+    _salaTicketIdx=idx;
+    const modal=document.getElementById("modal-limpeza");
+    const sub=document.getElementById("modal-limpeza-item");
+    if(sub) sub.textContent=sala.label+" — "+c.texto;
+    if(modal) modal.style.display="flex";
+    return;
+  }
+  await _criarTicketSala(idx,null);
+}
+
+async function _criarTicketSala(idx,categoriaLimpeza){
+  const sala=S.salasConcluidas[S.salasConcluidas.length-1];
+  if(!sala||!sala.chamados[idx]) return;
+  const c=sala.chamados[idx];
+  const btnWrap=document.getElementById("conclusao-zoho-btn-"+idx);
+  if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#6b7280">⏳ Criando ticket...</span>`;
+  const res=await api({
+    acao:"criarTicket",
+    unidade:S.unidade,
+    salaLabel:sala.label,
+    itemTexto:c.texto,
+    subcategoria:c.subcategoria||"",
+    obs:c.obs||"",
+    emergencial:c.emergencial||false,
+    critico:c.critico||false,
+    responsavel:sala.responsavel||S.responsavel,
+    categoriaLimpeza:categoriaLimpeza||"",
+    fotoBase64:c.foto||"",
+  });
+  if(res.sucesso){
+    if(btnWrap) btnWrap.innerHTML=`<a href="${res.ticketUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#f0fdf4;border:1.5px solid #86efac;font-size:12px;font-weight:700;color:#16a34a;text-decoration:none">✅ Ticket #${res.ticketNum} criado → Ver no Zoho</a>`;
+    toast("✅ Ticket criado!","success");
+  } else {
+    if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#dc2626">❌ Erro</span><button onclick="abrirTicketSala(${idx})" style="margin-left:8px;font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;text-decoration:underline">Tentar</button>`;
+    toast("Erro ao criar ticket","error");
+  }
+}
+
+function renderTelaConclusaoSala(sala,salvoNuvem){
+  if(!sala) return;
+  document.getElementById("conclusao-sala-titulo").textContent=sala.label+" — concluída!";
+  document.getElementById("conclusao-sala-sub").textContent=S.unidade+" · "+sala.responsavel+(salvoNuvem?" · ☁ salvo":" · 📱 local");
+  const wrap=document.getElementById("conclusao-nc-wrap");
+  const semNc=document.getElementById("conclusao-sem-nc");
+  if(!sala.chamados||sala.chamados.length===0){wrap.innerHTML="";semNc.style.display="block";return;}
+  semNc.style.display="none";
+  wrap.innerHTML=`
+    <div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${sala.chamados.length} item(ns) não conforme(s):</div>
+    ${sala.chamados.map((c,ci)=>`
+      <div class="chamado-card ${c.emergencial?"emerg":""}" style="margin-bottom:10px">
+        <div style="font-size:11px;color:#6b7280;margin-bottom:2px">${sala.label}</div>
+        <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
+        ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:3px;font-style:italic">→ ${c.obs}</div>`:""}
+        <div style="margin-top:8px" id="conclusao-zoho-btn-${ci}">
+          <button onclick="abrirTicketSala(${ci})" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1.5px solid #e0e0e0;background:#fff;font-size:12px;font-weight:600;color:#444;cursor:pointer;font-family:inherit">
+            🎫 Abrir ticket no Zoho
+          </button>
+        </div>
+      </div>
+    `).join("")}
+  `;
 }
 
 async function abrirTicketZoho(idx){
@@ -1437,6 +1536,12 @@ Todos os ${total} itens preenchidos — tudo conforme! ✅`;
   });
 
   // Resumo
+  document.getElementById("btn-salvar-ir-proxima").addEventListener("click",()=>{
+    renderListaSalas();
+    const ultimaSala=S.salasConcluidas[S.salasConcluidas.length-1];
+    if(ultimaSala) mostrarBannerConclusao(ultimaSala.label, ultimaSala.resumo.naoConformes);
+    ir("lista");
+  });
   document.getElementById("btn-exportar").addEventListener("click",exportar);
   document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();ir("inicio");});
   document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
