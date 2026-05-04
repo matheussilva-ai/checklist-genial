@@ -825,7 +825,6 @@ function renderSalaItem(salaId, label, badge){
 // ABRIR SALA
 // ════════════════════════════════════════════════════════════════
 async function abrirSala(salaId){
-  // Determinar itens e label
   const salaDef=(UNIDADES[S.unidade]||[]).find(s=>s.id===salaId);
   const ambDef=AMBIENTES.find(a=>a.id===salaId);
 
@@ -846,10 +845,13 @@ async function abrirSala(salaId){
     return;
   }
 
-  // Fazer claim
+  // Mostrar loading enquanto faz o claim
   if(S.apiUrl){
+    setLoading(true,`Abrindo ${label}...`,50);
     const res=await api({acao:"claimSala",unidade:S.unidade,salaId,responsavel:S.responsavel});
+    setLoading(false);
     if(res.sucesso&&!res.claimed){
+      setLoading(false);
       if(res.status==="concluida"){
         toast(`${label} já foi concluída por ${res.responsavel}`,"warning");
       } else {
@@ -965,7 +967,12 @@ async function concluirSala(){
 
   if(respondidos<total){
     const faltam=total-respondidos;
-    if(!confirm(`Ainda faltam ${faltam} item(ns) sem resposta nesta sala. Deseja concluir mesmo assim?`)) return;
+    const salaLabel=S.salaAtual.label;
+    if(!confirm(`Concluir ${salaLabel}?
+
+${respondidos} de ${total} itens preenchidos — ainda faltam ${faltam}.
+
+Os itens sem resposta serão ignorados.`)) return;
   }
 
   const chamados=itens.map((item,i)=>{
@@ -1289,7 +1296,27 @@ function bindGlobal(){
     ir("lista");
   });
   ["btn-concluir-sala","btn-concluir-sala-bottom"].forEach(id=>{
-    document.getElementById(id).addEventListener("click",concluirSala);
+    document.getElementById(id).addEventListener("click",()=>{
+      if(!S.salaAtual) return;
+      const itens=S.salaAtual.itens;
+      const prefix="item__";
+      const total=itens.length;
+      const respondidos=itens.filter((_,i)=>S.respostas[prefix+i]).length;
+      const nc=itens.filter((_,i)=>["chamado_normal","chamado_emergencial"].includes(S.respostas[prefix+i])).length;
+      if(respondidos===total){
+        // Tudo preenchido — confirmar com resumo
+        const msg=nc>0
+          ? `Concluir ${S.salaAtual.label}?
+
+Todos os ${total} itens preenchidos — ${nc} não conforme(s) encontrado(s).`
+          : `Concluir ${S.salaAtual.label}?
+
+Todos os ${total} itens preenchidos — tudo conforme! ✅`;
+        if(confirm(msg)) concluirSala();
+      } else {
+        concluirSala();
+      }
+    });
   });
 
   // Resumo
