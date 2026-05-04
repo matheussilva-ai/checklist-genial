@@ -7,152 +7,84 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap');
 
-/* ── TOKENS GENIAL CARE ─────────────────────────────────────────── */
 :root{
-  --roxo:#6E69AD;
-  --roxo-escuro:#5558A0;
-  --roxo-light:#EEEDF8;
-  --roxo-xlight:#F7F6FD;
-  --teal:#B0E0E4;
-  --teal-dark:#7BC4CA;
-  --teal-light:#E8F7F8;
+  --roxo:#6E69AD;--roxo-escuro:#5558A0;--roxo-light:#EEEDF8;--roxo-xlight:#F7F6FD;
+  --teal:#B0E0E4;--teal-dark:#7BC4CA;--teal-light:#E8F7F8;
   --amarelo:#F9DB89;
-  --text:#1A1A2E;
-  --text-muted:#6B7280;
-  --text-light:#9CA3AF;
-  --border:#E5E4F0;
-  --white:#FFFFFF;
-  --bg:#F5F4FB;
-  --success:#16a34a;
-  --success-light:#F0FDF4;
-  --warning:#854d0e;
-  --warning-light:#FEFCE8;
-  --danger:#DC2626;
-  --danger-light:#FEF2F2;
-  --orange:#EA580C;
-  --orange-light:#FFF7ED;
-  --radius-sm:8px;
-  --radius-md:12px;
-  --radius-lg:16px;
-  --radius-xl:20px;
+  --text:#1A1A2E;--text-muted:#6B7280;--text-light:#9CA3AF;
+  --border:#E5E4F0;--white:#FFFFFF;--bg:#F5F4FB;
+  --success:#16a34a;--success-light:#F0FDF4;
+  --warning:#854d0e;--warning-light:#FEFCE8;
+  --danger:#DC2626;--danger-light:#FEF2F2;
+  --orange:#EA580C;--orange-light:#FFF7ED;
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-xl:20px;
   --shadow-sm:0 1px 4px rgba(110,105,173,0.08);
   --shadow-md:0 4px 16px rgba(110,105,173,0.12);
 }
-
-/* ── RESET ───────────────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
-
-/* ── LAYOUT ──────────────────────────────────────────────────────── */
 .app{max-width:480px;margin:0 auto;padding:0 0 60px}
 .screen{display:none}.screen.active{display:block}
 .pad{padding:24px 16px}
-
-/* ── TIPOGRAFIA ──────────────────────────────────────────────────── */
 .title{font-size:22px;font-weight:800;color:var(--roxo);margin:0 0 4px}
 .subtitle{font-size:14px;color:var(--text-muted);margin:0}
 .section-label{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.1em;text-transform:uppercase;padding:0 16px;margin:24px 0 8px;display:block}
-
-/* ── CARD ────────────────────────────────────────────────────────── */
 .card{background:var(--white);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
-
-/* ── BOTÕES ──────────────────────────────────────────────────────── */
 .btn{display:block;width:100%;padding:14px;border-radius:var(--radius-md);border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:inherit;text-align:center;letter-spacing:0.01em}
 .btn:active{transform:scale(0.98)}
 .btn-primary{background:var(--roxo);color:var(--white)}
 .btn-primary:hover{background:var(--roxo-escuro)}
 .btn-primary:disabled{background:var(--border);color:var(--text-light);cursor:not-allowed;transform:none}
+.btn-success{background:var(--success);color:var(--white)}
+.btn-success:hover{background:#15803d}
 .btn-outline{background:var(--white);color:var(--roxo);border:2px solid var(--roxo)}
 .btn-ghost{background:var(--white);color:var(--text-muted);border:1.5px solid var(--border)}
-.btn-teal{background:var(--teal);color:#2D6B70;border:none;font-weight:700}
 .btn-sm{width:auto;padding:7px 14px;font-size:13px;font-weight:600;border-radius:var(--radius-sm)}
 .btn-stack{display:flex;flex-direction:column;gap:10px}
-
-/* ── INPUTS ──────────────────────────────────────────────────────── */
 label{font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px}
-select,input[type=text]{
-  width:100%;padding:12px 14px;border-radius:var(--radius-md);
-  border:1.5px solid var(--border);font-size:15px;color:var(--text);
-  background:var(--white);font-family:inherit;appearance:none;-webkit-appearance:none;outline:none;
-  transition:border-color 0.15s;
-}
+select,input[type=text]{width:100%;padding:12px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);font-size:15px;color:var(--text);background:var(--white);font-family:inherit;appearance:none;-webkit-appearance:none;outline:none;transition:border-color 0.15s}
 select:focus,input[type=text]:focus{border-color:var(--roxo);box-shadow:0 0 0 3px rgba(110,105,173,0.1)}
-textarea{
-  width:100%;border-radius:var(--radius-sm);border:1.5px solid #fca5a5;
-  padding:9px 12px;font-size:13px;color:var(--text);background:var(--white);
-  resize:vertical;font-family:inherit;outline:none;margin-top:8px;line-height:1.5;
-}
+textarea{width:100%;border-radius:var(--radius-sm);border:1.5px solid #fca5a5;padding:9px 12px;font-size:13px;color:var(--text);background:var(--white);resize:vertical;font-family:inherit;outline:none;margin-top:8px;line-height:1.5}
 textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.08)}
-
-/* ── BADGE ───────────────────────────────────────────────────────── */
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;line-height:1.4}
 
-/* ── TELA INÍCIO — hero card ─────────────────────────────────────── */
-.hero-card{
-  background:linear-gradient(135deg,var(--roxo) 0%,var(--roxo-escuro) 100%);
-  border-radius:0 0 var(--radius-xl) var(--radius-xl);
-  padding:32px 24px 40px;
-  text-align:center;
-  margin-bottom:-20px;
-}
-
-/* ── HEADER STICKY ───────────────────────────────────────────────── */
-.sticky-header{
-  position:sticky;top:0;z-index:100;
-  background:var(--roxo);
-  padding:12px 16px;
-  box-shadow:0 2px 12px rgba(85,88,160,0.25);
-}
+/* ── HEADER STICKY ── */
+.sticky-header{position:sticky;top:0;z-index:100;background:var(--roxo);padding:12px 16px;box-shadow:0 2px 12px rgba(85,88,160,0.25)}
 .progress-track{height:4px;background:rgba(176,224,228,0.3);border-radius:99px;overflow:hidden;margin-top:8px}
 .progress-fill{height:100%;border-radius:99px;background:var(--teal);transition:width 0.4s ease}
-.progress-fill.nc{background:var(--amarelo)}
-.progress-fill.done{background:var(--teal)}
 
-/* ── GRUPOS ──────────────────────────────────────────────────────── */
-.groups-wrap{padding:0 16px}
-.group-btn{
-  width:100%;padding:13px 14px;
-  border-radius:var(--radius-md);
-  border:1.5px solid var(--border);
-  background:var(--white);
-  cursor:pointer;
+/* ── LISTA DE SALAS (tela principal da ronda) ── */
+.sala-item{
   display:flex;align-items:center;justify-content:space-between;
-  text-align:left;transition:all 0.15s;margin-bottom:6px;
-  font-family:inherit;
-  box-shadow:var(--shadow-sm);
+  padding:13px 14px;border-radius:var(--radius-md);
+  border:1.5px solid var(--border);background:var(--white);
+  margin-bottom:6px;box-shadow:var(--shadow-sm);
+  cursor:pointer;transition:all 0.15s;font-family:inherit;width:100%;text-align:left;
 }
-.group-btn:active{transform:scale(0.99)}
+.sala-item:active{transform:scale(0.99)}
+.sala-item.livre{}
+.sala-item.andamento{border-color:#f59e0b;background:#fffbeb}
+.sala-item.concluida{border-color:var(--teal-dark);background:var(--teal-light);cursor:default}
+.sala-item.minha{border-color:var(--roxo);background:var(--roxo-xlight)}
+.sala-nome{font-size:14px;font-weight:600;color:var(--text)}
+.sala-status-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.badge-livre{background:var(--roxo-light);color:var(--roxo)}
+.badge-andamento{background:#fef3c7;color:#92400e}
+.badge-concluida{background:var(--teal-light);color:#2D6B70}
+.badge-minha{background:var(--roxo-light);color:var(--roxo-escuro)}
+
+/* ── ITEM CHECKLIST ── */
+.groups-wrap{padding:0 16px}
+.group-btn{width:100%;padding:13px 14px;border-radius:var(--radius-md);border:1.5px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:space-between;text-align:left;transition:all 0.15s;margin-bottom:6px;font-family:inherit;box-shadow:var(--shadow-sm)}
 .group-btn.open{border-radius:var(--radius-md) var(--radius-md) 0 0;margin-bottom:0;border-color:var(--roxo);border-bottom-color:transparent}
 .group-btn.nc{border-color:#fca5a5;background:#fff5f5}
 .group-btn.nc.open{border-color:var(--danger)}
 .group-btn.done{border-color:var(--teal-dark);background:var(--teal-light)}
-.group-btn.done .group-label{color:#2D6B70}
-.group-body{
-  border:1.5px solid var(--border);border-top:none;
-  border-radius:0 0 var(--radius-md) var(--radius-md);
-  padding:12px;background:#FAFAFA;margin-bottom:6px;display:none;
-}
+.group-body{border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--radius-md) var(--radius-md);padding:12px;background:#FAFAFA;margin-bottom:6px;display:none}
 .group-body.open{display:block}
 .group-btn.open + .group-body.open{border-color:var(--roxo)}
 .group-btn.nc.open + .group-body.open{border-color:var(--danger)}
-.group-label{font-size:14px;font-weight:600;color:var(--text)}
-
-/* ── SUBCAT LABEL ────────────────────────────────────────────────── */
-.subcat-label{
-  font-size:12px;font-weight:800;color:var(--white);
-  letter-spacing:0.06em;text-transform:uppercase;
-  padding:6px 12px;margin:12px 0 6px;
-  background:var(--roxo);border-radius:var(--radius-sm);
-  display:inline-flex;align-items:center;gap:6px;
-}
-
-/* ── ITEM CHECKLIST ──────────────────────────────────────────────── */
-.item-card{
-  padding:13px 14px;border-radius:var(--radius-sm);
-  margin-bottom:8px;background:var(--white);
-  border:1px solid var(--border);
-  transition:border-color 0.15s,background 0.15s;
-}
+.item-card{padding:13px 14px;border-radius:var(--radius-sm);margin-bottom:8px;background:var(--white);border:1px solid var(--border);transition:border-color 0.15s,background 0.15s}
 .item-card.critico{background:var(--orange-light);border-color:#fed7aa}
 .item-card.item-ok{background:var(--teal-light);border-color:var(--teal-dark)}
 .item-card.item-nc{background:#fff5f5;border-color:#fca5a5}
@@ -160,147 +92,75 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 .item-text{font-size:14px;color:var(--text);line-height:1.5;margin-bottom:10px}
 .item-text.ct{color:#9a3412;font-weight:600}
 .status-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
-.sbt{
-  padding:9px 14px;border-radius:99px;font-size:13px;font-weight:600;
-  border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);
-  cursor:pointer;transition:all 0.15s;font-family:inherit;white-space:nowrap;
-  min-height:40px;display:inline-flex;align-items:center;
-}
+.sbt{padding:9px 14px;border-radius:99px;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--text-muted);cursor:pointer;transition:all 0.15s;font-family:inherit;white-space:nowrap;min-height:40px;display:inline-flex;align-items:center}
 .sbt:active{transform:scale(0.95)}
 .sbt.ok.active{border-color:var(--success);background:var(--success-light);color:var(--success)}
 .sbt.chamado_normal.active{border-color:var(--warning);background:var(--warning-light);color:var(--warning)}
 .sbt.chamado_emergencial.active{border-color:var(--danger);background:var(--danger-light);color:var(--danger)}
 .sbt.nao_aplica.active{border-color:var(--text-light);background:#F9FAFB;color:var(--text-light)}
-
-/* ── LEGENDA DE STATUS ───────────────────────────────────────────── */
-.status-desc{
-  font-size:12px;font-weight:500;line-height:1.4;
-  padding:6px 10px;border-radius:var(--radius-sm);
-  margin-top:6px;display:block;
-}
+.status-desc{font-size:12px;font-weight:500;line-height:1.4;padding:6px 10px;border-radius:var(--radius-sm);margin-top:6px;display:block}
 .status-desc-ok{color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0}
 .status-desc-chamado_normal{color:var(--warning);background:var(--warning-light);border:1px solid #fde68a}
 .status-desc-chamado_emergencial{color:var(--danger);background:var(--danger-light);border:1px solid #fca5a5}
 
-/* ── RESUMO ──────────────────────────────────────────────────────── */
+/* ── FOTO ── */
+.foto-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 14px;border-radius:99px;border:1.5px dashed var(--border);background:var(--white);color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.foto-btn.tem-foto{border-color:var(--teal-dark);background:var(--teal-light);color:#2D6B70;border-style:solid;font-weight:700}
+.foto-preview{width:100%;max-height:200px;object-fit:contain;border-radius:var(--radius-sm);margin-top:8px;border:1px solid var(--teal-dark);display:block;background:#f0fafa}
+.foto-remove{font-size:11px;color:var(--danger);background:none;border:none;cursor:pointer;padding:2px 6px;margin-top:4px;font-family:inherit}
+
+/* ── RESUMO ── */
 .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
-.summary-card{
-  background:var(--white);border-radius:var(--radius-md);
-  padding:14px 8px;text-align:center;
-  box-shadow:var(--shadow-sm);border:1px solid var(--border);
-}
-.chamado-card{
-  padding:11px 13px;background:var(--white);border-radius:var(--radius-sm);
-  margin-bottom:6px;border-left:3px solid #fca5a5;
-  box-shadow:var(--shadow-sm);
-}
+.summary-card{background:var(--white);border-radius:var(--radius-md);padding:14px 8px;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.chamado-card{padding:11px 13px;background:var(--white);border-radius:var(--radius-sm);margin-bottom:6px;border-left:3px solid #fca5a5;box-shadow:var(--shadow-sm)}
 .chamado-card.emerg{border-left-color:var(--danger)}
-.chamado-card.ct{border-left-color:var(--orange)}
 
-/* ── HISTÓRICO ───────────────────────────────────────────────────── */
-.hist-card{
-  background:var(--white);border-radius:var(--radius-md);
-  padding:16px;margin-bottom:10px;
-  box-shadow:var(--shadow-sm);border:1px solid var(--border);
-}
+/* ── HISTÓRICO ── */
+.hist-card{background:var(--white);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
 
-/* ── TOAST ───────────────────────────────────────────────────────── */
-.toast{
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:var(--text);color:var(--white);
-  padding:12px 20px;border-radius:99px;
-  font-size:13px;font-weight:600;opacity:0;
-  transition:all 0.3s;z-index:999;white-space:nowrap;
-  box-shadow:var(--shadow-md);
-}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:var(--white);padding:12px 20px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:999;white-space:nowrap;box-shadow:var(--shadow-md)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--danger)}
 .toast.success{background:var(--success)}
+.toast.warning{background:#b45309}
 
-/* ── AVISO RASCUNHO ──────────────────────────────────────────────── */
-.aviso-rascunho-box{
-  background:var(--teal-light);border:1.5px solid var(--teal-dark);
-  border-radius:var(--radius-md);padding:12px 14px;
-  font-size:13px;color:#2D6B70;margin-bottom:12px;line-height:1.5;
-  display:none;
-}
-
-
-/* ── FOTO ────────────────────────────────────────────────────────── */
-.foto-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  margin-top:8px;padding:7px 14px;border-radius:99px;
-  border:1.5px dashed var(--border);background:var(--white);
-  color:var(--text-muted);font-size:12px;font-weight:600;
-  cursor:pointer;font-family:inherit;transition:all 0.15s;
-}
-.foto-btn:active{transform:scale(0.97)}
-.foto-btn.tem-foto{border-color:var(--teal-dark);background:var(--teal-light);color:#2D6B70;border-style:solid;font-weight:700}
-.foto-preview{
-  width:100%;max-height:200px;object-fit:contain;
-  border-radius:var(--radius-sm);margin-top:8px;
-  border:1px solid var(--teal-dark);display:block;
-  background:#f0fafa;
-}
-.foto-remove{
-  font-size:11px;color:var(--danger);background:none;border:none;
-  cursor:pointer;padding:2px 6px;margin-top:4px;font-family:inherit;
-}
-/* ── LOADING ENVIO ───────────────────────────────────────────────── */
-.loading-overlay{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  background:rgba(26,26,46,0.85);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:9999;display:none;
-}
+/* ── LOADING ── */
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,26,46,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;display:none}
 .loading-overlay.show{display:flex}
-.loading-card{
-  background:var(--white);border-radius:var(--radius-xl);
-  padding:32px 28px;text-align:center;max-width:280px;width:90%;
-  box-shadow:var(--shadow-md);
-}
-.loading-spinner{
-  width:48px;height:48px;border:4px solid var(--roxo-light);
-  border-top-color:var(--roxo);border-radius:50%;
-  animation:spin 0.8s linear infinite;margin:0 auto 16px;
-}
+.loading-card{background:var(--white);border-radius:var(--radius-xl);padding:32px 28px;text-align:center;max-width:280px;width:90%;box-shadow:var(--shadow-md)}
+.loading-spinner{width:48px;height:48px;border:4px solid var(--roxo-light);border-top-color:var(--roxo);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-bar-track{height:8px;background:var(--roxo-light);border-radius:99px;overflow:hidden;margin:12px 0 8px}
 .loading-bar-fill{height:100%;background:var(--roxo);border-radius:99px;transition:width 0.3s;width:0%}
-/* ── CONFIG ──────────────────────────────────────────────────────── */
+
+/* ── POLLING INDICATOR ── */
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#86efac;display:inline-block;margin-right:5px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.sync-dot.syncing{background:var(--amarelo)}
+.sync-dot.error{background:#fca5a5;animation:none}
+
+/* ── CONFIG ── */
 .config-input{display:flex;gap:8px;margin-bottom:16px}
 .config-input input{flex:1}
-
-/* ── PILL CONTADOR SALAS ─────────────────────────────────────────── */
-.salas-pill{
-  display:inline-flex;align-items:center;gap:4px;
-  background:var(--roxo-light);color:var(--roxo);
-  border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;
-}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 </head>
 <body>
-
-<!-- ── TOAST ─────────────────────────────────────────────────────── -->
 <div class="toast" id="toast"></div>
-
-<!-- ── LOADING OVERLAY ───────────────────────────────────────────── -->
 <div class="loading-overlay" id="loading-overlay">
   <div class="loading-card">
     <div class="loading-spinner"></div>
-    <div style="font-size:15px;font-weight:700;color:var(--roxo);margin-bottom:4px">Enviando ronda...</div>
+    <div style="font-size:15px;font-weight:700;color:var(--roxo);margin-bottom:4px" id="loading-title">Salvando sala...</div>
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px" id="loading-status">Preparando dados</div>
     <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
     <div style="font-size:12px;color:var(--text-light)" id="loading-pct">0%</div>
   </div>
 </div>
 
-<!-- ── APP ───────────────────────────────────────────────────────── -->
 <div class="app">
 
-  <!-- TELA: Configuração (primeira vez) -->
+  <!-- ── TELA: Configuração ── -->
   <div class="screen" id="screen-config">
     <div class="pad">
       <div style="text-align:center;margin-bottom:32px;padding-top:16px">
@@ -313,113 +173,131 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <div class="config-input">
           <input type="text" id="inp-api-url" placeholder="https://script.google.com/macros/s/...">
         </div>
-        <p style="font-size:12px;color:#9ca3af;margin-top:-8px">
-          Cole a URL gerada ao implantar o script como Web App.<br>
-          Se não configurar agora, as rondas são salvas só localmente.
-        </p>
+        <p style="font-size:12px;color:#9ca3af;margin-top:-8px">Cole a URL gerada ao implantar o script como Web App.</p>
       </div>
       <button class="btn btn-primary" id="btn-salvar-config" style="margin-bottom:10px">Salvar e continuar</button>
       <button class="btn btn-ghost" id="btn-pular-config">Pular por enquanto (modo offline)</button>
     </div>
   </div>
 
-  <!-- TELA: Início -->
+  <!-- ── TELA: Início ── -->
   <div class="screen active" id="screen-inicio">
     <div style="background:#fff;padding:32px 24px 24px;text-align:center;border-bottom:1px solid var(--border)">
-      <div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="277 297 1400 490" width="140" height="49" style="display:block;margin:0 auto 12px">
-  <style>.lp{fill:#6E69AD}.lt{fill:#B0E0E4}</style>
-  <path class="lt" d="M547.2,350.06c-30.56,0-58.27,12.21-78.53,32.01l40.06,40.06c10.09-9.37,23.61-15.1,38.46-15.1c31.24,0,56.57,25.33,56.57,56.57s-25.33,56.57-56.57,56.57c-14.92,0-28.49-5.79-38.6-15.23l-0.01,0.01l-0.21-0.21c-0.16-0.15-0.31-0.31-0.46-0.46c-0.53-0.51-1.05-1.03-1.56-1.56c-0.52-0.54-1.04-1.09-1.54-1.66l-77.06-79.5l0,0c-10.04-9.08-23.37-14.59-38.03-14.54c-31.24,0.11-56.57,25.33-56.57,56.57c0,31.24,25.33,56.57,56.57,56.57c15.64,0,29.77-6.34,39.99-16.6l33.58,33.58c20.58,23.08,50.53,37.62,83.89,37.62c62.05,0,112.36-50.3,112.36-112.36S609.25,350.06,547.2,350.06z"/>
-  <path class="lp" d="M547.2,407.03c-14.86,0-28.37,5.73-38.46,15.1l-38.02-38.02c-20.46-21.47-49.34-34.86-81.35-34.86c-62.05,0-112.36,50.3-112.36,112.36s50.3,112.36,112.36,112.36c30.62,0,58.37-12.25,78.64-32.12l-38.28-38.28c-10.23,10.25-24.36,16.6-39.99,16.6c-31.24,0-56.57-25.33-56.57-56.57c0-31.24,25.33-56.46,56.57-56.57c14.65-0.05,27.99,5.46,38.03,14.54l0,0l77.06,79.5c1.13,1.28,2.32,2.5,3.56,3.67l0.21,0.21l0.01-0.01c10.11,9.44,23.67,15.23,38.6,15.23c31.24,0,56.57-25.33,56.57-56.57S578.44,407.03,547.2,407.03z"/>
-  <path class="lp" d="M894.18,472.25c0-49.92-40.47-90.39-90.39-90.39c-49.88,0-90.39,40.51-90.39,90.39c0,49.92,40.47,90.39,90.39,90.39c14.97,0,29.09-3.64,41.53-10.09l0,0c-8.74,33.69-51.63,30.54-64.07,28.88c-1.8-0.24-3.39,1.16-3.39,2.97v39.93c0,1.67,1.36,3.02,3.03,3l31.1-0.36c80.59-11.93,82.18-83.45,82.18-83.45v-66.81l-0.12,0.18C894.14,475.37,894.18,473.81,894.18,472.25z M804.17,517.25c-24.89,0-45.07-20.18-45.07-45.07c0-24.89,20.18-45.07,45.07-45.07c24.89,0,45.07,20.18,45.07,45.07C849.24,497.07,829.06,517.25,804.17,517.25z"/>
-  <path class="lp" d="M1066.14,493.22H959.53c5.03,19.74,20.82,30.16,45.23,30.16c11.49,0,21.54-2.51,34.1-10.41c3.23-2.15,5.38-1.79,7.9,0.72l18.67,17.95c2.15,2.52,2.15,5.03-0.72,7.9c-16.87,16.87-39.85,26.92-65.33,26.92c-55.28,0-93.33-40.56-93.33-92.25s38.05-92.25,89.38-92.25c50.98,0,83.64,40.56,83.64,89.02C1079.06,485.68,1077.27,493.22,1066.14,493.22z M958.81,459.12h72.51c-3.23-21.54-17.95-31.95-35.54-31.95C977.83,427.17,962.76,437.58,958.81,459.12z"/>
-  <path class="lp" d="M1267.21,457.68v98.72c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38v-87.95c0-28.36-15.79-36.62-30.15-36.62c-24.05,0-34.1,23.69-34.1,32.31v92.25c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V391.27c0-3.23,2.15-5.38,5.38-5.38h41.64c3.23,0,5.03,2.15,5.38,5.38l1.43,22.25c11.13-18.3,29.08-31.59,54.2-31.59C1238.85,381.94,1267.21,410.66,1267.21,457.68z"/>
-  <path class="lp" d="M1297.36,326.3c0-16.15,12.92-29.08,29.08-29.08c15.79,0,28.72,12.92,28.72,29.08c0,15.79-12.92,28.72-28.72,28.72C1310.28,355.02,1297.36,342.09,1297.36,326.3z M1304.9,385.89h43.08c3.23,0,5.38,2.15,5.38,5.38V556.4c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V391.27C1299.51,388.04,1301.67,385.89,1304.9,385.89z"/>
-  <path class="lp" d="M1566.22,391.27V556.4c0,3.23-2.15,5.38-5.38,5.38h-39.13c-3.23,0-5.03-2.15-5.38-5.38l-1.08-12.92c-12.21,13.64-28.72,22.97-50.26,22.97c-48.82,0-84.72-40.92-84.72-92.25s35.9-92.25,84.72-92.25c20.82,0,37.69,9.69,50.26,24.05l1.08-14.72c0.36-3.23,2.15-5.38,5.38-5.38h39.13C1564.07,385.89,1566.22,388.04,1566.22,391.27z M1511.3,473.84c0-23.34-16.87-43.08-39.49-43.08c-22.97,0-39.84,18.67-39.84,43.08c0,24.77,16.87,43.43,39.84,43.43C1494.43,517.27,1511.3,497.17,1511.3,473.84z"/>
-  <path class="lp" d="M1603.19,299.73h43.08c3.23,0,5.38,2.15,5.38,5.38V556.4c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V305.12C1597.81,301.89,1599.96,299.73,1603.19,299.73z"/>
-  <path class="lp" d="M1163.34,747.34c2.79-2.79,5.23-2.44,7.68,0l5.58,4.89c2.09,2.09,2.44,4.88,0.35,7.33c-16.06,18.5-38.39,30.37-66.32,30.37c-49.21,0-85.52-39.44-85.52-89.7s36.3-89.7,85.52-89.7c27.23,0,49.22,11.87,65.27,30.37c2.09,2.44,1.74,5.24-0.35,7.33l-5.58,4.54c-2.44,2.45-4.89,2.79-7.68,0.35c-10.12-9.42-21.99-23.74-51.66-23.74c-38.39,0-65.27,30.37-65.27,70.86c0,40.49,26.88,70.86,65.27,70.86C1141,771.07,1153.57,757.46,1163.34,747.34z"/>
-  <path class="lp" d="M1364.74,619.58v160.56c0,3.14-2.09,5.24-5.24,5.24h-9.42c-3.14,0-4.89-2.09-5.23-5.24l-1.75-22.69c-13.26,19.55-34.9,32.11-62.48,32.11c-49.22,0-84.12-39.44-84.12-89.36s34.9-89.36,84.12-89.36c27.92,0,49.56,12.57,62.83,32.46l1.4-23.73c0.35-3.14,2.09-5.24,5.23-5.24h9.42C1362.64,614.35,1364.74,616.44,1364.74,619.58z M1345.19,714.88l0.7-14.66l-0.7-15.01c-5.93-31.42-30.72-55.5-63.18-55.5c-37.7,0-65.27,30.02-65.27,70.16c0,40.49,27.57,70.51,65.27,70.51C1314.47,770.37,1339.26,746.29,1345.19,714.88z"/>
-  <path class="lp" d="M1484.11,620.63l-4.19,8.73c-1.4,2.45-3.14,2.79-5.93,2.09c-3.14-0.7-6.28-1.74-13.61-1.74c-20.94,0-38.74,16.06-38.74,38.39v112.04c0,3.14-2.09,5.24-5.24,5.24h-10.47c-3.14,0-5.24-2.09-5.24-5.24V619.58c0-3.14,2.09-5.24,5.24-5.24h8.73c3.14,0,4.89,2.09,5.24,5.24l1.4,14.31c9.77-13.97,23.74-23.39,41.89-23.39c8.03,0,15.36,1.74,20.24,4.88C1485.15,616.44,1485.5,617.84,1484.11,620.63z"/>
-  <path class="lp" d="M1651.65,692.88c0,11.17-1.4,16.4-9.77,16.4h-132.99c3.84,34.56,28.97,61.78,67.72,61.78c23.04,0,38.39-8.73,49.21-18.5c2.44-2.09,4.54-3.49,7.33-1.05l4.54,4.19c2.79,2.79,3.14,5.24,0.35,8.03c-16.06,16.75-38.39,26.18-63.88,26.18c-50.26,0-85.86-39.44-85.86-89.7s34.21-89.7,83.42-89.7C1620.59,610.51,1651.65,649.95,1651.65,692.88z M1508.89,691.84h124.26c-0.7-33.86-25.83-62.48-61.78-62.48C1536.12,629.36,1512.03,656.58,1508.89,691.84z"/>
-</svg>
-        <h1 style="font-size:20px;font-weight:800;color:var(--roxo);margin:10px 0 4px">Ronda Mensal</h1>
-        <p style="font-size:13px;color:var(--text-muted);margin:0">Genial Care · Facilities</p>
-      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="277 297 1400 490" width="140" height="49" style="display:block;margin:0 auto 12px">
+        <style>.lp{fill:#6E69AD}.lt{fill:#B0E0E4}</style>
+        <path class="lt" d="M547.2,350.06c-30.56,0-58.27,12.21-78.53,32.01l40.06,40.06c10.09-9.37,23.61-15.1,38.46-15.1c31.24,0,56.57,25.33,56.57,56.57s-25.33,56.57-56.57,56.57c-14.92,0-28.49-5.79-38.6-15.23l-0.01,0.01l-0.21-0.21c-0.16-0.15-0.31-0.31-0.46-0.46c-0.53-0.51-1.05-1.03-1.56-1.56c-0.52-0.54-1.04-1.09-1.54-1.66l-77.06-79.5l0,0c-10.04-9.08-23.37-14.59-38.03-14.54c-31.24,0.11-56.57,25.33-56.57,56.57c0,31.24,25.33,56.57,56.57,56.57c15.64,0,29.77-6.34,39.99-16.6l33.58,33.58c20.58,23.08,50.53,37.62,83.89,37.62c62.05,0,112.36-50.3,112.36-112.36S609.25,350.06,547.2,350.06z"/>
+        <path class="lp" d="M547.2,407.03c-14.86,0-28.37,5.73-38.46,15.1l-38.02-38.02c-20.46-21.47-49.34-34.86-81.35-34.86c-62.05,0-112.36,50.3-112.36,112.36s50.3,112.36,112.36,112.36c30.62,0,58.37-12.25,78.64-32.12l-38.28-38.28c-10.23,10.25-24.36,16.6-39.99,16.6c-31.24,0-56.57-25.33-56.57-56.57c0-31.24,25.33-56.46,56.57-56.57c14.65-0.05,27.99,5.46,38.03,14.54l0,0l77.06,79.5c1.13,1.28,2.32,2.5,3.56,3.67l0.21,0.21l0.01-0.01c10.11,9.44,23.67,15.23,38.6,15.23c31.24,0,56.57-25.33,56.57-56.57S578.44,407.03,547.2,407.03z"/>
+        <path class="lp" d="M894.18,472.25c0-49.92-40.47-90.39-90.39-90.39c-49.88,0-90.39,40.51-90.39,90.39c0,49.92,40.47,90.39,90.39,90.39c14.97,0,29.09-3.64,41.53-10.09l0,0c-8.74,33.69-51.63,30.54-64.07,28.88c-1.8-0.24-3.39,1.16-3.39,2.97v39.93c0,1.67,1.36,3.02,3.03,3l31.1-0.36c80.59-11.93,82.18-83.45,82.18-83.45v-66.81l-0.12,0.18C894.14,475.37,894.18,473.81,894.18,472.25z M804.17,517.25c-24.89,0-45.07-20.18-45.07-45.07c0-24.89,20.18-45.07,45.07-45.07c24.89,0,45.07,20.18,45.07,45.07C849.24,497.07,829.06,517.25,804.17,517.25z"/>
+        <path class="lp" d="M1066.14,493.22H959.53c5.03,19.74,20.82,30.16,45.23,30.16c11.49,0,21.54-2.51,34.1-10.41c3.23-2.15,5.38-1.79,7.9,0.72l18.67,17.95c2.15,2.52,2.15,5.03-0.72,7.9c-16.87,16.87-39.85,26.92-65.33,26.92c-55.28,0-93.33-40.56-93.33-92.25s38.05-92.25,89.38-92.25c50.98,0,83.64,40.56,83.64,89.02C1079.06,485.68,1077.27,493.22,1066.14,493.22z M958.81,459.12h72.51c-3.23-21.54-17.95-31.95-35.54-31.95C977.83,427.17,962.76,437.58,958.81,459.12z"/>
+        <path class="lp" d="M1267.21,457.68v98.72c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38v-87.95c0-28.36-15.79-36.62-30.15-36.62c-24.05,0-34.1,23.69-34.1,32.31v92.25c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V391.27c0-3.23,2.15-5.38,5.38-5.38h41.64c3.23,0,5.03,2.15,5.38,5.38l1.43,22.25c11.13-18.3,29.08-31.59,54.2-31.59C1238.85,381.94,1267.21,410.66,1267.21,457.68z"/>
+        <path class="lp" d="M1297.36,326.3c0-16.15,12.92-29.08,29.08-29.08c15.79,0,28.72,12.92,28.72,29.08c0,15.79-12.92,28.72-28.72,28.72C1310.28,355.02,1297.36,342.09,1297.36,326.3z M1304.9,385.89h43.08c3.23,0,5.38,2.15,5.38,5.38V556.4c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V391.27C1299.51,388.04,1301.67,385.89,1304.9,385.89z"/>
+        <path class="lp" d="M1566.22,391.27V556.4c0,3.23-2.15,5.38-5.38,5.38h-39.13c-3.23,0-5.03-2.15-5.38-5.38l-1.08-12.92c-12.21,13.64-28.72,22.97-50.26,22.97c-48.82,0-84.72-40.92-84.72-92.25s35.9-92.25,84.72-92.25c20.82,0,37.69,9.69,50.26,24.05l1.08-14.72c0.36-3.23,2.15-5.38,5.38-5.38h39.13C1564.07,385.89,1566.22,388.04,1566.22,391.27z M1511.3,473.84c0-23.34-16.87-43.08-39.49-43.08c-22.97,0-39.84,18.67-39.84,43.08c0,24.77,16.87,43.43,39.84,43.43C1494.43,517.27,1511.3,497.17,1511.3,473.84z"/>
+        <path class="lp" d="M1603.19,299.73h43.08c3.23,0,5.38,2.15,5.38,5.38V556.4c0,3.23-2.15,5.38-5.38,5.38h-43.08c-3.23,0-5.38-2.15-5.38-5.38V305.12C1597.81,301.89,1599.96,299.73,1603.19,299.73z"/>
+        <path class="lp" d="M1163.34,747.34c2.79-2.79,5.23-2.44,7.68,0l5.58,4.89c2.09,2.09,2.44,4.88,0.35,7.33c-16.06,18.5-38.39,30.37-66.32,30.37c-49.21,0-85.52-39.44-85.52-89.7s36.3-89.7,85.52-89.7c27.23,0,49.22,11.87,65.27,30.37c2.09,2.44,1.74,5.24-0.35,7.33l-5.58,4.54c-2.44,2.45-4.89,2.79-7.68,0.35c-10.12-9.42-21.99-23.74-51.66-23.74c-38.39,0-65.27,30.37-65.27,70.86c0,40.49,26.88,70.86,65.27,70.86C1141,771.07,1153.57,757.46,1163.34,747.34z"/>
+        <path class="lp" d="M1364.74,619.58v160.56c0,3.14-2.09,5.24-5.24,5.24h-9.42c-3.14,0-4.89-2.09-5.23-5.24l-1.75-22.69c-13.26,19.55-34.9,32.11-62.48,32.11c-49.22,0-84.12-39.44-84.12-89.36s34.9-89.36,84.12-89.36c27.92,0,49.56,12.57,62.83,32.46l1.4-23.73c0.35-3.14,2.09-5.24,5.23-5.24h9.42C1362.64,614.35,1364.74,616.44,1364.74,619.58z M1345.19,714.88l0.7-14.66l-0.7-15.01c-5.93-31.42-30.72-55.5-63.18-55.5c-37.7,0-65.27,30.02-65.27,70.16c0,40.49,27.57,70.51,65.27,70.51C1314.47,770.37,1339.26,746.29,1345.19,714.88z"/>
+        <path class="lp" d="M1484.11,620.63l-4.19,8.73c-1.4,2.45-3.14,2.79-5.93,2.09c-3.14-0.7-6.28-1.74-13.61-1.74c-20.94,0-38.74,16.06-38.74,38.39v112.04c0,3.14-2.09,5.24-5.24,5.24h-10.47c-3.14,0-5.24-2.09-5.24-5.24V619.58c0-3.14,2.09-5.24,5.24-5.24h8.73c3.14,0,4.89,2.09,5.24,5.24l1.4,14.31c9.77-13.97,23.74-23.39,41.89-23.39c8.03,0,15.36,1.74,20.24,4.88C1485.15,616.44,1485.5,617.84,1484.11,620.63z"/>
+        <path class="lp" d="M1651.65,692.88c0,11.17-1.4,16.4-9.77,16.4h-132.99c3.84,34.56,28.97,61.78,67.72,61.78c23.04,0,38.39-8.73,49.21-18.5c2.44-2.09,4.54-3.49,7.33-1.05l4.54,4.19c2.79,2.79,3.14,5.24,0.35,8.03c-16.06,16.75-38.39,26.18-63.88,26.18c-50.26,0-85.86-39.44-85.86-89.7s34.21-89.7,83.42-89.7C1620.59,610.51,1651.65,649.95,1651.65,692.88z M1508.89,691.84h124.26c-0.7-33.86-25.83-62.48-61.78-62.48C1536.12,629.36,1512.03,656.58,1508.89,691.84z"/>
+      </svg>
+      <h1 style="font-size:20px;font-weight:800;color:var(--roxo);margin:10px 0 4px">Ronda Mensal</h1>
+      <p style="font-size:13px;color:var(--text-muted);margin:0">Genial Care · Facilities</p>
     </div>
     <div class="pad" style="padding-top:24px">
       <div class="card" style="margin-bottom:16px">
         <label>Unidade</label>
         <select id="sel-unidade" style="margin-bottom:16px">
           <option value="">Selecione a CG...</option>
-          <option>CG Morumbi</option>
-          <option>CG Tatuapé</option>
-          <option>CG Pinheiros</option>
-          <option>CG Paraíso</option>
-          <option>CG Alphaville</option>
-          <option>CG Anália Franco</option>
-          <option>CG Santana</option>
+          <option>CG Morumbi</option><option>CG Tatuapé</option><option>CG Pinheiros</option>
+          <option>CG Paraíso</option><option>CG Alphaville</option>
+          <option>CG Anália Franco</option><option>CG Santana</option>
         </select>
         <label>Seu nome</label>
         <input type="text" id="inp-responsavel" placeholder="Nome do responsável">
       </div>
       <div class="btn-stack">
-        <div id="aviso-rascunho" style="display:none;background:#EEF6FF;border:1.5px solid #B0D4F1;border-radius:10px;padding:10px 14px;font-size:13px;color:#1e4d78;margin-bottom:10px"></div>
-      <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
+        <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
         <button class="btn btn-ghost" id="btn-ver-hist-inicio">Ver histórico</button>
         <button class="btn btn-ghost" id="btn-config">⚙ Configurações</button>
       </div>
     </div>
   </div>
 
-  <!-- TELA: Ronda -->
-  <div class="screen" id="screen-ronda">
+  <!-- ── TELA: Lista de salas (hub da ronda) ── -->
+  <div class="screen" id="screen-lista">
     <div class="sticky-header">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
         <div>
-          <div style="font-size:13px;font-weight:700;color:#EDE9F8" id="hdr-unidade"></div>
-          <div style="font-size:11px;color:#D4D2F0" id="hdr-responsavel"></div>
+          <div style="font-size:13px;font-weight:700;color:#EDE9F8" id="lista-unidade"></div>
+          <div style="font-size:11px;color:#D4D2F0" id="lista-responsavel"></div>
         </div>
-        <div style="display:flex;gap:8px">
-        <button class="btn btn-sm" id="btn-voltar-ronda" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.3)">← Voltar</button>
-        <button class="btn btn-sm" id="btn-concluir-topo" style="background:#6E69AD;color:#fff;border:none">Concluir</button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:rgba(255,255,255,0.7)" id="sync-label">
+            <span class="sync-dot" id="sync-dot"></span>ao vivo
+          </span>
+          <button class="btn btn-sm" id="btn-voltar-lista" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.3)">← Sair</button>
+        </div>
       </div>
+      <div style="display:flex;gap:12px;font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px">
+        <span id="lista-progresso">0/0 salas</span>
+        <span id="lista-nc"></span>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:#e9d5ff;margin-bottom:4px">
-        <span id="hdr-progresso" style="font-size:12px;color:rgba(255,255,255,0.8)">0/0 itens</span>
-        <span id="hdr-nc" style="font-weight:700;font-size:12px">✓ Tudo ok</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-track" style="margin-top:6px"><div class="progress-fill" id="lista-progress-fill" style="width:0%"></div></div>
     </div>
 
     <span class="section-label" style="color:var(--roxo)">🏥 SALAS DE ATENDIMENTO</span>
-    <div class="groups-wrap" id="wrap-salas"></div>
+    <div style="padding:0 16px" id="wrap-lista-salas"></div>
 
     <span class="section-label" style="color:var(--roxo)">🔍 AMBIENTES FIXOS</span>
-    <div class="groups-wrap" id="wrap-ambientes"></div>
+    <div style="padding:0 16px" id="wrap-lista-ambientes"></div>
 
-    <div style="padding:0 16px 16px">
-      <div class="section-label" style="color:var(--roxo);padding:0;margin:20px 0 8px">📝 OBSERVAÇÕES GERAIS</div>
-      <div class="card" style="padding:14px">
-        <label style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;display:block">
-          Alguma observação geral sobre a unidade? (claviculário, comunicados, situações não cobertas acima)
-        </label>
-        <textarea id="obs-geral" rows="3" placeholder="Ex: Não havia claviculário na unidade. Comunicado desatualizado na recepção..." style="width:100%;border-radius:var(--radius-sm);border:1.5px solid var(--border);padding:10px 12px;font-size:14px;color:var(--text);background:var(--white);resize:vertical;font-family:inherit;outline:none;box-sizing:border-box"></textarea>
-      </div>
-    </div>
-    <div style="padding:0 16px 16px">
-      <button class="btn btn-primary" id="btn-concluir-bottom">Concluir e salvar ronda →</button>
+    <div style="padding:16px">
+      <button class="btn btn-outline" id="btn-finalizar-ronda">Ver resumo da ronda →</button>
     </div>
   </div>
 
-  <!-- TELA: Resumo -->
+  <!-- ── TELA: Sala (preenchimento) ── -->
+  <div class="screen" id="screen-sala">
+    <div class="sticky-header">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#EDE9F8" id="sala-titulo"></div>
+          <div style="font-size:11px;color:#D4D2F0" id="sala-subtitulo"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" id="btn-voltar-sala" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.3)">← Voltar</button>
+          <button class="btn btn-sm btn-success" id="btn-concluir-sala" style="background:#16a34a;color:#fff;border:none">✓ Concluir</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.8)">
+        <span id="sala-progresso">0/0 itens</span>
+        <span id="sala-nc" style="font-weight:700"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="sala-progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="groups-wrap" id="wrap-sala-grupos" style="margin-top:8px"></div>
+
+    <div style="padding:0 16px 16px">
+      <div class="section-label" style="color:var(--roxo);padding:0;margin:20px 0 8px">📝 OBSERVAÇÕES</div>
+      <div class="card" style="padding:14px">
+        <label style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;display:block">Alguma observação sobre esta sala?</label>
+        <textarea id="obs-sala" rows="2" placeholder="Ex: Janela com folga, armário sem puxador..." style="width:100%;border-radius:var(--radius-sm);border:1.5px solid var(--border);padding:10px 12px;font-size:14px;color:var(--text);background:var(--white);resize:vertical;font-family:inherit;outline:none;box-sizing:border-box"></textarea>
+      </div>
+    </div>
+    <div style="padding:0 16px 24px">
+      <button class="btn btn-success" id="btn-concluir-sala-bottom">✓ Concluir esta sala e salvar →</button>
+    </div>
+  </div>
+
+  <!-- ── TELA: Resumo final ── -->
   <div class="screen" id="screen-resumo">
     <div class="pad">
       <div style="text-align:center;margin-bottom:24px;padding-top:16px">
         <div style="font-size:44px;margin-bottom:10px" id="resumo-icon">✅</div>
-        <h2 class="title" style="margin-bottom:4px">Ronda concluída</h2>
+        <h2 class="title" style="margin-bottom:4px">Resumo da ronda</h2>
         <p class="subtitle" id="resumo-sub"></p>
       </div>
       <div class="summary-grid" id="summary-grid"></div>
+      <div id="salas-feitas-wrap" style="margin-bottom:20px"></div>
       <div id="chamados-wrap"></div>
       <div class="btn-stack">
         <button class="btn btn-outline" id="btn-exportar">⬇ Exportar relatório (.txt)</button>
@@ -429,21 +307,23 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
     </div>
   </div>
 
-  <!-- TELA: Histórico -->
+  <!-- ── TELA: Histórico ── -->
   <div class="screen" id="screen-historico">
     <div class="pad">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:8px">
         <button class="btn btn-ghost btn-sm" id="btn-voltar-hist">← Voltar</button>
-        <h2 class="title" style="font-size:18px">Histórico de rondas</h2>
+        <h2 class="title" style="font-size:18px">Histórico de salas</h2>
       </div>
       <div id="hist-lista"></div>
     </div>
   </div>
 
-</div>
+</div><!-- /app -->
 
 <script>
-// ── DADOS ────────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// DADOS
+// ════════════════════════════════════════════════════════════════
 function gs(andar,total,is){
   return Array.from({length:total},(_,i)=>{
     const n=i+1,num=String(n).padStart(2,"0");
@@ -622,723 +502,692 @@ const AMBIENTES=[
     {t:"Prateleiras fixas na parede e estáveis",sub:"mob"},
     {t:"Espaço limpo",sub:"limpeza"},
   ]},
-  {id:"elevador",icon:"🛗",titulo:"Elevador (unidades de rua)",itens:[
+  {id:"elevador",icon:"🛗",titulo:"Elevador",itens:[
     {t:"Elevador funcionando normalmente",sub:"infra"},
     {t:"Portas abrindo e fechando corretamente",sub:"infra"},
     {t:"Iluminação interna funcionando normalmente",sub:"infra"},
     {t:"Botões e painel interno funcionando",sub:"infra"},
     {t:"Botão de emergência funcionando",sub:"infra",c:true},
   ]},
-  {id:"fachada",icon:"🏠",titulo:"Fachada e área externa (unidades de rua)",itens:[
+  {id:"fachada",icon:"🏠",titulo:"Fachada e área externa",itens:[
     {t:"Iluminação externa funcionando normalmente",sub:"infra"},
     {t:"Calçada e acesso sem trincas ou risco de queda",sub:"infra",c:true},
     {t:"Porta de entrada abrindo e fechando corretamente",sub:"infra"},
   ]},
 ];
-
-// ── STATUS — nomes e legendas ─────────────────────────────────────
+const CGs_RUA=["CG Tatuapé","CG Anália Franco"];
 const STATUS_OPTS=[
   {val:"ok",label:"✅ OK",color:"#16a34a",bg:"#f0fdf4",desc:"Tudo funcionando perfeitamente."},
   {val:"chamado_normal",label:"🟡 Atenção",color:"#854d0e",bg:"#fefce8",desc:"Algo a corrigir, mas sem impacto no atendimento ou risco de segurança."},
   {val:"chamado_emergencial",label:"🔴 Crítico",color:"#dc2626",bg:"#fef2f2",desc:"Interfere na segurança, pode cancelar atendimento ou ocasionar acidente."},
   {val:"nao_aplica",label:"— N/A",color:"#6b7280",bg:"#f9fafb",desc:""},
 ];
+const SUB_LABELS={"infra":"🔧 Infraestrutura","mob":"🪑 Mobiliário","limpeza":"🧼 Limpeza"};
 
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+const API_URL_FIXA="https://script.google.com/macros/s/AKfycbwf5SfZQ-o59aKEKOxwy4bAAFxwUxa0m4RCzk1qzcsij7-MhHR7TmBPAzo7NDUGCKG19Q/exec";
+const CHAVE_SECRETA="genial-facilities-2026";
+const POLL_INTERVAL=15000; // 15 segundos
 
+const S={
+  unidade:"",responsavel:"",apiUrl:API_URL_FIXA,
+  // sala atual sendo preenchida
+  salaAtual:null,   // { id, label, tipo, itens }
+  respostas:{},     // chave -> val
+  observacoes:{},   // chave -> texto
+  fotos:{},         // chave -> base64
+  obsSala:"",
+  horaInicio:null,
+  expandido:null,
+  // colaborativo
+  statusSalas:{},   // salaId -> { status, responsavel }
+  salasConcluidas:[], // lista de { salaId, label, resumo, chamados, responsavel } concluídas nessa sessão
+  pollTimer:null,
+  historico:[],
+};
+
+// ════════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════════
 function txt(i){return typeof i==="string"?i:i.t}
 function crit(i){return typeof i==="object"&&i.c}
 function sub(i){return typeof i==="object"&&i.sub?i.sub:null}
+function gerarId(){return"sala_"+Date.now()+"_"+Math.random().toString(36).slice(2,6)}
 function fmtData(ts){return new Date(ts).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
-function gerarId(){return"ronda_"+Date.now()+"_"+Math.random().toString(36).slice(2,6)}
-
-// ── STATE ─────────────────────────────────────────────────────────
-const API_URL_FIXA="https://script.google.com/macros/s/AKfycbxGeriN-XNqfRUtX3PpgzCU-vwe57S6NjYTr01ReSHoO5QPy7_RKw3R-6snFTNyi7y41g/exec";
-const CHAVE_SECRETA="genial-facilities-2026";
-const S={
-  unidade:"",responsavel:"",respostas:{},observacoes:{},fotos:{},
-  expandido:null,historico:[],rondaId:null,apiUrl:API_URL_FIXA,
-  horaInicio:null,obsGeral:""
-};
 
 function loadLocal(){
-  try{
-    const h=localStorage.getItem("rondas_hist");if(h)S.historico=JSON.parse(h);
-    const resp=localStorage.getItem("rondas_responsavel");if(resp)S.responsavel=resp;
-  }catch{}
+  try{const h=localStorage.getItem("rondas_hist_v2");if(h)S.historico=JSON.parse(h);}catch{}
+  try{const r=localStorage.getItem("rondas_responsavel");if(r)S.responsavel=r;}catch{}
 }
-function saveHistorico(){try{localStorage.setItem("rondas_hist",JSON.stringify(S.historico));}catch{}}
-function saveApi(url){try{localStorage.setItem("rondas_api",url);S.apiUrl=url;}catch{}}
+function saveHistorico(){try{localStorage.setItem("rondas_hist_v2",JSON.stringify(S.historico.slice(0,200)));}catch{}}
 function saveResponsavel(n){try{localStorage.setItem("rondas_responsavel",n);}catch{}}
 
-// ── NAVEGAÇÃO ──────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// NAVEGAÇÃO
+// ════════════════════════════════════════════════════════════════
 function ir(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("screen-"+id).classList.add("active");
   window.scrollTo(0,0);
 }
-
-// ── TOAST ──────────────────────────────────────────────────────────
 function toast(msg,tipo=""){
   const t=document.getElementById("toast");
   t.textContent=msg;t.className="toast "+(tipo||"");
   setTimeout(()=>t.classList.add("show"),10);
-  setTimeout(()=>t.classList.remove("show"),3000);
+  setTimeout(()=>t.classList.remove("show"),3200);
 }
 
-// ── CÁLCULOS ───────────────────────────────────────────────────────
-const CGs_RUA=["CG Tatuapé","CG Anália Franco"];
-function todosItens(){
-  if(!S.unidade)return[];
-  const salas=UNIDADES[S.unidade]||[];
-  const iS=salas.flatMap(sala=>(sala.tipo==="IS"?IIS:IP).map((item,i)=>({
-    chave:`sala__${sala.id}__${i}`,texto:txt(item),critico:crit(item),grupo:sala.label
-  })));
-  const ambsFiltrados=AMBIENTES.filter(amb=>{
-    if(amb.id==="elevador"||amb.id==="fachada") return CGs_RUA.includes(S.unidade);
+// ════════════════════════════════════════════════════════════════
+// API
+// ════════════════════════════════════════════════════════════════
+async function api(payload){
+  if(!S.apiUrl) return{sucesso:false,mensagem:"sem URL"};
+  try{
+    const r=await fetch(S.apiUrl,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify({...payload,chave:CHAVE_SECRETA})
+    });
+    return await r.json();
+  }catch(e){return{sucesso:false,mensagem:e.toString()};}
+}
+
+// ════════════════════════════════════════════════════════════════
+// POLLING — sincronização colaborativa
+// ════════════════════════════════════════════════════════════════
+function iniciarPolling(){
+  pararPolling();
+  pollAgora();
+  S.pollTimer=setInterval(pollAgora, POLL_INTERVAL);
+}
+function pararPolling(){
+  if(S.pollTimer){clearInterval(S.pollTimer);S.pollTimer=null;}
+}
+async function pollAgora(){
+  setSyncDot("syncing");
+  const res=await api({acao:"getStatus",unidade:S.unidade});
+  if(res.sucesso){
+    S.statusSalas=res.salas||{};
+    setSyncDot("ok");
+    renderListaSalas();
+  } else {
+    setSyncDot("error");
+  }
+}
+function setSyncDot(estado){
+  const dot=document.getElementById("sync-dot");
+  if(!dot)return;
+  dot.className="sync-dot"+(estado==="syncing"?" syncing":estado==="error"?" error":"");
+}
+
+// ════════════════════════════════════════════════════════════════
+// TELA LISTA — renderização
+// ════════════════════════════════════════════════════════════════
+function getAmbientesFiltrados(){
+  return AMBIENTES.filter(a=>{
+    if(a.id==="elevador"||a.id==="fachada") return CGs_RUA.includes(S.unidade);
     return true;
   });
-  const iA=ambsFiltrados.flatMap(amb=>amb.itens.map((item,i)=>({
-    chave:`amb__${amb.id}__${i}`,texto:txt(item),critico:crit(item),grupo:amb.titulo
-  })));
-  return[...iS,...iA];
-}
-function contarGrupo(prefix){
-  const t=todosItens().filter(i=>i.chave.startsWith(prefix));
-  return{total:t.length,resp:t.filter(i=>S.respostas[i.chave]).length,nc:t.filter(i=>S.respostas[i.chave]==="chamado_normal"||S.respostas[i.chave]==="chamado_emergencial").length};
-}
-function resumo(){
-  const t=todosItens();
-  return{total:t.length,respondidos:t.filter(i=>S.respostas[i.chave]).length,
-    naoConformes:t.filter(i=>S.respostas[i.chave]==="chamado_normal"||S.respostas[i.chave]==="chamado_emergencial").length,
-    criticos:t.filter(i=>S.respostas[i.chave]==="chamado_emergencial").length};
-}
-function chamados(){
-  return todosItens().filter(i=>S.respostas[i.chave]==="chamado_normal"||S.respostas[i.chave]==="chamado_emergencial")
-    .map(i=>({...i,obs:S.observacoes[i.chave]||""}));
 }
 
-// ── RENDER RONDA ──────────────────────────────────────────────────
-function renderRonda(){
+function renderListaSalas(){
   const salas=UNIDADES[S.unidade]||[];
-  document.getElementById("hdr-unidade").textContent=S.unidade;
-  document.getElementById("hdr-responsavel").textContent=S.responsavel;
-  atualizarHeader();
-  renderGrupos("wrap-salas", salas.map(sala=>({
-    id:sala.id,label:sala.label,badge:sala.tipo==="IS"?'<span class="badge" style="color:#2A7A7D;background:#E0F5F6;font-size:10px">IS ⚠</span>':"",
-    prefix:`sala__${sala.id}__`,itens:sala.tipo==="IS"?IIS:IP
-  })));
-  const ambientesFiltrados=AMBIENTES.filter(amb=>{
-    if(amb.id==="elevador"||amb.id==="fachada") return CGs_RUA.includes(S.unidade);
-    return true;
-  });
-  renderGrupos("wrap-ambientes", ambientesFiltrados.map(amb=>({
-    id:amb.id,label:amb.titulo,badge:`<span style="font-size:18px;margin-right:4px">${amb.icon}</span>`,
-    prefix:`amb__${amb.id}__`,itens:amb.itens
-  })));
+  const ambientes=getAmbientesFiltrados();
+
+  // Progresso global
+  const totalGrupos=salas.length+ambientes.length;
+  const concluidosGlobal=totalGrupos>0
+    ? [...salas,...ambientes].filter(g=>{
+        const sid=g.id||g.titulo;
+        const st=S.statusSalas[sid];
+        return st&&st.status==="concluida";
+      }).length
+    : 0;
+  const pct=totalGrupos?Math.round(concluidosGlobal/totalGrupos*100):0;
+  document.getElementById("lista-progresso").textContent=`${concluidosGlobal}/${totalGrupos} concluídas`;
+  document.getElementById("lista-progress-fill").style.width=pct+"%";
+
+  const wSalas=document.getElementById("wrap-lista-salas");
+  const wAmb=document.getElementById("wrap-lista-ambientes");
+
+  wSalas.innerHTML=salas.map(sala=>renderSalaItem(sala.id,sala.label,sala.tipo==="IS"?"IS":"")).join("");
+  wAmb.innerHTML=ambientes.map(amb=>renderSalaItem(amb.id,amb.titulo,amb.icon||"")).join("");
 }
 
-function renderGrupos(wrapId,grupos){
-  const wrap=document.getElementById(wrapId);
-  wrap.innerHTML=grupos.map(g=>{
-    const{total,resp,nc}=contarGrupo(g.prefix);
-    const cls=nc>0?"nc":resp===total&&total>0?"done":"";
-    const aberto=S.expandido===g.id;
-    const itensHtml=aberto?renderItens(g.itens,g.prefix):"";
-    return`<div>
-    <button class="group-btn ${cls} ${aberto?"open":""}" data-gid="${g.id}">
-      <div style="display:flex;align-items:center;gap:6px;overflow:hidden">
-        ${g.badge}<span style="font-size:14px;font-weight:600;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${g.label}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:8px">
-        <span style="font-size:12px;color:#6b7280">${resp}/${total}</span>
-        ${nc>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${nc} NC</span>`:""}
-        ${resp===total&&total>0&&nc===0?`<span style="color:#16a34a">✓</span>`:""}
-        <span style="color:#9ca3af;font-size:14px">${aberto?"▲":"▼"}</span>
-      </div>
-    </button>
-    <div class="group-body ${aberto?"open":""}" id="body_${g.id}">${itensHtml}</div>
-    </div>`;
-  }).join("");
+function renderSalaItem(salaId, label, badge){
+  const st=S.statusSalas[salaId];
+  const status=st?st.status:"livre";
+  const resp=st?st.responsavel:"";
+  const eMinha=status==="andamento"&&resp===S.responsavel;
+  const concluida=status==="concluida";
+
+  let cls="sala-item ";
+  let badgeHtml="";
+  let subtext="";
+
+  if(concluida){
+    cls+="concluida";
+    badgeHtml=`<span class="sala-status-badge badge-concluida">✓ Concluída</span>`;
+    subtext=`<div style="font-size:11px;color:#2D6B70;margin-top:2px">${resp}</div>`;
+  } else if(eMinha){
+    cls+="minha";
+    badgeHtml=`<span class="sala-status-badge badge-minha">✏️ Você</span>`;
+    subtext=`<div style="font-size:11px;color:var(--roxo);margin-top:2px">em andamento</div>`;
+  } else if(status==="andamento"){
+    cls+="andamento";
+    badgeHtml=`<span class="sala-status-badge badge-andamento">🔒 ${resp}</span>`;
+    subtext=`<div style="font-size:11px;color:#92400e;margin-top:2px">sendo preenchida</div>`;
+  } else {
+    cls+="livre";
+    badgeHtml=`<span class="sala-status-badge badge-livre">Livre</span>`;
+  }
+
+  const isLabel=badge&&badge!=="IS"?`<span style="font-size:16px;margin-right:4px">${badge}</span>`
+    :badge==="IS"?`<span class="badge" style="color:#2A7A7D;background:#E0F5F6;font-size:10px;margin-right:4px">IS</span>`:"";
+
+  return`<button class="sala-item ${cls}" data-sala-id="${salaId}" ${concluida?"disabled":""}>
+    <div style="overflow:hidden">
+      <div style="display:flex;align-items:center">${isLabel}<span class="sala-nome">${label}</span></div>
+      ${subtext}
+    </div>
+    ${badgeHtml}
+  </button>`;
 }
 
-const SUB_LABELS={"infra":"🔧 Infraestrutura","mob":"🪑 Mobiliário","limpeza":"🧼 Limpeza"};
+// ════════════════════════════════════════════════════════════════
+// ABRIR SALA
+// ════════════════════════════════════════════════════════════════
+async function abrirSala(salaId){
+  // Determinar itens e label
+  const salaDef=(UNIDADES[S.unidade]||[]).find(s=>s.id===salaId);
+  const ambDef=AMBIENTES.find(a=>a.id===salaId);
+
+  if(!salaDef&&!ambDef){toast("Sala não encontrada","error");return;}
+
+  const label=salaDef?salaDef.label:ambDef.titulo;
+  const itens=salaDef?(salaDef.tipo==="IS"?IIS:IP):ambDef.itens;
+  const badge=salaDef?(salaDef.tipo==="IS"?"IS":""):(ambDef.icon||"");
+
+  // Verificar status atual
+  const st=S.statusSalas[salaId];
+  if(st&&st.status==="concluida"){
+    toast(`${label} já foi concluída por ${st.responsavel}`,"warning");
+    return;
+  }
+  if(st&&st.status==="andamento"&&st.responsavel!==S.responsavel){
+    toast(`${label} está sendo preenchida por ${st.responsavel}`,"warning");
+    return;
+  }
+
+  // Fazer claim
+  if(S.apiUrl){
+    const res=await api({acao:"claimSala",unidade:S.unidade,salaId,responsavel:S.responsavel});
+    if(res.sucesso&&!res.claimed){
+      if(res.status==="concluida"){
+        toast(`${label} já foi concluída por ${res.responsavel}`,"warning");
+      } else {
+        toast(`${label} está sendo preenchida por ${res.responsavel}`,"warning");
+      }
+      await pollAgora();
+      return;
+    }
+    // Atualizar estado local
+    S.statusSalas[salaId]={status:"andamento",responsavel:S.responsavel};
+    renderListaSalas();
+  }
+
+  // Inicializar estado da sala
+  S.salaAtual={id:salaId,label,itens,badge};
+  S.respostas={};S.observacoes={};S.fotos={};S.obsSala="";
+  S.expandido=null;
+  S.horaInicio=new Date().toISOString();
+
+  // Renderizar tela da sala
+  document.getElementById("sala-titulo").textContent=label;
+  document.getElementById("sala-subtitulo").textContent=`${S.unidade} · ${S.responsavel}`;
+  document.getElementById("obs-sala").value="";
+  renderSalaGrupos();
+  atualizarHeaderSala();
+  ir("sala");
+}
+
+// ════════════════════════════════════════════════════════════════
+// RENDER SALA (itens)
+// ════════════════════════════════════════════════════════════════
+function renderSalaGrupos(){
+  // Para salas de atendimento: um único grupo (a sala inteira)
+  // Para ambientes: subcategorias como grupos
+  const wrap=document.getElementById("wrap-sala-grupos");
+  if(!S.salaAtual)return;
+
+  const itens=S.salaAtual.itens;
+  const prefix="item__";
+
+  // Contar por subcategoria para criar grupos visuais
+  const subcats=[...new Set(itens.map(i=>sub(i)||"geral"))];
+
+  if(subcats.length<=1){
+    // Renderizar tudo flat
+    wrap.innerHTML=`<div style="padding:0 4px">${renderItens(itens,prefix)}</div>`;
+  } else {
+    // Agrupar por subcategoria (como grupos expansíveis)
+    wrap.innerHTML=renderItens(itens,prefix);
+  }
+}
+
 function renderItens(itens,prefix){
   let html="";let lastSub=null;
   itens.forEach((item,i)=>{
-    const chave=prefix+i;const v=S.respostas[chave]||"";const cr=crit(item);const texto=txt(item);
-    const s=sub(item);
-    if(s && s!==lastSub){
+    const chave=prefix+i;const v=S.respostas[chave]||"";
+    const cr=crit(item);const texto=txt(item);const s=sub(item);
+    if(s&&s!==lastSub){
       lastSub=s;
-      html+=`<div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#fff;letter-spacing:0.08em;text-transform:uppercase;background:#5B57A0;border-radius:6px;padding:5px 12px;margin:${i>0?14:6}px 0 8px">${SUB_LABELS[s]||s}</div>`;
+      html+=`<div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#fff;letter-spacing:0.08em;text-transform:uppercase;background:#5B57A0;border-radius:6px;padding:5px 12px;margin:${i>0?14:6}px 16px 8px">${SUB_LABELS[s]||s}</div>`;
     }
-    const isNC = v==="chamado_normal"||v==="chamado_emergencial";
-    const itemCls = v==="ok"?"item-ok":v==="chamado_normal"?"item-nc":v==="chamado_emergencial"?"item-emerg":"";
+    const isNC=v==="chamado_normal"||v==="chamado_emergencial";
+    const itemCls=v==="ok"?"item-ok":v==="chamado_normal"?"item-nc":v==="chamado_emergencial"?"item-emerg":"";
     const fotoData=S.fotos[chave]||"";
-    // Legenda do status selecionado (exceto N/A que não tem desc)
-    const statusSelecionado = v ? STATUS_OPTS.find(o=>o.val===v) : null;
-    const legendaHtml = statusSelecionado && statusSelecionado.desc
-      ? `<div class="status-desc status-desc-${v}">${statusSelecionado.desc}</div>`
-      : "";
-    html+=`<div class="item-card ${cr?"critico":""} ${itemCls}">
-    <div class="item-text ${cr?"ct":""}">${cr?"⚠️ ":""}${texto}</div>
-    <div class="status-row">
-      ${STATUS_OPTS.map(opt=>
-        `<button class="sbt ${opt.val} ${v===opt.val?"active":""}" data-chave="${chave}" data-val="${opt.val}">${opt.label}</button>`
-      ).join("")}
-    </div>
-    ${legendaHtml}
-    ${isNC?`<textarea data-chave="${chave}" placeholder="Descreva o problema..." rows="2">${S.observacoes[chave]||""}</textarea>`:""}
-    ${isNC?`<div>
-      <button class="foto-btn ${fotoData?"tem-foto":""}" data-foto-chave="${chave}">
-        📷 ${fotoData?"Foto anexada — trocar":"Adicionar foto"}
-      </button>
-      <input type="file" accept="image/*,image/heic,image/heif" capture="environment" style="display:none" data-foto-input="${chave}">
-      ${fotoData?`<img src="${fotoData}" class="foto-preview" data-foto-preview="${chave}"><button class="foto-remove" data-foto-remove="${chave}">✕ Remover foto</button>`:""}
-    </div>`:""}
+    const statusSel=v?STATUS_OPTS.find(o=>o.val===v):null;
+    const legendaHtml=statusSel&&statusSel.desc?`<div class="status-desc status-desc-${v}">${statusSel.desc}</div>`:"";
+    html+=`<div class="item-card ${cr?"critico":""} ${itemCls}" style="margin:0 16px 8px">
+      <div class="item-text ${cr?"ct":""}">${cr?"⚠️ ":""}${texto}</div>
+      <div class="status-row">
+        ${STATUS_OPTS.map(opt=>`<button class="sbt ${opt.val} ${v===opt.val?"active":""}" data-chave="${chave}" data-val="${opt.val}">${opt.label}</button>`).join("")}
+      </div>
+      ${legendaHtml}
+      ${isNC?`<textarea data-chave="${chave}" placeholder="Descreva o problema..." rows="2">${S.observacoes[chave]||""}</textarea>`:""}
+      ${isNC?`<div>
+        <button class="foto-btn ${fotoData?"tem-foto":""}" data-foto-chave="${chave}">📷 ${fotoData?"Foto anexada — trocar":"Adicionar foto"}</button>
+        <input type="file" accept="image/*,image/heic,image/heif" capture="environment" style="display:none" data-foto-input="${chave}">
+        ${fotoData?`<img src="${fotoData}" class="foto-preview"><button class="foto-remove" data-foto-remove="${chave}">✕ Remover foto</button>`:""}
+      </div>`:""}
     </div>`;
   });
   return html;
 }
 
-function contarGruposCompletos(){
-  const salas=UNIDADES[S.unidade]||[];
-  const ambsFiltrados=AMBIENTES.filter(amb=>{
-    if(amb.id==="elevador"||amb.id==="fachada") return CGs_RUA.includes(S.unidade);
-    return true;
+function atualizarHeaderSala(){
+  if(!S.salaAtual)return;
+  const itens=S.salaAtual.itens;
+  const prefix="item__";
+  const total=itens.length;
+  const respondidos=itens.filter((_,i)=>S.respostas[prefix+i]).length;
+  const nc=itens.filter((_,i)=>S.respostas[prefix+i]==="chamado_normal"||S.respostas[prefix+i]==="chamado_emergencial").length;
+  const pct=total?Math.round(respondidos/total*100):0;
+  document.getElementById("sala-progresso").textContent=`${respondidos}/${total} itens`;
+  const ncEl=document.getElementById("sala-nc");
+  ncEl.textContent=nc>0?`${nc} NC`:"✓ Tudo ok";
+  ncEl.style.color=nc>0?"#fca5a5":"#86efac";
+  document.getElementById("sala-progress-fill").style.width=pct+"%";
+}
+
+// ════════════════════════════════════════════════════════════════
+// CONCLUIR SALA
+// ════════════════════════════════════════════════════════════════
+async function concluirSala(){
+  if(!S.salaAtual)return;
+  const obsEl=document.getElementById("obs-sala");
+  S.obsSala=obsEl?obsEl.value:"";
+
+  const itens=S.salaAtual.itens;
+  const prefix="item__";
+  const total=itens.length;
+  const respondidos=itens.filter((_,i)=>S.respostas[prefix+i]).length;
+  const nc=itens.filter((_,i)=>["chamado_normal","chamado_emergencial"].includes(S.respostas[prefix+i]));
+  const criticos=itens.filter((_,i)=>S.respostas[prefix+i]==="chamado_emergencial");
+
+  if(respondidos<total){
+    const faltam=total-respondidos;
+    if(!confirm(`Ainda faltam ${faltam} item(ns) sem resposta nesta sala. Deseja concluir mesmo assim?`)) return;
+  }
+
+  const chamados=itens.map((item,i)=>{
+    const v=S.respostas[prefix+i];
+    if(v!=="chamado_normal"&&v!=="chamado_emergencial") return null;
+    return{
+      texto:txt(item),
+      subcategoria:SUB_LABELS[sub(item)]||"",
+      critico:crit(item)||false,
+      emergencial:v==="chamado_emergencial",
+      obs:S.observacoes[prefix+i]||"",
+      foto:S.fotos[prefix+i]||"",
+    };
+  }).filter(Boolean);
+
+  const resumo={total,respondidos,naoConformes:nc.length,criticos:criticos.length};
+  const salaData={
+    id:gerarId(),
+    acao:"concluirSala",
+    unidade:S.unidade,
+    responsavel:S.responsavel,
+    salaId:S.salaAtual.id,
+    salaLabel:S.salaAtual.label,
+    data:Date.now(),
+    horaInicio:S.horaInicio,
+    horaFim:new Date().toISOString(),
+    resumo,chamados,
+    obsSala:S.obsSala,
+  };
+
+  // Loading
+  setLoading(true,"Salvando sala...",20);
+  await new Promise(r=>setTimeout(r,200));
+  setLoading(true,"Enviando para a planilha...",60);
+
+  const ok=await api(salaData);
+  setLoading(true,"Finalizando...",90);
+  await new Promise(r=>setTimeout(r,300));
+  setLoading(false);
+
+  // Salvar no histórico local
+  S.historico=[{...salaData,salvoNaNuvem:ok.sucesso},...S.historico];
+  saveHistorico();
+
+  // Registrar como concluída na sessão
+  S.salasConcluidas.push({
+    salaId:S.salaAtual.id,
+    label:S.salaAtual.label,
+    resumo,chamados,
+    responsavel:S.responsavel,
+    salvoNaNuvem:ok.sucesso,
   });
-  const grupos=[
-    ...salas.map(sala=>({prefix:`sala__${sala.id}__`,total:(sala.tipo==="IS"?IIS:IP).length})),
-    ...ambsFiltrados.map(amb=>({prefix:`amb__${amb.id}__`,total:amb.itens.length}))
-  ];
-  const total=grupos.length;
-  const completos=grupos.filter(g=>{
-    const itens=todosItens().filter(i=>i.chave.startsWith(g.prefix));
-    return itens.length>0&&itens.every(i=>S.respostas[i.chave]);
-  }).length;
-  return{total,completos};
+
+  // Atualizar estado colaborativo local
+  S.statusSalas[S.salaAtual.id]={status:"concluida",responsavel:S.responsavel};
+
+  S.salaAtual=null;
+  S.respostas={};S.observacoes={};S.fotos={};
+
+  if(ok.sucesso) toast("✓ Sala salva na planilha!","success");
+  else toast("Sala salva localmente","");
+
+  renderListaSalas();
+  ir("lista");
 }
 
-function atualizarHeader(){
-  const res=resumo();const pct=res.total?Math.round(res.respondidos/res.total*100):0;
-  const grp=contarGruposCompletos();
-  document.getElementById("hdr-progresso").textContent=`${grp.completos}/${grp.total} ambientes · ${res.respondidos}/${res.total} itens`;
-  const ncEl=document.getElementById("hdr-nc");
-  ncEl.textContent=res.naoConformes>0?`${res.naoConformes} NC`:"✓ Tudo ok";
-  ncEl.style.color=res.naoConformes>0?"#fca5a5":"#86efac";
-  const fill=document.getElementById("progress-fill");
-  fill.style.width=pct+"%";fill.className="progress-fill"+(res.naoConformes>0?" nc":"");
-}
+// ════════════════════════════════════════════════════════════════
+// TELA RESUMO FINAL
+// ════════════════════════════════════════════════════════════════
+function renderResumoFinal(){
+  const totalSalas=S.salasConcluidas.length;
+  const totalNC=S.salasConcluidas.reduce((a,s)=>a+s.resumo.naoConformes,0);
+  const totalCrit=S.salasConcluidas.reduce((a,s)=>a+s.resumo.criticos,0);
+  const totalItens=S.salasConcluidas.reduce((a,s)=>a+s.resumo.respondidos,0);
 
-// ── RENDER RESUMO ─────────────────────────────────────────────────
-function renderResumo(){
-  const res=resumo();const ch=chamados();
-  document.getElementById("resumo-icon").textContent=res.naoConformes===0?"✅":"⚠️";
+  document.getElementById("resumo-icon").textContent=totalNC===0?"✅":"⚠️";
   document.getElementById("resumo-sub").textContent=`${S.unidade} · ${S.responsavel}`;
+
   document.getElementById("summary-grid").innerHTML=[
-    {l:"Respondidos",v:res.respondidos,c:"#6E69AD"},
-    {l:"Não conformes",v:res.naoConformes,c:res.naoConformes>0?"#dc2626":"#16a34a"},
-    {l:"Críticos NC",v:res.criticos,c:res.criticos>0?"#ea580c":"#16a34a"},
+    {l:"Salas concluídas",v:totalSalas,c:"var(--roxo)"},
+    {l:"Não conformes",v:totalNC,c:totalNC>0?"#dc2626":"#16a34a"},
+    {l:"Críticos",v:totalCrit,c:totalCrit>0?"#ea580c":"#16a34a"},
   ].map(x=>`<div class="summary-card"><div style="font-size:26px;font-weight:800;color:${x.c}">${x.v}</div><div style="font-size:11px;color:#6b7280;margin-top:2px">${x.l}</div></div>`).join("");
-  const cw=document.getElementById("chamados-wrap");
-  if(ch.length>0){
-    cw.innerHTML=`<div style="background:#fef2f2;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #fca5a5">
-    <div style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${ch.length} chamado${ch.length>1?"s":""} a abrir no Zoho</div>
-    ${ch.map(c=>`<div class="chamado-card ${c.critico?"ct":""} ${S.respostas[c.chave]==="chamado_emergencial"?"emerg":""}">
-      <div style="font-size:11px;color:#6b7280;margin-bottom:2px">${c.grupo}</div>
-      <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
-      ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:4px;font-style:italic">→ ${c.obs}</div>`:""}
-    </div>`).join("")}
+
+  // Lista de salas feitas nesta sessão
+  const sfEl=document.getElementById("salas-feitas-wrap");
+  sfEl.innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-bottom:8px">Salas nesta sessão</div>`+
+    S.salasConcluidas.map(s=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:4px">
+        <div>
+          <div style="font-size:13px;font-weight:600">${s.label}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${s.responsavel}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${s.resumo.naoConformes>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${s.resumo.naoConformes} NC</span>`:`<span style="color:var(--success);font-size:13px">✓</span>`}
+          <span style="font-size:11px;color:${s.salvoNaNuvem?"var(--success)":"#f59e0b"}">${s.salvoNaNuvem?"☁":"📱"}</span>
+        </div>
+      </div>`).join("");
+
+  // Chamados consolidados
+  const todosChamados=S.salasConcluidas.flatMap(s=>s.chamados.map(c=>({...c,salaLabel:s.label})));
+  const cwEl=document.getElementById("chamados-wrap");
+  if(todosChamados.length>0){
+    cwEl.innerHTML=`<div style="background:#fef2f2;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #fca5a5">
+      <div style="font-size:14px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${todosChamados.length} chamado(s) para abrir no Zoho</div>
+      ${todosChamados.map(c=>`<div class="chamado-card ${c.emergencial?"emerg":""}">
+        <div style="font-size:11px;color:#6b7280;margin-bottom:2px">${c.salaLabel}</div>
+        <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
+        ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:4px;font-style:italic">→ ${c.obs}</div>`:""}
+      </div>`).join("")}
     </div>`;
   } else {
-    cw.innerHTML=`<div style="background:#f0fdf4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #bbf7d0;text-align:center">
-    <div style="font-size:14px;font-weight:700;color:#16a34a">✓ Nenhum chamado necessário</div>
-    <div style="font-size:13px;color:#6b7280;margin-top:4px">Todos os itens respondidos estão conformes.</div>
+    cwEl.innerHTML=`<div style="background:#f0fdf4;border-radius:12px;padding:16px;margin-bottom:16px;border:1.5px solid #bbf7d0;text-align:center">
+      <div style="font-size:14px;font-weight:700;color:#16a34a">✓ Nenhum chamado necessário</div>
     </div>`;
   }
 }
 
-// ── RENDER HISTÓRICO ──────────────────────────────────────────────
-function renderHistorico(){
-  const lista=document.getElementById("hist-lista");
-  if(S.historico.length===0){
-    lista.innerHTML=`<div style="text-align:center;padding:40px;color:#9ca3af;font-size:14px">Nenhuma ronda registrada ainda.</div>`;
-    return;
-  }
-  lista.innerHTML=S.historico.map(r=>`<div class="hist-card" style="border-color:${r.resumo.naoConformes>0?"#fca5a5":"#bbf7d0"}">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div style="font-size:15px;font-weight:700;color:#1f2937">${r.unidade}</div>
-        <div style="font-size:13px;color:#6b7280">${r.responsavel}</div>
-        <div style="font-size:12px;color:#9ca3af;margin-top:2px">${fmtData(r.data)}</div>
-      </div>
-      <div style="text-align:right">
-        ${r.resumo.naoConformes>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${r.resumo.naoConformes} NC</span>`:`<span class="badge" style="color:#16a34a;background:#f0fdf4">OK ✓</span>`}
-        <div style="font-size:12px;color:#9ca3af;margin-top:4px">${r.resumo.respondidos}/${r.resumo.total} itens</div>
-        <div style="font-size:11px;color:${r.salvoNaNuvem?"#16a34a":"#f59e0b"};margin-top:2px">${r.salvoNaNuvem?"☁ salvo":"📱 local"}</div>
-      </div>
-    </div>
-  </div>`).join("");
-}
-
-// ── EXPORTAR ──────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// EXPORTAR
+// ════════════════════════════════════════════════════════════════
 function exportar(){
-  const ch=chamados();const res=resumo();
-  const linhas=[`RONDA MENSAL — ${S.unidade}`,`Responsável: ${S.responsavel}`,`Data: ${fmtData(Date.now())}`,``,
-    `RESUMO`,`Total de itens: ${res.total}`,`Respondidos: ${res.respondidos}`,`Não conformes: ${res.naoConformes}`,``,
-    ch.length>0?`CHAMADOS A ABRIR NO ZOHO (${ch.length})`:`NENHUM CHAMADO NECESSÁRIO`,
-    ...ch.map((c,i)=>`${i+1}. [${c.grupo}] ${c.texto}${c.obs?"\n   → "+c.obs:""}${c.critico?" ⚠ CRÍTICO":""}`)
+  const linhas=[
+    `RONDA MENSAL — ${S.unidade}`,`Responsável: ${S.responsavel}`,`Data: ${fmtData(Date.now())}`,``,
+    `SALAS CONCLUÍDAS NESTA SESSÃO (${S.salasConcluidas.length}):`,
+    ...S.salasConcluidas.map(s=>`  ✓ ${s.label} — ${s.resumo.naoConformes} NC`),``,
   ];
+  const todos=S.salasConcluidas.flatMap(s=>s.chamados.map(c=>({...c,sala:s.label})));
+  if(todos.length>0){
+    linhas.push(`CHAMADOS A ABRIR NO ZOHO (${todos.length}):`);
+    todos.forEach((c,i)=>linhas.push(`${i+1}. [${c.sala}] ${c.texto}${c.obs?"\n   → "+c.obs:""}${c.emergencial?" 🔴 CRÍTICO":""}`));
+  }
   const blob=new Blob([linhas.join("\n")],{type:"text/plain;charset=utf-8"});
   const url=URL.createObjectURL(blob);const a=document.createElement("a");
   a.href=url;a.download=`ronda_${S.unidade.replace(/ /g,"_")}_${new Date().toISOString().slice(0,10)}.txt`;
   a.click();URL.revokeObjectURL(url);
 }
 
-// ── ENVIAR PARA SHEETS ────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// HISTÓRICO
+// ════════════════════════════════════════════════════════════════
+function renderHistorico(){
+  const lista=document.getElementById("hist-lista");
+  if(!S.historico.length){
+    lista.innerHTML=`<div style="text-align:center;padding:40px;color:#9ca3af;font-size:14px">Nenhuma sala registrada ainda.</div>`;
+    return;
+  }
+  lista.innerHTML=S.historico.map(r=>`<div class="hist-card" style="border-color:${r.resumo.naoConformes>0?"#fca5a5":"#bbf7d0"}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:#1f2937">${r.salaLabel||r.unidade}</div>
+        <div style="font-size:13px;color:#6b7280">${r.unidade} · ${r.responsavel}</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:2px">${fmtData(r.data)}</div>
+      </div>
+      <div style="text-align:right">
+        ${r.resumo.naoConformes>0?`<span class="badge" style="color:#dc2626;background:#fef2f2">${r.resumo.naoConformes} NC</span>`:`<span class="badge" style="color:#16a34a;background:#f0fdf4">OK ✓</span>`}
+        <div style="font-size:11px;color:${r.salvoNaNuvem?"#16a34a":"#f59e0b"};margin-top:4px">${r.salvoNaNuvem?"☁ salvo":"📱 local"}</div>
+      </div>
+    </div>
+  </div>`).join("");
+}
+
+// ════════════════════════════════════════════════════════════════
+// LOADING
+// ════════════════════════════════════════════════════════════════
 function setLoading(show,status,pct){
-  const overlay=document.getElementById("loading-overlay");
-  const statusEl=document.getElementById("loading-status");
+  const ov=document.getElementById("loading-overlay");
+  const st=document.getElementById("loading-status");
   const bar=document.getElementById("loading-bar");
   const pctEl=document.getElementById("loading-pct");
-  if(overlay) overlay.className="loading-overlay"+(show?" show":"");
-  if(statusEl&&status) statusEl.textContent=status;
+  if(ov) ov.className="loading-overlay"+(show?" show":"");
+  if(st&&status) st.textContent=status;
   if(bar) bar.style.width=(pct||0)+"%";
   if(pctEl) pctEl.textContent=(pct||0)+"%";
 }
 
-async function enviarParaSheets(ronda){
-  if(!S.apiUrl)return false;
-  try{
-    const totalFotos=Object.keys(ronda.fotos||{}).length;
-    setLoading(true,"Preparando dados...",10);
-    await new Promise(r=>setTimeout(r,300));
-
-    if(totalFotos>0){
-      setLoading(true,`Enviando ${totalFotos} foto(s)...`,30);
-      await new Promise(r=>setTimeout(r,200));
-    }
-
-    setLoading(true,"Salvando na planilha...",60);
-    const res=await fetch(S.apiUrl,{
-      method:"POST",
-      headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify(ronda)
-    });
-
-    setLoading(true,"Finalizando...",90);
-    await new Promise(r=>setTimeout(r,300));
-
-    const data=await res.json();
-    setLoading(false);
-    return data.sucesso===true;
-  }catch(err){
-    setLoading(false);
-    return false;
-  }
-}
-
-// ── CONCLUIR RONDA ────────────────────────────────────────────────
-async function concluirRonda(){
-  const obsGeralEl=document.getElementById("obs-geral");
-  if(obsGeralEl) S.obsGeral=obsGeralEl.value||"";
-  const res=resumo();const ch=chamados();
-  const ronda={
-    id:S.rondaId,unidade:S.unidade,responsavel:S.responsavel,
-    data:Date.now(),horaInicio:S.horaInicio,horaFim:new Date().toISOString(),
-    respostas:{...S.respostas},observacoes:{...S.observacoes},
-    fotos:{...S.fotos},
-    obsGeral:S.obsGeral||"",
-    resumo:res,chamados:ch.map(c=>({...c,emergencial:S.respostas[c.chave]==="chamado_emergencial"})),
-    salvoNaNuvem:false,chave:CHAVE_SECRETA,
-  };
-  toast("Salvando...");
-  const ok=await enviarParaSheets(ronda);
-  ronda.salvoNaNuvem=ok;
-  S.historico=[ronda,...S.historico].slice(0,100);
-  saveHistorico();
-  renderResumo();
-  ir("resumo");
-  if(ok) toast("✓ Salvo na planilha Google Sheets!","success");
-  else if(S.apiUrl) toast("Salvo localmente (sem conexão)","");
-  else toast("Salvo localmente","");
-}
-
-// ── EVENTOS ───────────────────────────────────────────────────────
-function processarFoto(fileOrBlob, chave, base64Override){
-  if(base64Override){
-    comprimirBase64(base64Override, chave);
-    return;
-  }
-  var reader2=new FileReader();
-  reader2.onerror=function(){alert("Erro ao processar foto. Tente novamente.");};
-  reader2.onload=function(ev){
-    comprimirBase64(ev.target.result, chave);
-  };
-  reader2.readAsDataURL(fileOrBlob);
-}
-
-function comprimirBase64(base64, chave){
-  var tamanhoKB = Math.round(base64.length * 0.75 / 1024);
-  if(tamanhoKB < 600){
-    S.fotos[chave]=base64;
-    salvarRascunho();
-    atualizarGrupoFoto(chave);
-    return;
-  }
-  setTimeout(function(){
+// ════════════════════════════════════════════════════════════════
+// FOTO
+// ════════════════════════════════════════════════════════════════
+function comprimirBase64(base64,chave){
+  const kb=Math.round(base64.length*0.75/1024);
+  if(kb<600){S.fotos[chave]=base64;rerenderItemFoto(chave);return;}
+  setTimeout(()=>{
     try{
-      var img=new Image();
-      img.onerror=function(){
-        img=null;
-        S.fotos[chave]=base64;
-        salvarRascunho();
-        atualizarGrupoFoto(chave);
-      };
-      img.onload=function(){
+      const img=new Image();
+      img.onerror=()=>{S.fotos[chave]=base64;rerenderItemFoto(chave);};
+      img.onload=()=>{
         try{
-          var canvas=document.createElement("canvas");
-          var MAX=500;
-          var w=img.width,h=img.height;
-          if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
-          else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
-          canvas.width=w;canvas.height=h;
-          var ctx=canvas.getContext("2d");
-          ctx.fillStyle="#FFF";ctx.fillRect(0,0,w,h);
-          ctx.drawImage(img,0,0,w,h);
-          var compressed=canvas.toDataURL("image/jpeg",0.5);
-          ctx.clearRect(0,0,w,h);
-          canvas.width=1;canvas.height=1;
-          ctx=null;canvas=null;
-          img.src="";img.onload=null;img.onerror=null;img=null;
+          const c=document.createElement("canvas");
+          const MAX=500;let w=img.width,h=img.height;
+          if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+          c.width=w;c.height=h;
+          const ctx=c.getContext("2d");ctx.fillStyle="#FFF";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+          const compressed=c.toDataURL("image/jpeg",0.5);
+          c.width=1;c.height=1;
           S.fotos[chave]=compressed;
-        }catch(canvasErr){
-          S.fotos[chave]=base64;
-        }
-        salvarRascunho();
-        atualizarGrupoFoto(chave);
+        }catch{S.fotos[chave]=base64;}
+        rerenderItemFoto(chave);
       };
       img.src=base64;
-    }catch(err){
-      S.fotos[chave]=base64;
-      salvarRascunho();
-      atualizarGrupoFoto(chave);
-    }
-  }, 300);
+    }catch{S.fotos[chave]=base64;rerenderItemFoto(chave);}
+  },300);
+}
+function rerenderItemFoto(chave){
+  renderSalaGrupos();
+  atualizarHeaderSala();
 }
 
-function atualizarGrupoFoto(chave){
-  var gid=chave.split("__")[1];
-  var body=document.getElementById("body_"+gid);
-  if(body&&body.classList.contains("open")){
-    var prefix=chave.replace(/__[0-9]+$/,"__");
-    var sala=(UNIDADES[S.unidade]||[]).find(function(s){return s.id===gid;});
-    var amb=AMBIENTES.find(function(a){return a.id===gid;});
-    var itens=amb?amb.itens:(sala&&sala.tipo==="IS"?IIS:IP);
-    body.innerHTML=renderItens(itens,prefix);
-  }
-  atualizarHeader();
-}
-
+// ════════════════════════════════════════════════════════════════
+// EVENTOS
+// ════════════════════════════════════════════════════════════════
 function bindGlobal(){
+  // Config
   document.getElementById("btn-salvar-config").addEventListener("click",()=>{
     const url=document.getElementById("inp-api-url").value.trim();
-    saveApi(url);toast("Configuração salva!","success");ir("inicio");
+    S.apiUrl=url;try{localStorage.setItem("rondas_api",url);}catch{}
+    toast("Configuração salva!","success");ir("inicio");
   });
   document.getElementById("btn-pular-config").addEventListener("click",()=>ir("inicio"));
 
-  document.getElementById("sel-unidade").addEventListener("change",e=>{
-    S.unidade=e.target.value;atualizarBtnIniciar();
-  });
-  document.getElementById("inp-responsavel").addEventListener("input",e=>{
-    S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();
-  });
-  document.getElementById("sel-unidade").addEventListener("change",e=>{
-    S.unidade=e.target.value;atualizarBtnIniciar();
-  });
-  document.getElementById("btn-iniciar").addEventListener("click",()=>{
-    const rascunho = recuperarRascunho();
-    if(rascunho && rascunho.unidade === S.unidade){
-      const total = Object.keys(rascunho.respostas).length;
-      if(total > 0 && confirm(`Há uma ronda em andamento para ${rascunho.unidade} com ${total} itens respondidos. Deseja continuar de onde parou?`)){
-        S.respostas = rascunho.respostas;
-        S.observacoes = rascunho.observacoes;
-        S.rondaId = rascunho.rondaId;
-        S.expandido = null;
-        renderRonda();ir("ronda");
-        return;
-      }
-    }
-    S.respostas={};S.observacoes={};S.fotos={};S.obsGeral="";S.expandido=null;S.rondaId=gerarId();
-    S.horaInicio=new Date().toISOString();
-    limparRascunho();
-    renderRonda();ir("ronda");
+  // Início
+  const selU=document.getElementById("sel-unidade");
+  const inpR=document.getElementById("inp-responsavel");
+  selU.addEventListener("change",e=>{S.unidade=e.target.value;atualizarBtnIniciar();});
+  inpR.addEventListener("input",e=>{S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();});
+  document.getElementById("btn-config").addEventListener("click",()=>{
+    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("config");
   });
   document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
-  document.getElementById("btn-config").addEventListener("click",()=>{
-    document.getElementById("inp-api-url").value=S.apiUrl||"";ir("inicio");
+  document.getElementById("btn-iniciar").addEventListener("click",async()=>{
+    S.salasConcluidas=[];
+    document.getElementById("lista-unidade").textContent=S.unidade;
+    document.getElementById("lista-responsavel").textContent=S.responsavel;
+    // Carregar status inicial
+    if(S.apiUrl){
+      setSyncDot("syncing");
+      const res=await api({acao:"getStatus",unidade:S.unidade});
+      if(res.sucesso) S.statusSalas=res.salas||{};
+      setSyncDot("ok");
+    }
+    renderListaSalas();
+    iniciarPolling();
+    ir("lista");
   });
 
-  document.getElementById("screen-ronda").addEventListener("click",e=>{
-    const gBtn=e.target.closest("[data-gid]");
-    if(gBtn){
-      const id=gBtn.dataset.gid;
-      S.expandido=S.expandido===id?null:id;
-      renderRonda();
-      setTimeout(()=>gBtn.scrollIntoView({behavior:"smooth",block:"nearest"}),50);
-      return;
+  // Lista de salas — clique
+  document.getElementById("wrap-lista-salas").addEventListener("click",e=>{
+    const btn=e.target.closest("[data-sala-id]");
+    if(btn&&!btn.disabled) abrirSala(btn.dataset.salaId);
+  });
+  document.getElementById("wrap-lista-ambientes").addEventListener("click",e=>{
+    const btn=e.target.closest("[data-sala-id]");
+    if(btn&&!btn.disabled) abrirSala(btn.dataset.salaId);
+  });
+  document.getElementById("btn-voltar-lista").addEventListener("click",()=>{
+    if(confirm("Deseja sair da ronda? O progresso já salvo é mantido.")){
+      pararPolling();ir("inicio");
     }
+  });
+  document.getElementById("btn-finalizar-ronda").addEventListener("click",()=>{
+    renderResumoFinal();ir("resumo");
+  });
+
+  // Sala — itens
+  const screenSala=document.getElementById("screen-sala");
+  screenSala.addEventListener("click",e=>{
     const sBtn=e.target.closest(".sbt");
     if(sBtn){
       S.respostas[sBtn.dataset.chave]=sBtn.dataset.val;
-      salvarRascunho();
-      const prefix=sBtn.dataset.chave.replace(/__\d+$/,"__");
-      const gid=sBtn.dataset.chave.split("__")[1];
-      const body=document.getElementById("body_"+gid);
-      if(body&&body.classList.contains("open")){
-        const isIS=gid.includes("IS")||(UNIDADES[S.unidade]||[]).find(s=>s.id===gid)?.tipo==="IS";
-        const amb=AMBIENTES.find(a=>a.id===gid);
-        const itens=amb?amb.itens:(isIS?IIS:IP);
-        body.innerHTML=renderItens(itens,prefix);
-      }
-      const{total,resp,nc}=contarGrupo(prefix);
-      const btn=document.querySelector(`[data-gid="${gid}"]`);
-      if(btn){
-        btn.className=`group-btn ${nc>0?"nc":resp===total&&total>0?"done":""} ${S.expandido===gid?"open":""}`;
-        const cntSpan=btn.querySelector('[style*="12px"]');
-        if(cntSpan)cntSpan.textContent=`${resp}/${total}`;
-      }
-      atualizarHeader();
+      renderSalaGrupos();
+      atualizarHeaderSala();
       return;
     }
-  });
-  document.getElementById("screen-ronda").addEventListener("input",e=>{
-    if(e.target.tagName==="TEXTAREA"&&e.target.dataset.chave){
-      S.observacoes[e.target.dataset.chave]=e.target.value;
-    salvarRascunho();
-    }
-  });
-  ["btn-concluir-topo","btn-concluir-bottom"].forEach(id=>{
-    document.getElementById(id).addEventListener("click",()=>{
-      const res=resumo();
-      if(res.respondidos===0){concluirRonda();return;}
-      if(confirm("Você respondeu "+res.respondidos+" itens. Tem certeza que deseja concluir a ronda?")){
-        concluirRonda();
-      }
-    });
-  });
-
-  document.getElementById("btn-voltar-ronda").addEventListener("click",()=>{
-    const res=resumo();
-    if(res.respondidos===0){
-      limparRascunho();
-      S.respostas={};S.observacoes={};S.unidade="";S.expandido=null;
-      document.getElementById("sel-unidade").value="";
-      ir("inicio");atualizarBtnIniciar();
-      return;
-    }
-    if(confirm("Você já preencheu "+res.respondidos+" itens. O rascunho será mantido — você pode continuar depois. Deseja voltar ao início?")){
-      ir("inicio");atualizarBtnIniciar();
-    }
-  });
-
-  document.getElementById("btn-exportar").addEventListener("click",exportar);
-  document.getElementById("btn-nova-ronda").addEventListener("click",()=>ir("inicio"));
-  document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
-  document.getElementById("btn-voltar-hist").addEventListener("click",()=>ir("inicio"));
-
-  document.getElementById("screen-ronda").addEventListener("click",function(e){
-    var fotoBtn=e.target.closest ? e.target.closest("[data-foto-chave]") : null;
-    var removeBtn=e.target.closest ? e.target.closest("[data-foto-remove]") : null;
+    const removeBtn=e.target.closest("[data-foto-remove]");
     if(removeBtn){
-      var chave=removeBtn.getAttribute("data-foto-remove");
-      delete S.fotos[chave];
-      salvarRascunho();
-      var gid=chave.split("__")[1];
-      var body=document.getElementById("body_"+gid);
-      if(body&&body.classList.contains("open")){
-        var prefix=chave.replace(/__[0-9]+$/,"__");
-        var sala=(UNIDADES[S.unidade]||[]).find(function(s){return s.id===gid;});
-        var amb=AMBIENTES.find(function(a){return a.id===gid;});
-        var itens=amb?amb.itens:(sala&&sala.tipo==="IS"?IIS:IP);
-        body.innerHTML=renderItens(itens,prefix);
-      }
+      delete S.fotos[removeBtn.dataset.fotoRemove];
+      renderSalaGrupos();
       return;
     }
+    const fotoBtn=e.target.closest("[data-foto-chave]");
     if(fotoBtn){
-      var chave2=fotoBtn.getAttribute("data-foto-chave");
-      var input=document.querySelector("[data-foto-input=\""+chave2+"\"]");
+      const input=screenSala.querySelector(`[data-foto-input="${fotoBtn.dataset.fotoChave}"]`);
       if(input) input.click();
     }
-  },true);
-
-  document.getElementById("screen-ronda").addEventListener("change",function(e){
-    var fotoInput=e.target.getAttribute("data-foto-input");
-    if(fotoInput){
-      var chave=fotoInput;
-      var file=e.target.files[0];
-      if(!file) return;
-      if(file.size > 8*1024*1024){
-        alert("Foto muito grande (máx. 8MB). Tente uma foto com menor resolução.");
-        e.target.value="";
-        return;
-      }
-      var isHeic = file.type === "image/heic" || file.type === "image/heif" 
-        || file.name.toLowerCase().endsWith(".heic") 
-        || file.name.toLowerCase().endsWith(".heif")
-        || file.type === "";
-
-      if(isHeic && typeof heic2any !== "undefined"){
-        heic2any({blob: file, toType:"image/jpeg", quality:0.7})
-          .then(function(jpegBlob){
-            processarFoto(jpegBlob, chave);
-          })
-          .catch(function(){
-            processarFoto(file, chave);
-          });
-        return;
-      }
-
-      var reader=new FileReader();
-      reader.onerror=function(){
-        alert("Erro ao ler a foto. Tente novamente.");
-      };
-      reader.onload=function(ev){
-        try{
-          var base64=ev.target.result;
-          if(file.size > 500*1024){
-            var img=new Image();
-            img.onerror=function(){
-              S.fotos[chave]=base64;
-              salvarRascunho();
-              atualizarGrupoFoto(chave);
-            };
-            img.onload=function(){
-              try{
-                var canvas=document.createElement("canvas");
-                var MAX=600;
-                var w=img.width,h=img.height;
-                if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
-                else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
-                canvas.width=w;canvas.height=h;
-                var ctx2=canvas.getContext("2d");ctx2.fillStyle="#FFFFFF";ctx2.fillRect(0,0,w,h);ctx2.drawImage(img,0,0,w,h);
-                var compressed=canvas.toDataURL("image/jpeg",0.55);
-                canvas.width=1;canvas.height=1;
-                img.src="";
-                S.fotos[chave]=compressed;
-              }catch(err){
-                S.fotos[chave]=base64;
-              }
-              salvarRascunho();
-              atualizarGrupoFoto(chave);
-            };
-            img.src=base64;
-          } else {
-            S.fotos[chave]=base64;
-            salvarRascunho();
-            atualizarGrupoFoto(chave);
-          }
-        }catch(err){
-          alert("Não foi possível processar a foto. Tente novamente.");
-        }
-      };
-      reader.readAsDataURL(file);
+  });
+  screenSala.addEventListener("input",e=>{
+    if(e.target.tagName==="TEXTAREA"&&e.target.dataset.chave){
+      S.observacoes[e.target.dataset.chave]=e.target.value;
     }
   });
+  screenSala.addEventListener("change",e=>{
+    const fotoInput=e.target.dataset.fotoInput;
+    if(!fotoInput) return;
+    const file=e.target.files[0];
+    if(!file) return;
+    if(file.size>8*1024*1024){alert("Foto muito grande (máx. 8MB).");e.target.value="";return;}
+    const isHeic=file.type==="image/heic"||file.type==="image/heif"
+      ||file.name.toLowerCase().endsWith(".heic")||file.name.toLowerCase().endsWith(".heif")||file.type==="";
+    if(isHeic&&typeof heic2any!=="undefined"){
+      heic2any({blob:file,toType:"image/jpeg",quality:0.7})
+        .then(b=>{const r=new FileReader();r.onload=ev=>comprimirBase64(ev.target.result,fotoInput);r.readAsDataURL(b);})
+        .catch(()=>{const r=new FileReader();r.onload=ev=>comprimirBase64(ev.target.result,fotoInput);r.readAsDataURL(file);});
+      return;
+    }
+    const r=new FileReader();
+    r.onload=ev=>comprimirBase64(ev.target.result,fotoInput);
+    r.readAsDataURL(file);
+  });
+
+  document.getElementById("btn-voltar-sala").addEventListener("click",async()=>{
+    if(!S.salaAtual) return;
+    const respondidos=S.salaAtual.itens.filter((_,i)=>S.respostas["item__"+i]).length;
+    if(respondidos>0){
+      if(!confirm(`Você preencheu ${respondidos} itens. Ao voltar, o progresso desta sala será perdido. Continuar?`)) return;
+    }
+    // Liberar claim
+    if(S.apiUrl) await api({acao:"releaseSala",unidade:S.unidade,salaId:S.salaAtual.id,responsavel:S.responsavel});
+    S.statusSalas[S.salaAtual.id]={status:"livre",responsavel:""};
+    S.salaAtual=null;S.respostas={};S.observacoes={};S.fotos={};
+    renderListaSalas();
+    ir("lista");
+  });
+  ["btn-concluir-sala","btn-concluir-sala-bottom"].forEach(id=>{
+    document.getElementById(id).addEventListener("click",concluirSala);
+  });
+
+  // Resumo
+  document.getElementById("btn-exportar").addEventListener("click",exportar);
+  document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();ir("inicio");});
+  document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
+
+  // Histórico
+  document.getElementById("btn-voltar-hist").addEventListener("click",()=>ir("inicio"));
 }
 
 function atualizarBtnIniciar(){
   document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
-  const rascunho = recuperarRascunho();
-  const aviso = document.getElementById("aviso-rascunho");
-  if(aviso){
-    if(rascunho && rascunho.unidade === S.unidade && Object.keys(rascunho.respostas).length > 0){
-      const total = Object.keys(rascunho.respostas).length;
-      aviso.style.display = "block";
-      aviso.textContent = `↩ Ronda em andamento encontrada — ${total} itens respondidos. Clique em "Iniciar ronda" para continuar.`;
-    } else {
-      aviso.style.display = "none";
-    }
-  }
 }
 
-// ── RASCUNHO ──────────────────────────────────────────────────────
-function salvarRascunho(){
-  try{
-    localStorage.setItem("ronda_rascunho", JSON.stringify({
-      unidade: S.unidade,
-      responsavel: S.responsavel,
-      rondaId: S.rondaId,
-      respostas: S.respostas,
-      observacoes: S.observacoes,
-      horaInicio: S.horaInicio,
-      ts: Date.now()
-    }));
-  }catch{}
-  try{
-    var chavesFotos = Object.keys(S.fotos);
-    localStorage.setItem("ronda_fotos_keys", JSON.stringify(chavesFotos));
-    chavesFotos.forEach(function(k){
-      try{ localStorage.setItem("ronda_foto_"+k, S.fotos[k]); }catch(e){}
-    });
-  }catch{}
-}
-
-function limparFotosRascunho(){
-  try{
-    var keys = JSON.parse(localStorage.getItem("ronda_fotos_keys")||"[]");
-    keys.forEach(function(k){ localStorage.removeItem("ronda_foto_"+k); });
-    localStorage.removeItem("ronda_fotos_keys");
-  }catch{}
-}
-
-function recuperarRascunho(){
-  try{
-    const raw = localStorage.getItem("ronda_rascunho");
-    if(!raw) return false;
-    const r = JSON.parse(raw);
-    const idade = Date.now() - (r.ts || 0);
-    if(idade > 24 * 60 * 60 * 1000) return false;
-    if(!r.unidade || !r.respostas) return false;
-    var fotos = {};
-    try{
-      var keys = JSON.parse(localStorage.getItem("ronda_fotos_keys")||"[]");
-      keys.forEach(function(k){
-        var f = localStorage.getItem("ronda_foto_"+k);
-        if(f) fotos[k] = f;
-      });
-    }catch{}
-    r.fotos = fotos;
-    return r;
-  }catch{ return false; }
-}
-
-function limparRascunho(){
-  try{ localStorage.removeItem("ronda_rascunho"); }catch{}
-  limparFotosRascunho();
-}
-
-// ── INIT ──────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════
 loadLocal();
 bindGlobal();
 document.getElementById("inp-responsavel").value=S.responsavel||"";
-
-const rascunhoInicial = recuperarRascunho();
-if(rascunhoInicial && Object.keys(rascunhoInicial.respostas||{}).length > 0){
-  S.unidade = rascunhoInicial.unidade;
-  S.responsavel = rascunhoInicial.responsavel || S.responsavel;
-  S.rondaId = rascunhoInicial.rondaId;
-  S.respostas = rascunhoInicial.respostas;
-  S.observacoes = rascunhoInicial.observacoes || {};
-  S.fotos = rascunhoInicial.fotos || {};
-  S.horaInicio = rascunhoInicial.horaInicio || new Date().toISOString();
-  S.expandido = null;
-  document.getElementById("inp-responsavel").value = S.responsavel||"";
-  renderRonda();
-  ir("ronda");
-} else {
-  ir("inicio");
-  atualizarBtnIniciar();
-}
+ir("inicio");
+atualizarBtnIniciar();
 </script>
 </body>
 </html>
