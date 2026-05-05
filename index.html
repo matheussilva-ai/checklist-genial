@@ -1455,12 +1455,17 @@ function bindGlobal(){
     document.getElementById("lista-unidade").textContent=S.unidade;
     document.getElementById("lista-responsavel").textContent=S.responsavel;
 
-    // Verificar se deve resetar o Status Ronda (usa dados buscados da planilha)
+    // Verificar se deve resetar o Status Ronda
     const diasPassados = S._diasUltimaRonda !== undefined ? S._diasUltimaRonda : 999;
     const ultimaData = S._ultimaRondaData;
+    const temRondaAtiva = S._temRondaAtiva || false;
     let deveResetar = diasPassados > 15;
 
-    if(!deveResetar && ultimaData) {
+    if(temRondaAtiva) {
+      // Há ronda em andamento hoje — entrar sem resetar
+      deveResetar = false;
+    } else if(!deveResetar && ultimaData) {
+      // Ronda recente mas não de hoje — perguntar
       const dataFmt = new Date(ultimaData).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
       const confirma = confirm(`Já existe uma ronda de ${dataFmt} para ${S.unidade} (${diasPassados} dia${diasPassados!==1?"s":""} atrás).
 
@@ -1637,6 +1642,7 @@ async function atualizarBtnIniciar(){
       const diasPassados = Math.floor((Date.now()-res.ultimaData)/(1000*60*60*24));
       S._ultimaRondaData = res.ultimaData;
       S._diasUltimaRonda = diasPassados;
+      S._temRondaAtiva = res.temRondaAtiva || false;
       if(diasPassados<=15){
         infoEl.innerHTML=`🕐 Última ronda: <strong>${dataFmt}</strong> (${diasPassados} dia${diasPassados!==1?"s":""} atrás)`;
         infoEl.style.background="var(--teal-light)";
