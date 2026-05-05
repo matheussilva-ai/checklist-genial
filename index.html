@@ -795,11 +795,26 @@ function iniciarPolling(){
 function pararPolling(){
   if(S.pollTimer){clearInterval(S.pollTimer);S.pollTimer=null;}
 }
+// Peso numérico de cada status — maior = mais avançado
+const STATUS_PESO={livre:0,andamento:1,concluida:2};
+
 async function pollAgora(){
   setSyncDot("syncing");
   const res=await api({acao:"getStatus",unidade:S.unidade});
   if(res.sucesso){
-    S.statusSalas=res.salas||{};
+    // Merge inteligente: nunca rebaixa status local
+    // (evita que salas concluídas/em andamento voltem para "livre" entre polls)
+    const remoto=res.salas||{};
+    Object.keys(remoto).forEach(salaId=>{
+      const local=S.statusSalas[salaId];
+      const pesoLocal=local?STATUS_PESO[local.status]??0:0;
+      const pesoRemoto=STATUS_PESO[remoto[salaId].status]??0;
+      // Só atualiza se o remoto for igual ou mais avançado
+      if(pesoRemoto>=pesoLocal){
+        S.statusSalas[salaId]=remoto[salaId];
+      }
+    });
+    // Salas que existem localmente mas não no remoto: manter estado local
     setSyncDot("ok");
     renderListaSalas();
   } else {
