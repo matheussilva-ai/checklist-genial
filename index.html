@@ -819,7 +819,6 @@ function iniciarPolling(){
 function pararPolling(){
   if(S.pollTimer){clearInterval(S.pollTimer);S.pollTimer=null;}
 }
-// Peso de cada status — maior = mais avançado
 const STATUS_PESO={livre:0,andamento:1,concluida:2};
 
 async function pollAgora(){
@@ -830,7 +829,7 @@ async function pollAgora(){
     const remoto=res.salas||{};
     Object.keys(remoto).forEach(salaId=>{
       const local=S.statusSalas[salaId];
-      const pesoLocal=local?STATUS_PESO[local.status]??0:0;
+      const pesoLocal=local?(STATUS_PESO[local.status]??0):0;
       const pesoRemoto=STATUS_PESO[remoto[salaId].status]??0;
       if(pesoRemoto>=pesoLocal) S.statusSalas[salaId]=remoto[salaId];
     });
@@ -1487,51 +1486,49 @@ function bindGlobal(){
   });
   document.getElementById("btn-ver-hist-inicio").addEventListener("click",()=>{renderHistorico();ir("historico");});
   document.getElementById("btn-iniciar").addEventListener("click",async()=>{
-    S.salasConcluidas=[];
     document.getElementById("lista-unidade").textContent=S.unidade;
     document.getElementById("lista-responsavel").textContent=S.responsavel;
 
-    // Se sessão foi restaurada do localStorage (recarga de página), entrar direto sem resetar
-    if(S._sessaoAtiva){
-      S._sessaoAtiva=false;
-      renderListaSalas();
-      iniciarPolling();
-      ir("lista");
-      return;
-    }
-
-    // Verificar se deve resetar o Status Ronda
-    const diasPassados = S._diasUltimaRonda !== undefined ? S._diasUltimaRonda : 999;
-    const ultimaData = S._ultimaRondaData;
-    const temRondaAtiva = S._temRondaAtiva || false;
-    let deveResetar = diasPassados > 15;
-
-    if(temRondaAtiva) {
-      // Há ronda em andamento hoje — entrar sem resetar
-      deveResetar = false;
-    } else if(!deveResetar && ultimaData) {
-      // Ronda recente mas não de hoje — perguntar
-      const dataFmt = new Date(ultimaData).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
-      const confirma = confirm(`Já existe uma ronda de ${dataFmt} para ${S.unidade} (${diasPassados} dia${diasPassados!==1?"s":""} atrás).
-
-Deseja iniciar uma nova ronda e resetar o status das salas?`);
-      if(!confirma) return;
-      deveResetar = true;
-    }
-
-    // Carregar status inicial (com reset se necessário)
     if(S.apiUrl){
       setSyncDot("syncing");
-      if(deveResetar){
-        await api({acao:"resetarStatus",unidade:S.unidade});
-        S.statusSalas={};
-        clearSessao();
-      } else {
-        const res=await api({acao:"getStatus",unidade:S.unidade});
-        if(res.sucesso) S.statusSalas=res.salas||{};
-      }
+
+      // Sempre buscar o status atual da planilha primeiro
+      const [resStatus, resUltima] = await Promise.all([
+        api({acao:"getStatus", unidade:S.unidade}),
+        api({acao:"ultimaRonda", unidade:S.unidade}),
+      ]);
       setSyncDot("ok");
+
+      const temRondaAtiva = resUltima.sucesso && resUltima.temRondaAtiva;
+      const salas = resStatus.sucesso ? resStatus.salas||{} : {};
+      const temSalasNaPlanilha = Object.keys(salas).length > 0;
+
+      if(temRondaAtiva || temSalasNaPlanilha) {
+        // Há ronda em andamento — entrar e colaborar
+        S.statusSalas = salas;
+        S.salasConcluidas = [];
+      } else {
+        // Planilha vazia — verificar se é nova ronda ou continuação
+        const ultimaData = resUltima.sucesso ? resUltima.ultimaData : null;
+        if(ultimaData){
+          const diasPassados = Math.floor((Date.now()-ultimaData)/(1000*60*60*24));
+          const dataFmt = new Date(ultimaData).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+          const confirma = confirm(`Última ronda de ${S.unidade}: ${dataFmt} (${diasPassados} dia${diasPassados!==1?"s":""} atrás).
+
+Iniciar nova ronda?`);
+          if(!confirma) return;
+        }
+        // Nova ronda limpa — garantir planilha limpa (por segurança) e zerar local
+        await api({acao:"resetarStatus", unidade:S.unidade});
+        S.statusSalas = {};
+        S.salasConcluidas = [];
+      }
+    } else {
+      // Modo offline
+      S.statusSalas = {};
+      S.salasConcluidas = [];
     }
+
     renderListaSalas();
     iniciarPolling();
     ir("lista");
@@ -1548,7 +1545,7 @@ Deseja iniciar uma nova ronda e resetar o status das salas?`);
   });
   document.getElementById("btn-voltar-lista").addEventListener("click",()=>{
     if(confirm("Deseja sair da ronda? O progresso já salvo é mantido.")){
-      pararPolling();clearSessao();S.statusSalas={};S.salasConcluidas=[];ir("inicio");
+      pararPolling();ir("inicio");
     }
   });
   document.getElementById("btn-finalizar-ronda").addEventListener("click",()=>{
@@ -1646,7 +1643,7 @@ Todos os ${total} itens preenchidos — tudo conforme! ✅`;
     ir("lista");
   });
   document.getElementById("btn-exportar").addEventListener("click",exportar);
-  document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();clearSessao();S.statusSalas={};S.salasConcluidas=[];ir("inicio");});
+  document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();clearSessao();ir("inicio");});
   document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
 
   // Histórico
@@ -1720,8 +1717,10 @@ if(S.unidade){
   const sel=document.getElementById("sel-unidade");
   if(sel) sel.value=S.unidade;
 }
-// Se há sessão ativa restaurada, ir direto para a lista
 if(S._sessaoAtiva){
+  S._sessaoAtiva=false;
+  document.getElementById("lista-unidade").textContent=S.unidade;
+  document.getElementById("lista-responsavel").textContent=S.responsavel;
   renderListaSalas();
   iniciarPolling();
   ir("lista");
