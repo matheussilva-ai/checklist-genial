@@ -750,9 +750,33 @@ function fmtData(ts){return new Date(ts).toLocaleDateString("pt-BR",{day:"2-digi
 function loadLocal(){
   try{const h=localStorage.getItem("rondas_hist_v2");if(h)S.historico=JSON.parse(h);}catch{}
   try{const r=localStorage.getItem("rondas_responsavel");if(r)S.responsavel=r;}catch{}
+  // Restaurar sessão ativa após recarga de página
+  try{
+    const sess=localStorage.getItem("rondas_sessao_v2");
+    if(sess){
+      const obj=JSON.parse(sess);
+      if(obj.unidade) S.unidade=obj.unidade;
+      if(obj.statusSalas) S.statusSalas=obj.statusSalas;
+      if(obj.salasConcluidas) S.salasConcluidas=obj.salasConcluidas;
+      S._sessaoAtiva=true;
+    }
+  }catch{}
 }
 function saveHistorico(){try{localStorage.setItem("rondas_hist_v2",JSON.stringify(S.historico.slice(0,200)));}catch{}}
 function saveResponsavel(n){try{localStorage.setItem("rondas_responsavel",n);}catch{}}
+function saveSessao(){
+  try{
+    const salasConcluidasSemFoto=(S.salasConcluidas||[]).map(s=>({
+      ...s,chamados:(s.chamados||[]).map(c=>({...c,foto:""}))
+    }));
+    localStorage.setItem("rondas_sessao_v2",JSON.stringify({
+      unidade:S.unidade,
+      statusSalas:S.statusSalas,
+      salasConcluidas:salasConcluidasSemFoto,
+    }));
+  }catch{}
+}
+function clearSessao(){try{localStorage.removeItem("rondas_sessao_v2");}catch{}}
 
 // ════════════════════════════════════════════════════════════════
 // NAVEGAÇÃO
@@ -795,7 +819,7 @@ function iniciarPolling(){
 function pararPolling(){
   if(S.pollTimer){clearInterval(S.pollTimer);S.pollTimer=null;}
 }
-// Peso numérico de cada status — maior = mais avançado
+// Peso de cada status — maior = mais avançado
 const STATUS_PESO={livre:0,andamento:1,concluida:2};
 
 async function pollAgora(){
@@ -803,18 +827,14 @@ async function pollAgora(){
   const res=await api({acao:"getStatus",unidade:S.unidade});
   if(res.sucesso){
     // Merge inteligente: nunca rebaixa status local
-    // (evita que salas concluídas/em andamento voltem para "livre" entre polls)
     const remoto=res.salas||{};
     Object.keys(remoto).forEach(salaId=>{
       const local=S.statusSalas[salaId];
       const pesoLocal=local?STATUS_PESO[local.status]??0:0;
       const pesoRemoto=STATUS_PESO[remoto[salaId].status]??0;
-      // Só atualiza se o remoto for igual ou mais avançado
-      if(pesoRemoto>=pesoLocal){
-        S.statusSalas[salaId]=remoto[salaId];
-      }
+      if(pesoRemoto>=pesoLocal) S.statusSalas[salaId]=remoto[salaId];
     });
-    // Salas que existem localmente mas não no remoto: manter estado local
+    saveSessao();
     setSyncDot("ok");
     renderListaSalas();
   } else {
@@ -1113,6 +1133,7 @@ Os itens sem resposta serão ignorados.`)) return;
 
   // Atualizar estado colaborativo local
   S.statusSalas[S.salaAtual.id]={status:"concluida",responsavel:S.responsavel};
+  saveSessao();
 
   // Guardar dados da sala concluída para a tela de conclusão
   const salaConcluida = S.salasConcluidas[S.salasConcluidas.length - 1];
@@ -1470,6 +1491,15 @@ function bindGlobal(){
     document.getElementById("lista-unidade").textContent=S.unidade;
     document.getElementById("lista-responsavel").textContent=S.responsavel;
 
+    // Se sessão foi restaurada do localStorage (recarga de página), entrar direto sem resetar
+    if(S._sessaoAtiva){
+      S._sessaoAtiva=false;
+      renderListaSalas();
+      iniciarPolling();
+      ir("lista");
+      return;
+    }
+
     // Verificar se deve resetar o Status Ronda
     const diasPassados = S._diasUltimaRonda !== undefined ? S._diasUltimaRonda : 999;
     const ultimaData = S._ultimaRondaData;
@@ -1495,6 +1525,7 @@ Deseja iniciar uma nova ronda e resetar o status das salas?`);
       if(deveResetar){
         await api({acao:"resetarStatus",unidade:S.unidade});
         S.statusSalas={};
+        clearSessao();
       } else {
         const res=await api({acao:"getStatus",unidade:S.unidade});
         if(res.sucesso) S.statusSalas=res.salas||{};
@@ -1517,7 +1548,7 @@ Deseja iniciar uma nova ronda e resetar o status das salas?`);
   });
   document.getElementById("btn-voltar-lista").addEventListener("click",()=>{
     if(confirm("Deseja sair da ronda? O progresso já salvo é mantido.")){
-      pararPolling();ir("inicio");
+      pararPolling();clearSessao();S.statusSalas={};S.salasConcluidas=[];ir("inicio");
     }
   });
   document.getElementById("btn-finalizar-ronda").addEventListener("click",()=>{
@@ -1615,7 +1646,7 @@ Todos os ${total} itens preenchidos — tudo conforme! ✅`;
     ir("lista");
   });
   document.getElementById("btn-exportar").addEventListener("click",exportar);
-  document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();ir("inicio");});
+  document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();clearSessao();S.statusSalas={};S.salasConcluidas=[];ir("inicio");});
   document.getElementById("btn-ver-hist-resumo").addEventListener("click",()=>{renderHistorico();ir("historico");});
 
   // Histórico
@@ -1685,8 +1716,19 @@ async function atualizarBtnIniciar(){
 loadLocal();
 bindGlobal();
 document.getElementById("inp-responsavel").value=S.responsavel||"";
-ir("inicio");
-atualizarBtnIniciar();
+if(S.unidade){
+  const sel=document.getElementById("sel-unidade");
+  if(sel) sel.value=S.unidade;
+}
+// Se há sessão ativa restaurada, ir direto para a lista
+if(S._sessaoAtiva){
+  renderListaSalas();
+  iniciarPolling();
+  ir("lista");
+} else {
+  ir("inicio");
+  atualizarBtnIniciar();
+}
 </script>
 </body>
 </html>
