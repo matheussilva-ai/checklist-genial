@@ -131,6 +131,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 .loading-card{background:var(--white);border-radius:var(--radius-xl);padding:32px 28px;text-align:center;max-width:280px;width:90%;box-shadow:var(--shadow-md)}
 .loading-spinner{width:48px;height:48px;border:4px solid var(--roxo-light);border-top-color:var(--roxo);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ticketLoad{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
 .loading-bar-track{height:8px;background:var(--roxo-light);border-radius:99px;overflow:hidden;margin:12px 0 8px}
 .loading-bar-fill{height:100%;background:var(--roxo);border-radius:99px;transition:width 0.3s;width:0%}
 
@@ -238,7 +239,8 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <div>1. Selecione a unidade e informe seu nome</div>
         <div>2. Escolha uma sala disponível na lista</div>
         <div>3. Preencha cada item como <strong>OK</strong>, <strong>Atenção</strong>, <strong>Crítico</strong> ou <strong>N/A</strong></div>
-        <div>4. Conclua a sala — ela será salva automaticamente</div>
+        <div>4. Conclua a sala — abra os tickets dos itens não conformes no Zoho</div>
+        <div>5. Passe para a próxima sala</div>
         <div style="margin-top:6px;font-size:12px;opacity:0.8">Você pode fazer a ronda junto com outra pessoa — cada um pega salas diferentes.</div>
       </div>
       <div class="btn-stack">
@@ -324,6 +326,10 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
       <div style="font-size:13px;color:var(--text-muted)" id="conclusao-sala-sub"></div>
     </div>
     <div class="pad" style="padding-top:16px">
+      <div id="conclusao-instrucao" style="display:none;background:#fff8e1;border:1.5px solid #f59e0b;border-radius:var(--radius-md);padding:12px 14px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:2px">👆 Abra os tickets antes de continuar!</div>
+        <div style="font-size:12px;color:#b45309">Clique em "🎫 Abrir ticket no Zoho" em cada item não conforme para registrar o chamado.</div>
+      </div>
       <div id="conclusao-nc-wrap"></div>
       <div id="conclusao-sem-nc" style="display:none;background:var(--teal-light);border:1.5px solid var(--teal-dark);border-radius:var(--radius-md);padding:14px;text-align:center;margin-bottom:16px">
         <div style="font-size:15px;font-weight:700;color:#2D6B70">✅ Tudo conforme nesta sala!</div>
@@ -1226,7 +1232,11 @@ async function _criarTicketSala(idx,categoriaLimpeza){
   if(!sala||!sala.chamados[idx]) return;
   const c=sala.chamados[idx];
   const btnWrap=document.getElementById("conclusao-zoho-btn-"+idx);
-  if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#6b7280">⏳ Criando ticket...</span>`;
+  if(btnWrap) btnWrap.innerHTML=`
+    <div style="font-size:12px;color:#6b7280;margin-bottom:4px">⏳ Criando ticket no Zoho...</div>
+    <div style="height:4px;background:#e5e7eb;border-radius:99px;overflow:hidden;width:180px">
+      <div style="height:100%;background:var(--roxo);border-radius:99px;width:30%;animation:ticketLoad 1.2s ease-in-out infinite"></div>
+    </div>`;
   const res=await api({
     acao:"criarTicket",
     unidade:S.unidade,
@@ -1243,6 +1253,16 @@ async function _criarTicketSala(idx,categoriaLimpeza){
   if(res.sucesso){
     if(btnWrap) btnWrap.innerHTML=`<a href="${res.ticketUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#f0fdf4;border:1.5px solid #86efac;font-size:12px;font-weight:700;color:#16a34a;text-decoration:none">✅ Ticket #${res.ticketNum} criado → Ver no Zoho</a>`;
     toast("✅ Ticket criado!","success");
+    // Verificar se todos os tickets foram abertos
+    const sala2=S.salasConcluidas[S.salasConcluidas.length-1];
+    if(sala2){
+      const total=sala2.chamados.length;
+      const criados=document.querySelectorAll("[id^='conclusao-zoho-btn-'] a").length;
+      if(criados>=total){
+        const inst=document.getElementById("conclusao-instrucao");
+        if(inst) inst.innerHTML=`<div style="font-size:13px;font-weight:700;color:#16a34a">✅ Todos os tickets foram abertos! Pode ir para a próxima sala.</div>`;
+      }
+    }
   } else {
     if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#dc2626">❌ Erro</span><button onclick="abrirTicketSala(${idx})" style="margin-left:8px;font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;text-decoration:underline">Tentar</button>`;
     toast("Erro ao criar ticket","error");
@@ -1255,8 +1275,15 @@ function renderTelaConclusaoSala(sala,salvoNuvem){
   document.getElementById("conclusao-sala-sub").textContent=S.unidade+" · "+sala.responsavel+(salvoNuvem?" · ☁ salvo":" · 📱 local");
   const wrap=document.getElementById("conclusao-nc-wrap");
   const semNc=document.getElementById("conclusao-sem-nc");
-  if(!sala.chamados||sala.chamados.length===0){wrap.innerHTML="";semNc.style.display="block";return;}
+  const instrucaoEl=document.getElementById("conclusao-instrucao");
+  if(!sala.chamados||sala.chamados.length===0){
+    wrap.innerHTML="";semNc.style.display="block";
+    if(instrucaoEl) instrucaoEl.style.display="none";
+    return;
+  }
   semNc.style.display="none";
+  const instrucao=document.getElementById("conclusao-instrucao");
+  if(instrucao) instrucao.style.display="block";
   wrap.innerHTML=`
     <div style="font-size:13px;font-weight:700;color:#dc2626;margin-bottom:12px">🔔 ${sala.chamados.length} item(ns) não conforme(s):</div>
     ${sala.chamados.map((c,ci)=>`
@@ -1265,7 +1292,7 @@ function renderTelaConclusaoSala(sala,salvoNuvem){
         <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
         ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:3px;font-style:italic">→ ${c.obs}</div>`:""}
         <div style="margin-top:8px" id="conclusao-zoho-btn-${ci}">
-          <button onclick="abrirTicketSala(${ci})" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1.5px solid #e0e0e0;background:#fff;font-size:12px;font-weight:600;color:#444;cursor:pointer;font-family:inherit">
+          <button onclick="abrirTicketSala(${ci})" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1.5px solid var(--roxo);background:var(--roxo-light);font-size:12px;font-weight:700;color:var(--roxo);cursor:pointer;font-family:inherit">
             🎫 Abrir ticket no Zoho
           </button>
         </div>
@@ -1298,7 +1325,11 @@ async function _criarTicketComCategoria(idx, categoriaLimpezaSelecionada){
   if(!c) return;
 
   const btnWrap=document.getElementById("zoho-btn-"+idx);
-  if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#6b7280">⏳ Criando ticket...</span>`;
+  if(btnWrap) btnWrap.innerHTML=`
+    <div style="font-size:12px;color:#6b7280;margin-bottom:4px">⏳ Criando ticket no Zoho...</div>
+    <div style="height:4px;background:#e5e7eb;border-radius:99px;overflow:hidden;width:180px">
+      <div style="height:100%;background:var(--roxo);border-radius:99px;width:30%;animation:ticketLoad 1.2s ease-in-out infinite"></div>
+    </div>`;
 
   const res=await api({
     acao:"criarTicket",
