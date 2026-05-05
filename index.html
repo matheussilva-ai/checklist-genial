@@ -243,6 +243,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <div>5. Passe para a próxima sala</div>
         <div style="margin-top:6px;font-size:12px;opacity:0.8">Você pode fazer a ronda junto com outra pessoa — cada um pega salas diferentes.</div>
       </div>
+      <div id="ultima-ronda-info" style="display:none;background:var(--roxo-light);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--roxo)"></div>
       <div class="btn-stack">
         <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
         <button class="btn btn-ghost" id="btn-ver-hist-inicio">Ver histórico</button>
@@ -1453,11 +1454,32 @@ function bindGlobal(){
     S.salasConcluidas=[];
     document.getElementById("lista-unidade").textContent=S.unidade;
     document.getElementById("lista-responsavel").textContent=S.responsavel;
-    // Carregar status inicial
+
+    // Verificar se deve resetar o Status Ronda
+    const rondasUnidade = S.historico.filter(r=>r.unidade===S.unidade);
+    const ultima = rondasUnidade.sort((a,b)=>b.data-a.data)[0];
+    const diasPassados = ultima ? Math.floor((Date.now()-ultima.data)/(1000*60*60*24)) : 999;
+    let deveResetar = diasPassados > 15;
+
+    if(!deveResetar && ultima) {
+      const dataFmt = new Date(ultima.data).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+      const confirma = confirm(`Já existe uma ronda de ${dataFmt} para ${S.unidade} (${diasPassados} dia${diasPassados!==1?"s":""} atrás).
+
+Deseja iniciar uma nova ronda e resetar o status das salas?`);
+      if(!confirma) return;
+      deveResetar = true;
+    }
+
+    // Carregar status inicial (com reset se necessário)
     if(S.apiUrl){
       setSyncDot("syncing");
-      const res=await api({acao:"getStatus",unidade:S.unidade});
-      if(res.sucesso) S.statusSalas=res.salas||{};
+      if(deveResetar){
+        await api({acao:"resetarStatus",unidade:S.unidade});
+        S.statusSalas={};
+      } else {
+        const res=await api({acao:"getStatus",unidade:S.unidade});
+        if(res.sucesso) S.statusSalas=res.salas||{};
+      }
       setSyncDot("ok");
     }
     renderListaSalas();
@@ -1598,6 +1620,27 @@ function mostrarBannerConclusao(label, nc){
 
 function atualizarBtnIniciar(){
   document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
+  // Mostrar última ronda da unidade selecionada
+  const infoEl = document.getElementById("ultima-ronda-info");
+  if(!infoEl) return;
+  if(!S.unidade){ infoEl.style.display="none"; return; }
+  const rondasUnidade = S.historico.filter(r=>r.unidade===S.unidade);
+  if(rondasUnidade.length===0){ infoEl.style.display="none"; return; }
+  // Pegar a mais recente
+  const ultima = rondasUnidade.sort((a,b)=>b.data-a.data)[0];
+  const dataUltima = new Date(ultima.data);
+  const dataFmt = dataUltima.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+  const diasPassados = Math.floor((Date.now()-ultima.data)/(1000*60*60*24));
+  infoEl.style.display="block";
+  if(diasPassados<=15){
+    infoEl.innerHTML=`🕐 Última ronda: <strong>${dataFmt}</strong> (${diasPassados} dia${diasPassados!==1?"s":""} atrás)`;
+    infoEl.style.background="var(--teal-light)";
+    infoEl.style.color="#2D6B70";
+  } else {
+    infoEl.innerHTML=`⚠️ Última ronda: <strong>${dataFmt}</strong> — há ${diasPassados} dias. Está na hora de uma nova ronda!`;
+    infoEl.style.background="var(--warning-light)";
+    infoEl.style.color="var(--warning)";
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
