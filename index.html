@@ -1455,14 +1455,13 @@ function bindGlobal(){
     document.getElementById("lista-unidade").textContent=S.unidade;
     document.getElementById("lista-responsavel").textContent=S.responsavel;
 
-    // Verificar se deve resetar o Status Ronda
-    const rondasUnidade = S.historico.filter(r=>r.unidade===S.unidade);
-    const ultima = rondasUnidade.sort((a,b)=>b.data-a.data)[0];
-    const diasPassados = ultima ? Math.floor((Date.now()-ultima.data)/(1000*60*60*24)) : 999;
+    // Verificar se deve resetar o Status Ronda (usa dados buscados da planilha)
+    const diasPassados = S._diasUltimaRonda !== undefined ? S._diasUltimaRonda : 999;
+    const ultimaData = S._ultimaRondaData;
     let deveResetar = diasPassados > 15;
 
-    if(!deveResetar && ultima) {
-      const dataFmt = new Date(ultima.data).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+    if(!deveResetar && ultimaData) {
+      const dataFmt = new Date(ultimaData).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
       const confirma = confirm(`Já existe uma ronda de ${dataFmt} para ${S.unidade} (${diasPassados} dia${diasPassados!==1?"s":""} atrás).
 
 Deseja iniciar uma nova ronda e resetar o status das salas?`);
@@ -1618,28 +1617,44 @@ function mostrarBannerConclusao(label, nc){
   setTimeout(()=>{ wrap.style.display="none"; }, 6000);
 }
 
-function atualizarBtnIniciar(){
+async function atualizarBtnIniciar(){
   document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
-  // Mostrar última ronda da unidade selecionada
   const infoEl = document.getElementById("ultima-ronda-info");
   if(!infoEl) return;
   if(!S.unidade){ infoEl.style.display="none"; return; }
-  const rondasUnidade = S.historico.filter(r=>r.unidade===S.unidade);
-  if(rondasUnidade.length===0){ infoEl.style.display="none"; return; }
-  // Pegar a mais recente
-  const ultima = rondasUnidade.sort((a,b)=>b.data-a.data)[0];
-  const dataUltima = new Date(ultima.data);
-  const dataFmt = dataUltima.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
-  const diasPassados = Math.floor((Date.now()-ultima.data)/(1000*60*60*24));
+
+  // Buscar última ronda da planilha via API
   infoEl.style.display="block";
-  if(diasPassados<=15){
-    infoEl.innerHTML=`🕐 Última ronda: <strong>${dataFmt}</strong> (${diasPassados} dia${diasPassados!==1?"s":""} atrás)`;
-    infoEl.style.background="var(--teal-light)";
-    infoEl.style.color="#2D6B70";
+  infoEl.innerHTML=`<span style="color:var(--text-muted);font-size:12px">⏳ Verificando última ronda...</span>`;
+  infoEl.style.background="var(--roxo-light)";
+  infoEl.style.color="var(--roxo)";
+
+  if(S.apiUrl){
+    const res = await api({acao:"ultimaRonda", unidade:S.unidade});
+    if(res.sucesso && res.ultimaData){
+      const dataUltima = new Date(res.ultimaData);
+      const dataFmt = dataUltima.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+      const diasPassados = Math.floor((Date.now()-res.ultimaData)/(1000*60*60*24));
+      S._ultimaRondaData = res.ultimaData;
+      S._diasUltimaRonda = diasPassados;
+      if(diasPassados<=15){
+        infoEl.innerHTML=`🕐 Última ronda: <strong>${dataFmt}</strong> (${diasPassados} dia${diasPassados!==1?"s":""} atrás)`;
+        infoEl.style.background="var(--teal-light)";
+        infoEl.style.color="#2D6B70";
+      } else {
+        infoEl.innerHTML=`⚠️ Última ronda: <strong>${dataFmt}</strong> — há ${diasPassados} dias. Está na hora de uma nova ronda!`;
+        infoEl.style.background="var(--warning-light)";
+        infoEl.style.color="var(--warning)";
+      }
+    } else {
+      infoEl.innerHTML=`📋 Nenhuma ronda encontrada para ${S.unidade}`;
+      infoEl.style.background="var(--roxo-light)";
+      infoEl.style.color="var(--roxo)";
+      S._ultimaRondaData = null;
+      S._diasUltimaRonda = 999;
+    }
   } else {
-    infoEl.innerHTML=`⚠️ Última ronda: <strong>${dataFmt}</strong> — há ${diasPassados} dias. Está na hora de uma nova ronda!`;
-    infoEl.style.background="var(--warning-light)";
-    infoEl.style.color="var(--warning)";
+    infoEl.style.display="none";
   }
 }
 
