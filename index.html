@@ -232,7 +232,14 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
           <option>CG Anália Franco</option><option>CG Santana</option>
         </select>
         <label>Seu nome</label>
-        <input type="text" id="inp-responsavel" placeholder="Nome do responsável">
+        <select id="inp-responsavel" style="width:100%;padding:10px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:15px;color:var(--text);background:var(--white);font-family:inherit;outline:none;cursor:pointer">
+          <option value="">Selecione seu nome</option>
+          <option>Elaine</option>
+          <option>Marina</option>
+          <option>Maria Luiza</option>
+          <option>Matheus</option>
+          <option>Nathalia</option>
+        </select>
       </div>
       <div style="background:var(--teal-light);border:1.5px solid var(--teal-dark);border-radius:var(--radius-md);padding:12px 14px;margin-bottom:16px;font-size:13px;color:#2D6B70;line-height:1.6">
         <div style="font-weight:700;margin-bottom:4px">📋 Como funciona</div>
@@ -244,6 +251,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <div style="margin-top:6px;font-size:12px;opacity:0.8">Você pode fazer a ronda junto com outra pessoa — cada um pega salas diferentes.</div>
       </div>
       <div id="ultima-ronda-info" style="display:none;background:var(--roxo-light);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--roxo)"></div>
+      <div id="pendencias-info" style="display:none;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:var(--radius-md);padding:12px 14px;margin-bottom:12px;font-size:13px;color:#92400e"></div>
       <div class="btn-stack">
         <button class="btn btn-primary" id="btn-iniciar" disabled>Iniciar ronda →</button>
         <button class="btn btn-ghost" id="btn-ver-hist-inicio">Ver histórico</button>
@@ -1133,6 +1141,22 @@ Os itens sem resposta serão ignorados.`)) return;
   // Atualizar estado colaborativo local
   S.statusSalas[S.salaAtual.id]={status:"concluida",responsavel:S.responsavel};
   saveSessao();
+  // Salvar itens NC como pendências (para recuperar se não criar tickets)
+  if(dadosSala.chamados && dadosSala.chamados.length > 0){
+    const jaExistentes = loadPendencias(S.responsavel);
+    const novos = dadosSala.chamados.map(c=>({
+      unidade:S.unidade,
+      salaLabel:dadosSala.label,
+      texto:c.texto,
+      obs:c.obs||"",
+      subcategoria:c.subcategoria||"",
+      emergencial:c.emergencial||false,
+      critico:c.critico||false,
+      responsavel:S.responsavel,
+      ticketCriado:false,
+    }));
+    savePendencias(S.responsavel, [...jaExistentes, ...novos]);
+  }
 
   // Guardar dados da sala concluída para a tela de conclusão
   const salaConcluida = S.salasConcluidas[S.salasConcluidas.length - 1];
@@ -1289,6 +1313,10 @@ async function _criarTicketSala(idx,categoriaLimpeza){
   if(res.sucesso){
     if(btnWrap) btnWrap.innerHTML=`<a href="${res.ticketUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#f0fdf4;border:1.5px solid #86efac;font-size:12px;font-weight:700;color:#16a34a;text-decoration:none">✅ Ticket #${res.ticketNum} criado → Ver no Zoho</a>`;
     toast("✅ Ticket criado!","success");
+    // Marcar pendência como resolvida
+    {const todos=loadPendencias(S.responsavel);
+    const gi=todos.findIndex(t=>!t.ticketCriado&&t.texto===c.texto&&t.salaLabel===sala.label);
+    if(gi>-1){todos[gi].ticketCriado=true;savePendencias(S.responsavel,todos);}}
     // Verificar se todos os tickets foram abertos
     const sala2=S.salasConcluidas[S.salasConcluidas.length-1];
     if(sala2){
@@ -1480,7 +1508,7 @@ function bindGlobal(){
   const selU=document.getElementById("sel-unidade");
   const inpR=document.getElementById("inp-responsavel");
   selU.addEventListener("change",e=>{S.unidade=e.target.value;atualizarBtnIniciar();});
-  inpR.addEventListener("input",e=>{S.responsavel=e.target.value;saveResponsavel(S.responsavel);atualizarBtnIniciar();});
+  inpR.addEventListener("change",e=>{S.responsavel=e.target.value;saveResponsavel(S.responsavel);verificarPendencias();atualizarBtnIniciar();});
   document.getElementById("btn-config").addEventListener("click",()=>{
     document.getElementById("inp-api-url").value=S.apiUrl||"";ir("config");
   });
@@ -1665,6 +1693,94 @@ function mostrarBannerConclusao(label, nc){
   setTimeout(()=>{ wrap.style.display="none"; }, 6000);
 }
 
+// ── PENDÊNCIAS ───────────────────────────────────────────────────────
+function keyPendencias(responsavel){ return "rondas_pendencias_" + responsavel; }
+
+function savePendencias(responsavel, itens){
+  try{ localStorage.setItem(keyPendencias(responsavel), JSON.stringify(itens)); }catch{}
+}
+
+function loadPendencias(responsavel){
+  try{
+    const d = localStorage.getItem(keyPendencias(responsavel));
+    return d ? JSON.parse(d) : [];
+  }catch{ return []; }
+}
+
+function clearPendencias(responsavel){
+  try{ localStorage.removeItem(keyPendencias(responsavel)); }catch{}
+}
+
+function verificarPendencias(){
+  const el = document.getElementById("pendencias-info");
+  if(!el) return;
+  if(!S.responsavel){ el.style.display="none"; return; }
+  const pendentes = loadPendencias(S.responsavel).filter(p=>!p.ticketCriado);
+  if(pendentes.length === 0){ el.style.display="none"; return; }
+  el.style.display="block";
+  el.innerHTML = `⚠️ Você tem <strong>${pendentes.length} item${pendentes.length!==1?"s":""} NC sem ticket</strong> de uma ronda anterior.
+    <button onclick="abrirPendencias()" style="margin-left:8px;padding:4px 10px;border-radius:99px;background:#92400e;color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer">Criar tickets agora</button>
+    <button onclick="descartarPendencias()" style="margin-left:6px;padding:4px 10px;border-radius:99px;background:none;color:#92400e;border:1.5px solid #fed7aa;font-size:12px;cursor:pointer">Descartar</button>`;
+}
+
+function descartarPendencias(){
+  if(!confirm("Descartar os itens pendentes? Isso não apaga os dados da planilha, só remove o aviso.")) return;
+  clearPendencias(S.responsavel);
+  verificarPendencias();
+}
+
+function abrirPendencias(){
+  const pendentes = loadPendencias(S.responsavel).filter(p=>!p.ticketCriado);
+  if(pendentes.length === 0) return;
+  // Montar tela de pendências inline
+  const el = document.getElementById("pendencias-info");
+  let html = `<div style="font-weight:700;margin-bottom:10px">📋 Itens sem ticket — criar agora:</div>`;
+  pendentes.forEach((p,i)=>{
+    html += `<div style="background:#fff;border:1.5px solid #fed7aa;border-radius:8px;padding:10px 12px;margin-bottom:8px">
+      <div style="font-size:12px;color:#6b7280;margin-bottom:2px">${p.unidade} · ${p.salaLabel}</div>
+      <div style="font-weight:600;margin-bottom:2px">${p.obs||p.texto}</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:6px">${p.emergencial?"🔴 Crítico":"🟡 Atenção"}</div>
+      <div id="pend-btn-${i}">
+        <button onclick="criarTicketPendente(${i})" style="padding:5px 12px;border-radius:99px;background:var(--roxo);color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer">🎫 Criar ticket no Zoho</button>
+      </div>
+    </div>`;
+  });
+  html += `<button onclick="verificarPendencias()" style="margin-top:4px;font-size:12px;color:#92400e;background:none;border:none;cursor:pointer;text-decoration:underline">← Voltar</button>`;
+  el.innerHTML = html;
+}
+
+async function criarTicketPendente(idx){
+  const pendentes = loadPendencias(S.responsavel).filter(p=>!p.ticketCriado);
+  const p = pendentes[idx];
+  if(!p) return;
+  const btnWrap = document.getElementById("pend-btn-"+idx);
+  if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#6b7280">⏳ Criando ticket...</span>`;
+  const res = await api({
+    acao:"criarTicket",
+    unidade:p.unidade,
+    salaLabel:p.salaLabel,
+    itemTexto:p.texto,
+    subcategoria:p.subcategoria||"",
+    obs:p.obs||"",
+    emergencial:p.emergencial||false,
+    critico:p.critico||false,
+    responsavel:p.responsavel||S.responsavel,
+    categoriaLimpeza:p.categoriaLimpeza||"",
+    fotoBase64:"",
+  });
+  if(res.sucesso){
+    if(btnWrap) btnWrap.innerHTML=`<a href="${res.ticketUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:#f0fdf4;border:1.5px solid #86efac;font-size:12px;font-weight:700;color:#16a34a;text-decoration:none">✅ Ticket #${res.ticketNum} criado → Ver</a>`;
+    // Marcar como criado no localStorage
+    const todos = loadPendencias(S.responsavel);
+    const globalIdx = todos.findIndex(t=>!t.ticketCriado && t.texto===p.texto && t.salaLabel===p.salaLabel);
+    if(globalIdx > -1){ todos[globalIdx].ticketCriado=true; savePendencias(S.responsavel, todos); }
+    toast("✅ Ticket criado!","success");
+  } else {
+    if(btnWrap) btnWrap.innerHTML=`<span style="font-size:12px;color:#dc2626">❌ Erro</span> <button onclick="criarTicketPendente(${idx})" style="font-size:12px;color:#6b7280;background:none;border:none;cursor:pointer;text-decoration:underline">Tentar novamente</button>`;
+    toast("Erro ao criar ticket","error");
+  }
+}
+
 async function atualizarBtnIniciar(){
   document.getElementById("btn-iniciar").disabled=!S.unidade||!S.responsavel.trim();
   const infoEl = document.getElementById("ultima-ronda-info");
@@ -1712,7 +1828,13 @@ async function atualizarBtnIniciar(){
 // ════════════════════════════════════════════════════════════════
 loadLocal();
 bindGlobal();
-document.getElementById("inp-responsavel").value=S.responsavel||"";
+const selResp=document.getElementById("inp-responsavel");
+if(selResp && S.responsavel){
+  // Tentar encontrar opção com nome salvo
+  const opts=[...selResp.options].map(o=>o.value);
+  if(opts.includes(S.responsavel)) selResp.value=S.responsavel;
+}
+verificarPendencias();
 if(S.unidade){
   const sel=document.getElementById("sel-unidade");
   if(sel) sel.value=S.unidade;
