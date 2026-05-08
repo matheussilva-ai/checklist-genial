@@ -1518,24 +1518,26 @@ function bindGlobal(){
     document.getElementById("lista-responsavel").textContent=S.responsavel;
 
     if(S.apiUrl){
-      setSyncDot("syncing");
+      setLoading(true,"Verificando ronda...",20);
+      await new Promise(r=>setTimeout(r,100));
 
       // Sempre buscar o status atual da planilha primeiro
       const [resStatus, resUltima] = await Promise.all([
         api({acao:"getStatus", unidade:S.unidade}),
         api({acao:"ultimaRonda", unidade:S.unidade}),
       ]);
-      setSyncDot("ok");
 
       const temRondaAtiva = resUltima.sucesso && resUltima.temRondaAtiva;
       const salas = resStatus.sucesso ? resStatus.salas||{} : {};
       const temSalasNaPlanilha = Object.keys(salas).length > 0;
 
       if(temRondaAtiva || temSalasNaPlanilha) {
-        // Há ronda em andamento — entrar e colaborar
+        setLoading(true,"Carregando salas...",70);
+        await new Promise(r=>setTimeout(r,200));
         S.statusSalas = salas;
         S.salasConcluidas = [];
       } else {
+        setLoading(false);
         // Planilha vazia — verificar se é nova ronda ou continuação
         const ultimaData = resUltima.sucesso ? resUltima.ultimaData : null;
         if(ultimaData){
@@ -1546,11 +1548,16 @@ function bindGlobal(){
 Iniciar nova ronda?`);
           if(!confirma) return;
         }
-        // Nova ronda limpa — garantir planilha limpa (por segurança) e zerar local
+        setLoading(true,"Preparando nova ronda...",60);
+        await new Promise(r=>setTimeout(r,100));
         await api({acao:"resetarStatus", unidade:S.unidade});
         S.statusSalas = {};
         S.salasConcluidas = [];
       }
+
+      setLoading(true,"Abrindo lista de salas...",95);
+      await new Promise(r=>setTimeout(r,200));
+      setLoading(false);
     } else {
       // Modo offline
       S.statusSalas = {};
