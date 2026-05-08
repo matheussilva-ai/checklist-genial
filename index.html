@@ -1142,11 +1142,11 @@ Os itens sem resposta serão ignorados.`)) return;
   S.statusSalas[S.salaAtual.id]={status:"concluida",responsavel:S.responsavel};
   saveSessao();
   // Salvar itens NC como pendências (para recuperar se não criar tickets)
-  if(dadosSala.chamados && dadosSala.chamados.length > 0){
+  if(salaData.chamados && salaData.chamados.length > 0){
     const jaExistentes = loadPendencias(S.responsavel);
-    const novos = dadosSala.chamados.map(c=>({
+    const novos = salaData.chamados.map(c=>({
       unidade:S.unidade,
-      salaLabel:dadosSala.label,
+      salaLabel:salaData.salaLabel,
       texto:c.texto,
       obs:c.obs||"",
       subcategoria:c.subcategoria||"",
