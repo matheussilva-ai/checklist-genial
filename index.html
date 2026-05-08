@@ -1488,8 +1488,17 @@ function comprimirBase64(base64,chave){
   },300);
 }
 function rerenderItemFoto(chave){
-  renderSalaGrupos();
-  atualizarHeaderSala();
+  try{
+    // Guardar posição do scroll antes de re-renderizar
+    const screenEl=document.getElementById("screen-sala");
+    const scrollY=screenEl?screenEl.scrollTop:0;
+    renderSalaGrupos();
+    atualizarHeaderSala();
+    // Restaurar scroll
+    if(screenEl) screenEl.scrollTop=scrollY;
+  }catch(e){
+    console.error("Erro ao re-renderizar foto:",e);
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1619,18 +1628,29 @@ Iniciar nova ronda?`);
     if(!fotoInput) return;
     const file=e.target.files[0];
     if(!file) return;
-    if(file.size>8*1024*1024){alert("Foto muito grande (máx. 8MB).");e.target.value="";return;}
-    const isHeic=file.type==="image/heic"||file.type==="image/heif"
-      ||file.name.toLowerCase().endsWith(".heic")||file.name.toLowerCase().endsWith(".heif")||file.type==="";
-    if(isHeic&&typeof heic2any!=="undefined"){
-      heic2any({blob:file,toType:"image/jpeg",quality:0.7})
-        .then(b=>{const r=new FileReader();r.onload=ev=>comprimirBase64(ev.target.result,fotoInput);r.readAsDataURL(b);})
-        .catch(()=>{const r=new FileReader();r.onload=ev=>comprimirBase64(ev.target.result,fotoInput);r.readAsDataURL(file);});
-      return;
+    if(file.size>8*1024*1024){toast("Foto muito grande (máx. 8MB). Tente novamente.","error");e.target.value="";return;}
+    try{
+      const isHeic=file.type==="image/heic"||file.type==="image/heif"
+        ||file.name.toLowerCase().endsWith(".heic")||file.name.toLowerCase().endsWith(".heif")||file.type==="";
+      if(isHeic&&typeof heic2any!=="undefined"){
+        heic2any({blob:file,toType:"image/jpeg",quality:0.7})
+          .then(b=>{
+            try{const r=new FileReader();r.onload=ev=>{try{comprimirBase64(ev.target.result,fotoInput);}catch{toast("Erro ao processar foto. Suas respostas foram mantidas.","error");}};r.readAsDataURL(b);}
+            catch{toast("Erro ao processar foto. Suas respostas foram mantidas.","error");}
+          })
+          .catch(()=>{
+            try{const r=new FileReader();r.onload=ev=>{try{comprimirBase64(ev.target.result,fotoInput);}catch{toast("Erro ao processar foto. Suas respostas foram mantidas.","error");}};r.readAsDataURL(file);}
+            catch{toast("Erro ao processar foto. Suas respostas foram mantidas.","error");}
+          });
+        return;
+      }
+      const r=new FileReader();
+      r.onerror=()=>toast("Erro ao ler foto. Suas respostas foram mantidas.","error");
+      r.onload=ev=>{try{comprimirBase64(ev.target.result,fotoInput);}catch{toast("Erro ao processar foto. Suas respostas foram mantidas.","error");}};
+      r.readAsDataURL(file);
+    }catch(err){
+      toast("Erro ao processar foto. Suas respostas foram mantidas.","error");
     }
-    const r=new FileReader();
-    r.onload=ev=>comprimirBase64(ev.target.result,fotoInput);
-    r.readAsDataURL(file);
   });
 
   document.getElementById("btn-voltar-sala").addEventListener("click",async()=>{
