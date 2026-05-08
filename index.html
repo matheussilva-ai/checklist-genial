@@ -321,6 +321,8 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
       <div class="card" style="padding:14px">
         <label style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;display:block">Alguma observação sobre esta sala?</label>
         <textarea id="obs-sala" rows="2" placeholder="Ex: Janela com folga, armário sem puxador..." style="width:100%;border-radius:var(--radius-sm);border:1.5px solid var(--border);padding:10px 12px;font-size:14px;color:var(--text);background:var(--white);resize:vertical;font-family:inherit;outline:none;box-sizing:border-box"></textarea>
+        <button id="btn-chamado-obs" onclick="abrirModalChamadoObs()" style="display:none;margin-top:10px;width:100%;padding:10px;border-radius:var(--radius-sm);background:var(--roxo-light);border:1.5px solid var(--roxo);color:var(--roxo);font-size:13px;font-weight:700;cursor:pointer">🎫 Abrir chamado para esta observação</button>
+        <div id="chamados-obs-lista" style="margin-top:8px"></div>
       </div>
     </div>
     <div style="padding:0 16px 24px">
@@ -376,6 +378,31 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <h2 class="title" style="font-size:18px">Histórico de salas</h2>
       </div>
       <div id="hist-lista"></div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: Chamado de Observação ── -->
+  <div id="modal-chamado-obs" style="display:none" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">🎫 Abrir chamado</div>
+      <div class="modal-sub" id="modal-obs-texto" style="margin-bottom:12px;font-size:13px;color:var(--text-muted);word-break:break-word"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:8px">Selecione a categoria:</div>
+      <button class="modal-option" onclick="confirmarChamadoObs('Manutenção')">🔧 Manutenção</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Limpeza')">🧼 Limpeza</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Segurança')">🔒 Segurança</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Estacionamento')">🚗 Estacionamento</button>
+      <button class="modal-option" onclick="abrirSubcatCompras()">🛒 Compras →</button>
+      <button class="modal-cancel" onclick="document.getElementById('modal-chamado-obs').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- ── MODAL: Subcategoria Compras ── -->
+  <div id="modal-compras-obs" style="display:none" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">🛒 Compras — Subcategoria</div>
+      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Uniforme')">👕 Uniforme</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Melhorias e Outros assuntos')">📦 Melhorias e Outros assuntos</button>
+      <button class="modal-cancel" onclick="document.getElementById('modal-compras-obs').style.display='none';document.getElementById('modal-chamado-obs').style.display='flex'">← Voltar</button>
     </div>
   </div>
 
@@ -1666,6 +1693,10 @@ Iniciar nova ronda?`);
     renderListaSalas();
     ir("lista");
   });
+  document.getElementById("obs-sala").addEventListener("input",e=>{
+    const btn=document.getElementById("btn-chamado-obs");
+    if(btn) btn.style.display=e.target.value.trim()?"block":"none";
+  });
   ["btn-concluir-sala-bottom"].forEach(id=>{
     document.getElementById(id).addEventListener("click",()=>{
       if(!S.salaAtual) return;
@@ -1718,6 +1749,62 @@ function mostrarBannerConclusao(label, nc){
        </div>`;
   // Sumir após 6 segundos
   setTimeout(()=>{ wrap.style.display="none"; }, 6000);
+}
+
+// ── CHAMADO DE OBSERVAÇÃO ────────────────────────────────────────────
+function abrirModalChamadoObs(){
+  const obs = document.getElementById("obs-sala").value.trim();
+  if(!obs){ toast("Escreva uma observação primeiro","error"); return; }
+  document.getElementById("modal-obs-texto").textContent = '"' + obs + '"';
+  document.getElementById("modal-chamado-obs").style.display="flex";
+}
+
+function abrirSubcatCompras(){
+  document.getElementById("modal-chamado-obs").style.display="none";
+  document.getElementById("modal-compras-obs").style.display="flex";
+}
+
+async function confirmarChamadoObs(motivo, subcategoria){
+  document.getElementById("modal-chamado-obs").style.display="none";
+  document.getElementById("modal-compras-obs").style.display="none";
+
+  const obs = document.getElementById("obs-sala").value.trim();
+  if(!obs) return;
+
+  const payload = {
+    acao:"criarTicket",
+    unidade: S.unidade,
+    salaLabel: S.salaAtual ? S.salaAtual.label : S.unidade,
+    itemTexto: obs,
+    subcategoria: motivo === "Limpeza" ? "🧼 Limpeza" : motivo === "Manutenção" ? "🔧 Infraestrutura" : motivo,
+    obs: obs,
+    emergencial: false,
+    critico: motivo === "Segurança",
+    responsavel: S.responsavel,
+    categoriaLimpeza: "",
+    fotoBase64: "",
+    motivoOverride: motivo,
+    subcategoriaCompras: subcategoria || "",
+  };
+
+  const lista = document.getElementById("chamados-obs-lista");
+  const tmpId = "obs-ticket-" + Date.now();
+  lista.insertAdjacentHTML("beforeend",
+    `<div id="${tmpId}" style="font-size:12px;color:var(--text-muted);padding:6px 0">⏳ Criando ticket de ${motivo}...</div>`
+  );
+
+  const res = await api(payload);
+  const el = document.getElementById(tmpId);
+  if(res.sucesso){
+    if(el) el.outerHTML = `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px">
+      <span style="color:#16a34a;font-weight:700">✅ Ticket #${res.ticketNum} (${motivo}${subcategoria?" — "+subcategoria:""})</span>
+      <a href="${res.ticketUrl}" target="_blank" style="color:var(--roxo);text-decoration:underline">Ver →</a>
+    </div>`;
+    toast("✅ Ticket de " + motivo + " criado!","success");
+  } else {
+    if(el) el.outerHTML = `<div style="font-size:12px;color:#dc2626;padding:6px 0">❌ Erro ao criar ticket. Tente novamente.</div>`;
+    toast("Erro ao criar ticket","error");
+  }
 }
 
 // ── PENDÊNCIAS ───────────────────────────────────────────────────────
