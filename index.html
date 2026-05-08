@@ -767,6 +767,8 @@ const S={
   horaInicio:null,
   expandido:null,
   // colaborativo
+  modoEdicao:false,
+  salaEditandoOriginal:null,
   statusSalas:{},   // salaId -> { status, responsavel }
   salasConcluidas:[], // lista de { salaId, label, resumo, chamados, responsavel } concluídas nessa sessão
   pollTimer:null,
@@ -933,8 +935,9 @@ function renderSalaItem(salaId, label, badge){
 
   if(concluida){
     cls+="concluida";
+    const eMinhaConcluida = resp === S.responsavel;
     badgeHtml=`<span class="sala-status-badge badge-concluida">✓ Concluída</span>`;
-    subtext=`<div style="font-size:11px;color:#2D6B70;margin-top:2px">${resp}</div>`;
+    subtext=`<div style="font-size:11px;color:#2D6B70;margin-top:2px">${resp}${eMinhaConcluida?' <button onclick="event.stopPropagation();editarSala(''+salaId+'')" style="margin-left:6px;padding:2px 8px;border-radius:99px;background:#e0f5f6;border:1px solid #2D6B70;color:#2D6B70;font-size:10px;font-weight:700;cursor:pointer">✏️ Editar</button>':''}</div>`;
   } else if(eMinha){
     cls+="minha";
     badgeHtml=`<span class="sala-status-badge badge-minha">✏️ Você</span>`;
@@ -958,6 +961,50 @@ function renderSalaItem(salaId, label, badge){
     </div>
     ${badgeHtml}
   </button>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// EDITAR SALA
+// ════════════════════════════════════════════════════════════════
+async function editarSala(salaId){
+  // Buscar dados da sala concluída por mim nesta sessão
+  const salaConcluida = S.salasConcluidas.find(s=>s.salaId===salaId&&s.responsavel===S.responsavel);
+  if(!salaConcluida){
+    toast("Só é possível editar salas preenchidas por você nesta sessão","error");
+    return;
+  }
+
+  // Reabrir a sala no modo edição
+  const salaDef=(UNIDADES[S.unidade]||[]).find(s=>s.id===salaId);
+  const ambDef=AMBIENTES.find(a=>a.id===salaId);
+  if(!salaDef&&!ambDef){ toast("Sala não encontrada","error"); return; }
+
+  const def=salaDef||ambDef;
+  S.salaAtual={id:salaId, label:def.label||def.titulo, itens:def.itens||[]};
+  S.modoEdicao=true;
+  S.salaEditandoOriginal=salaConcluida;
+
+  // Restaurar respostas anteriores
+  S.respostas={};S.observacoes={};S.fotos={};S.obsSala="";
+  if(salaConcluida.respostas) S.respostas={...salaConcluida.respostas};
+  if(salaConcluida.observacoes) S.observacoes={...salaConcluida.observacoes};
+  if(salaConcluida.obsSala) S.obsSala=salaConcluida.obsSala;
+
+  renderTelaSala();
+  ir("sala");
+
+  // Indicar modo edição no header
+  const subtitulo=document.getElementById("sala-subtitulo");
+  if(subtitulo) subtitulo.textContent=`${S.unidade} · ${S.responsavel} · ✏️ Editando`;
+
+  const obsEl=document.getElementById("obs-sala");
+  if(obsEl){ obsEl.value=S.obsSala||""; if(S.obsSala) document.getElementById("btn-chamado-obs").style.display="block"; }
+
+  // Mudar texto do botão concluir
+  ["btn-concluir-sala-bottom"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent="✓ Salvar edição →";
+  });
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1097,6 +1144,26 @@ async function concluirSala(){
   const obsEl=document.getElementById("obs-sala");
   S.obsSala=obsEl?obsEl.value:"";
 
+  // Modo edição: atualizar salasConcluidas e ir direto para lista
+  if(S.modoEdicao){
+    S.modoEdicao=false;
+    const idx=S.salasConcluidas.findIndex(s=>s.salaId===S.salaAtual.id&&s.responsavel===S.responsavel);
+    if(idx>-1){
+      S.salasConcluidas[idx]={
+        ...S.salasConcluidas[idx],
+        respostas:{...S.respostas},
+        observacoes:{...S.observacoes},
+        obsSala:S.obsSala,
+      };
+    }
+    saveSessao();
+    toast("✅ Edição salva localmente","success");
+    S.salaAtual=null; S.respostas={}; S.observacoes={}; S.fotos={}; S.obsSala="";
+    renderListaSalas();
+    ir("lista");
+    return;
+  }
+
   const itens=S.salaAtual.itens;
   const prefix="item__";
   const total=itens.length;
@@ -1156,13 +1223,16 @@ Os itens sem resposta serão ignorados.`)) return;
   S.historico=[{...salaData,salvoNaNuvem:ok.sucesso},...S.historico];
   saveHistorico();
 
-  // Registrar como concluída na sessão
+  // Registrar como concluída na sessão (salvar respostas para edição futura)
   S.salasConcluidas.push({
     salaId:S.salaAtual.id,
     label:S.salaAtual.label,
     resumo,chamados,
     responsavel:S.responsavel,
     salvoNaNuvem:ok.sucesso,
+    respostas:{...S.respostas},
+    observacoes:{...S.observacoes},
+    obsSala:S.obsSala,
   });
 
   // Atualizar estado colaborativo local
