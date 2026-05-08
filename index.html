@@ -990,7 +990,7 @@ async function editarSala(salaId){
   if(salaConcluida.observacoes) S.observacoes={...salaConcluida.observacoes};
   if(salaConcluida.obsSala) S.obsSala=salaConcluida.obsSala;
 
-  renderTelaSala();
+  renderSalaGrupos();
   ir("sala");
 
   // Indicar modo edição no header
