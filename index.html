@@ -164,6 +164,9 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
 .modal-option:active{transform:scale(0.98)}
 .modal-option:hover{border-color:var(--roxo);background:var(--roxo-xlight)}
 .modal-cancel{width:100%;padding:12px;border-radius:var(--radius-md);border:none;background:none;color:var(--text-muted);font-size:14px;font-family:inherit;cursor:pointer;margin-top:4px}
+.chamado-livre-cat{padding:15px 12px;border-radius:var(--radius-sm);border:2px solid var(--border);background:var(--white);font-size:14px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;width:100%;display:block;line-height:1.4;font-family:inherit;transition:border-color .15s,background .15s}
+.chamado-livre-cat.active{border-color:var(--roxo);background:var(--roxo);color:#fff}
+.chamado-livre-cat:active{opacity:0.85}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 </head>
@@ -317,13 +320,15 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
       </div>
 
       <!-- Subcategoria Compras -->
+      <!-- Subcategoria Compras -->
       <div id="chamado-livre-compras-wrap" style="display:none;margin-bottom:12px">
         <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Subcategoria Compras</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button class="chamado-livre-cat" data-subcat="Solicitar compra emergencial de insumos" onclick="selecionarSubcatComprasLivre(this)" style="grid-column:1/-1">🚨 Solicitar compra emergencial de insumos</button>
-          <button class="chamado-livre-cat" data-subcat="Solicitar compra específica" onclick="selecionarSubcatComprasLivre(this)" style="grid-column:1/-1">🛍️ Solicitar compra específica</button>
-          <button class="chamado-livre-cat" data-subcat="Tirar dúvidas sobre compras" onclick="selecionarSubcatComprasLivre(this)" style="grid-column:1/-1">❓ Tirar dúvidas sobre compras</button>
-        </div>
+        <select id="chamado-livre-subcat" onchange="_subcatLivre=this.value" style="width:100%;padding:14px 12px;border-radius:var(--radius-sm);border:2px solid var(--border);font-size:14px;color:var(--text);background:var(--white);font-family:inherit;outline:none;cursor:pointer;appearance:auto">
+          <option value="">Selecione a subcategoria...</option>
+          <option value="Solicitar compra emergencial de insumos">🚨 Solicitar compra emergencial de insumos</option>
+          <option value="Solicitar compra específica">🛍️ Solicitar compra específica</option>
+          <option value="Tirar dúvidas sobre compras">❓ Tirar dúvidas sobre compras</option>
+        </select>
       </div>
 
       <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Descrição do problema</div>
@@ -1949,6 +1954,7 @@ function abrirNovoChamadoLivre(){
   document.querySelectorAll(".chamado-livre-cat").forEach(b=>b.classList.remove("active"));
   document.getElementById("chamado-livre-sev-normal").classList.add("active");
   document.getElementById("chamado-livre-compras-wrap").style.display="none";
+  const scEl=document.getElementById("chamado-livre-subcat"); if(scEl) scEl.value="";
   document.getElementById("chamado-livre-desc").value="";
   document.getElementById("chamado-livre-resultado").innerHTML="";
   document.getElementById("btn-confirmar-chamado-livre").style.display="block";
@@ -1968,13 +1974,11 @@ function selecionarCatLivre(btn){
 }
 
 function selecionarSubcatComprasLivre(btn){
-  document.querySelectorAll("#chamado-livre-compras-wrap .chamado-livre-cat").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  _subcatLivre=btn.dataset.subcat;
+  if(btn){ _subcatLivre=btn.dataset.subcat||""; }
 }
 
 function selecionarSevLivre(btn){
-  document.querySelectorAll("[data-sev]").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll("#chamado-livre-sev-normal,#chamado-livre-sev-critico").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
   _sevLivre=btn.dataset.sev;
 }
