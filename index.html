@@ -993,8 +993,12 @@ async function editarSala(salaId){
   if(salaConcluida.observacoes) S.observacoes={...salaConcluida.observacoes};
   if(salaConcluida.obsSala) S.obsSala=salaConcluida.obsSala;
 
-  renderSalaGrupos();
   ir("sala");
+  // Renderizar APÓS ir para a tela (garante que o DOM está visível)
+  setTimeout(()=>{
+    renderSalaGrupos();
+    atualizarHeaderSala();
+  }, 50);
 
   // Indicar modo edição no header
   const subtitulo=document.getElementById("sala-subtitulo");
@@ -1456,9 +1460,10 @@ function renderTelaConclusaoSala(sala,salvoNuvem){
         <div style="font-size:13px;color:#1f2937;font-weight:${c.critico?700:400}">${c.critico?"⚠️ ":""}${c.texto}</div>
         ${c.obs?`<div style="font-size:12px;color:#6b7280;margin-top:3px;font-style:italic">→ ${c.obs}</div>`:""}
         <div style="margin-top:8px" id="conclusao-zoho-btn-${ci}">
-          <button onclick="abrirTicketSala(${ci})" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1.5px solid var(--roxo);background:var(--roxo-light);font-size:12px;font-weight:700;color:var(--roxo);cursor:pointer;font-family:inherit">
-            🎫 Abrir ticket no Zoho
-          </button>
+          ${c.ticket
+            ? `<a href="${c.ticket.url}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:#f0fdf4;border:1.5px solid #86efac;font-size:12px;font-weight:700;color:#16a34a;text-decoration:none">✅ Ticket #${c.ticket.num} criado → Ver no Zoho</a>`
+            : `<button onclick="abrirTicketSala(${ci})" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;border:1.5px solid var(--roxo);background:var(--roxo-light);font-size:12px;font-weight:700;color:var(--roxo);cursor:pointer;font-family:inherit">🎫 Abrir ticket no Zoho</button>`
+          }
         </div>
       </div>
     `).join("")}
@@ -1514,6 +1519,17 @@ async function _criarTicketComCategoria(idx, categoriaLimpezaSelecionada){
         ✅ Ticket #${res.ticketNum} criado → Ver no Zoho
       </a>`;
     toast("✅ Ticket criado no Zoho!","success");
+    // Salvar ticket no histórico da sala para persistir após reload
+    const salaIdx=S.salasConcluidas.findIndex(s=>s.chamados&&s.chamados.some(ch=>ch.texto===c.texto&&s.label===c.salaLabel));
+    if(salaIdx>-1){
+      const chamIdx=S.salasConcluidas[salaIdx].chamados.findIndex(ch=>ch.texto===c.texto);
+      if(chamIdx>-1){
+        S.salasConcluidas[salaIdx].chamados[chamIdx].ticket={
+          id:res.ticketId, num:res.ticketNum, url:res.ticketUrl
+        };
+        saveSessao();
+      }
+    }
   } else {
     if(btnWrap) btnWrap.innerHTML=`
       <span style="font-size:12px;color:#dc2626">❌ Erro ao criar ticket — tente novamente</span>
