@@ -970,20 +970,50 @@ function renderSalaItem(salaId, label, badge){
 // EDITAR SALA
 // ════════════════════════════════════════════════════════════════
 async function editarSala(salaId){
-  // Buscar dados da sala concluída por mim nesta sessão
-  const salaConcluida = S.salasConcluidas.find(s=>s.salaId===salaId&&s.responsavel===S.responsavel);
-  if(!salaConcluida){
-    toast("Só é possível editar salas preenchidas por você nesta sessão","error");
-    return;
-  }
-
-  // Reabrir a sala no modo edição
+  // Buscar definição da sala
   const salaDef=(UNIDADES[S.unidade]||[]).find(s=>s.id===salaId);
   const ambDef=AMBIENTES.find(a=>a.id===salaId);
   if(!salaDef&&!ambDef){ toast("Sala não encontrada","error"); return; }
-
   const def=salaDef||ambDef;
-  S.salaAtual={id:salaId, label:def.label||def.titulo, itens:def.itens||[]};
+  const salaLabel=def.label||def.titulo;
+
+  // Tentar buscar da sessão local primeiro
+  let salaConcluida = S.salasConcluidas.find(s=>s.salaId===salaId&&s.responsavel===S.responsavel);
+
+  // Se não encontrou localmente, buscar da planilha
+  if(!salaConcluida){
+    toast("🔍 Buscando dados da planilha...","info");
+    const res = await api({acao:"getSalaDetalhes", unidade:S.unidade, salaLabel, responsavel:S.responsavel});
+    if(!res.sucesso){
+      toast("Não foi possível recuperar os dados desta sala","error");
+      return;
+    }
+    // Reconstituir salaConcluida com dados da planilha
+    salaConcluida = {
+      salaId, label:salaLabel,
+      responsavel:res.responsavel||S.responsavel,
+      chamados:res.chamados||[],
+      resumo:res.resumo||{},
+      respostas:{}, observacoes:{}, obsSala:"",
+      // Reconstruir respostas a partir dos chamados (itens NC = chamado_normal)
+    };
+    // Marcar nos respostas os itens que eram NC
+    const itens=def.itens||[];
+    res.chamados.forEach(c=>{
+      const idx=itens.findIndex(it=>{
+        const t=typeof it==="string"?it:it.texto||it.label||"";
+        return t.replace("⚠ ","")===c.texto.replace("⚠ ","");
+      });
+      if(idx>-1){
+        const chave="item__"+idx;
+        salaConcluida.respostas[chave]=c.emergencial?"chamado_emergencial":"chamado_normal";
+        if(c.obs) salaConcluida.observacoes[chave]=c.obs;
+      }
+    });
+    toast("✅ Dados recuperados da planilha","success");
+  }
+
+  S.salaAtual={id:salaId, label:salaLabel, itens:def.itens||[]};
   S.modoEdicao=true;
   S.salaEditandoOriginal=salaConcluida;
 
