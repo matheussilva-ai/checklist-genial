@@ -292,6 +292,54 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
     <div style="padding:16px">
       <button class="btn btn-outline" id="btn-finalizar-ronda">Ver resumo da ronda →</button>
     </div>
+
+    <!-- Botão flutuante novo chamado -->
+    <button id="btn-novo-chamado-livre" onclick="abrirNovoChamadoLivre()" style="position:fixed;bottom:24px;right:20px;z-index:999;width:52px;height:52px;border-radius:50%;background:var(--roxo);border:none;color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(91,87,160,0.4);cursor:pointer;display:none;align-items:center;justify-content:center">🎫</button>
+  </div>
+
+  <!-- ── MODAL: Novo Chamado Livre ── -->
+  <div id="modal-chamado-livre" style="display:none" class="modal-overlay">
+    <div class="modal-box" style="max-height:90vh;overflow-y:auto">
+      <div class="modal-title">🎫 Novo chamado</div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Ambiente</div>
+      <select id="chamado-livre-ambiente" style="width:100%;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;color:var(--text);background:var(--white);font-family:inherit;margin-bottom:12px">
+        <option value="">Selecione o ambiente...</option>
+      </select>
+
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Categoria</div>
+      <div id="chamado-livre-cats" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <button class="chamado-livre-cat" data-cat="Manutenção" onclick="selecionarCatLivre(this)">🔧 Manutenção</button>
+        <button class="chamado-livre-cat" data-cat="Limpeza" onclick="selecionarCatLivre(this)">🧼 Limpeza</button>
+        <button class="chamado-livre-cat" data-cat="Segurança" onclick="selecionarCatLivre(this)">🔒 Segurança</button>
+        <button class="chamado-livre-cat" data-cat="Estacionamento" onclick="selecionarCatLivre(this)">🚗 Estacionamento</button>
+        <button class="chamado-livre-cat" data-cat="Compras" onclick="selecionarCatLivre(this)" style="grid-column:1/-1">🛒 Compras</button>
+      </div>
+
+      <!-- Subcategoria Compras -->
+      <div id="chamado-livre-compras-wrap" style="display:none;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Subcategoria Compras</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="chamado-livre-cat" data-subcat="Solicitar compra emergencial de insumos" onclick="selecionarSubcatComprasLivre(this)" style="grid-column:1/-1">🚨 Solicitar compra emergencial de insumos</button>
+          <button class="chamado-livre-cat" data-subcat="Solicitar compra específica" onclick="selecionarSubcatComprasLivre(this)" style="grid-column:1/-1">🛍️ Solicitar compra específica</button>
+          <button class="chamado-livre-cat" data-subcat="Tirar dúvidas sobre compras" onclick="selecionarSubcatComprasLivre(this)" style="grid-column:1/-1">❓ Tirar dúvidas sobre compras</button>
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Descrição do problema</div>
+      <textarea id="chamado-livre-desc" rows="3" placeholder="Descreva o problema ou solicitação..." style="width:100%;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:14px;color:var(--text);background:var(--white);resize:none;font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:12px"></textarea>
+
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px">Severidade</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <button class="chamado-livre-cat active" data-sev="normal" onclick="selecionarSevLivre(this)" id="chamado-livre-sev-normal">🟡 Atenção</button>
+        <button class="chamado-livre-cat" data-sev="critico" onclick="selecionarSevLivre(this)" id="chamado-livre-sev-critico">🔴 Crítico</button>
+      </div>
+
+      <div id="chamado-livre-resultado" style="margin-bottom:12px"></div>
+
+      <button onclick="confirmarChamadoLivre()" id="btn-confirmar-chamado-livre" style="width:100%;padding:12px;border-radius:var(--radius-sm);background:var(--roxo);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px">Abrir chamado no Zoho</button>
+      <button onclick="document.getElementById('modal-chamado-livre').style.display='none'" style="width:100%;padding:10px;border-radius:var(--radius-sm);background:none;color:var(--text-muted);border:1.5px solid var(--border);font-size:13px;cursor:pointer">Cancelar</button>
+    </div>
   </div>
 
   <!-- ── TELA: Sala (preenchimento) ── -->
@@ -400,8 +448,9 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
   <div id="modal-compras-obs" style="display:none" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-title">🛒 Compras — Subcategoria</div>
-      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Uniforme')">👕 Uniforme</button>
-      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Melhorias e Outros assuntos')">📦 Melhorias e Outros assuntos</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Solicitar compra emergencial de insumos')">🚨 Solicitar compra emergencial de insumos</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Solicitar compra específica')">🛍️ Solicitar compra específica</button>
+      <button class="modal-option" onclick="confirmarChamadoObs('Compras','Tirar dúvidas sobre compras')">❓ Tirar dúvidas sobre compras</button>
       <button class="modal-cancel" onclick="document.getElementById('modal-compras-obs').style.display='none';document.getElementById('modal-chamado-obs').style.display='flex'">← Voltar</button>
     </div>
   </div>
@@ -822,6 +871,9 @@ function ir(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   document.getElementById("screen-"+id).classList.add("active");
   window.scrollTo(0,0);
+  // Mostrar botão flutuante só na tela de lista
+  const fab=document.getElementById("btn-novo-chamado-livre");
+  if(fab) fab.style.display=id==="lista"?"flex":"none";
 }
 function toast(msg,tipo=""){
   const t=document.getElementById("toast");
@@ -1805,11 +1857,13 @@ Iniciar nova ronda?`);
     if(respondidos>0){
       if(!confirm(`Você preencheu ${respondidos} itens. Ao voltar, o progresso desta sala será perdido. Continuar?`)) return;
     }
+    setLoading(true,"Voltando para a lista...",50);
     // Liberar claim
     if(S.apiUrl) await api({acao:"releaseSala",unidade:S.unidade,salaId:S.salaAtual.id,responsavel:S.responsavel});
     S.statusSalas[S.salaAtual.id]={status:"livre",responsavel:""};
     S.salaAtual=null;S.respostas={};S.observacoes={};S.fotos={};
     renderListaSalas();
+    setLoading(false);
     ir("lista");
   });
   document.getElementById("obs-sala").addEventListener("input",e=>{
@@ -1842,10 +1896,14 @@ Todos os ${total} itens preenchidos — tudo conforme! ✅`;
 
   // Resumo
   document.getElementById("btn-salvar-ir-proxima").addEventListener("click",()=>{
-    renderListaSalas();
-    const ultimaSala=S.salasConcluidas[S.salasConcluidas.length-1];
-    if(ultimaSala) mostrarBannerConclusao(ultimaSala.label, ultimaSala.resumo.naoConformes);
-    ir("lista");
+    setLoading(true,"Carregando próxima sala...",60);
+    setTimeout(()=>{
+      renderListaSalas();
+      const ultimaSala=S.salasConcluidas[S.salasConcluidas.length-1];
+      if(ultimaSala) mostrarBannerConclusao(ultimaSala.label, ultimaSala.resumo.naoConformes);
+      setLoading(false);
+      ir("lista");
+    },300);
   });
   document.getElementById("btn-exportar").addEventListener("click",exportar);
   document.getElementById("btn-nova-ronda").addEventListener("click",()=>{pararPolling();clearSessao();ir("inicio");});
@@ -1868,6 +1926,96 @@ function mostrarBannerConclusao(label, nc){
        </div>`;
   // Sumir após 6 segundos
   setTimeout(()=>{ wrap.style.display="none"; }, 6000);
+}
+
+// ── CHAMADO LIVRE ────────────────────────────────────────────────────
+let _catLivre="", _subcatLivre="", _sevLivre="normal";
+
+function abrirNovoChamadoLivre(){
+  const sel=document.getElementById("chamado-livre-ambiente");
+  sel.innerHTML='<option value="">Selecione o ambiente...</option>';
+  const salas=UNIDADES[S.unidade]||[];
+  salas.forEach(s=>{ const o=document.createElement("option"); o.value=s.label; o.textContent=s.label; sel.appendChild(o); });
+  const ambsFiltrados=AMBIENTES.filter(a=>{
+    if(!a.unidades||a.unidades.length===0) return true;
+    return a.unidades.includes(S.unidade);
+  });
+  if(ambsFiltrados.length>0){
+    const og=document.createElement("optgroup"); og.label="Ambientes Fixos";
+    ambsFiltrados.forEach(a=>{ const o=document.createElement("option"); o.value=a.titulo; o.textContent=a.titulo; og.appendChild(o); });
+    sel.appendChild(og);
+  }
+  _catLivre=""; _subcatLivre=""; _sevLivre="normal";
+  document.querySelectorAll(".chamado-livre-cat").forEach(b=>b.classList.remove("active"));
+  document.getElementById("chamado-livre-sev-normal").classList.add("active");
+  document.getElementById("chamado-livre-compras-wrap").style.display="none";
+  document.getElementById("chamado-livre-desc").value="";
+  document.getElementById("chamado-livre-resultado").innerHTML="";
+  document.getElementById("btn-confirmar-chamado-livre").style.display="block";
+  document.getElementById("btn-confirmar-chamado-livre").disabled=false;
+  document.getElementById("btn-confirmar-chamado-livre").textContent="Abrir chamado no Zoho";
+  document.getElementById("modal-chamado-livre").style.display="flex";
+}
+
+function selecionarCatLivre(btn){
+  document.querySelectorAll("#chamado-livre-cats .chamado-livre-cat").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  _catLivre=btn.dataset.cat;
+  _subcatLivre="";
+  const comprasWrap=document.getElementById("chamado-livre-compras-wrap");
+  comprasWrap.style.display=_catLivre==="Compras"?"block":"none";
+  if(_catLivre==="Compras") document.querySelectorAll("#chamado-livre-compras-wrap .chamado-livre-cat").forEach(b=>b.classList.remove("active"));
+}
+
+function selecionarSubcatComprasLivre(btn){
+  document.querySelectorAll("#chamado-livre-compras-wrap .chamado-livre-cat").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  _subcatLivre=btn.dataset.subcat;
+}
+
+function selecionarSevLivre(btn){
+  document.querySelectorAll("[data-sev]").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  _sevLivre=btn.dataset.sev;
+}
+
+async function confirmarChamadoLivre(){
+  const ambiente=document.getElementById("chamado-livre-ambiente").value;
+  const desc=document.getElementById("chamado-livre-desc").value.trim();
+  if(!ambiente){ toast("Selecione o ambiente","error"); return; }
+  if(!_catLivre){ toast("Selecione a categoria","error"); return; }
+  if(_catLivre==="Compras"&&!_subcatLivre){ toast("Selecione a subcategoria de Compras","error"); return; }
+  if(!desc){ toast("Descreva o problema","error"); return; }
+
+  const btn=document.getElementById("btn-confirmar-chamado-livre");
+  btn.textContent="⏳ Criando ticket..."; btn.disabled=true;
+
+  const res=await api({
+    acao:"criarTicket",
+    unidade:S.unidade,
+    salaLabel:ambiente,
+    itemTexto:desc,
+    obs:desc,
+    subcategoria:_catLivre==="Limpeza"?"🧼 Limpeza":_catLivre==="Manutenção"?"🔧 Infraestrutura":_catLivre,
+    emergencial:_sevLivre==="critico",
+    critico:_sevLivre==="critico",
+    responsavel:S.responsavel,
+    categoriaLimpeza:"",
+    fotoBase64:"",
+    motivoOverride:_catLivre,
+    subcategoriaCompras:_subcatLivre||"",
+  });
+
+  btn.textContent="Abrir chamado no Zoho"; btn.disabled=false;
+  const resultado=document.getElementById("chamado-livre-resultado");
+  if(res.sucesso){
+    resultado.innerHTML=`<a href="${res.ticketUrl}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--radius-sm);background:#f0fdf4;border:1.5px solid #86efac;font-size:13px;font-weight:700;color:#16a34a;text-decoration:none">✅ Ticket #${res.ticketNum} criado → Ver no Zoho</a>`;
+    btn.style.display="none";
+    toast("✅ Ticket criado!","success");
+  } else {
+    resultado.innerHTML=`<div style="font-size:13px;color:#dc2626;padding:8px 0">❌ Erro ao criar ticket. Tente novamente.</div>`;
+    toast("Erro ao criar ticket","error");
+  }
 }
 
 // ── CHAMADO DE OBSERVAÇÃO ────────────────────────────────────────────
