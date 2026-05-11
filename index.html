@@ -230,7 +230,7 @@ textarea:focus{border-color:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,0.
         <label>Unidade</label>
         <select id="sel-unidade" style="margin-bottom:16px">
           <option value="">Selecione a CG...</option>
-          <option>CG Morumbi</option><option>CG Tatuapé</option><option>CG Pinheiros</option>
+          <option>CG Morumbi 12º andar</option><option>CG Morumbi 14º andar</option><option>CG Morumbi 16º andar</option><option>Escritório 11º andar - Morumbi</option><option>CG Tatuapé</option><option>CG Pinheiros</option>
           <option>CG Paraíso</option><option>CG Alphaville</option>
           <option>CG Anália Franco</option><option>CG Santana</option>
         </select>
@@ -491,7 +491,10 @@ function gs(andar,total,is){
   });
 }
 const UNIDADES={
-  "CG Morumbi":[...gs("12° andar",18,[7,18]),...gs("14° andar",7,[7]),...gs("16° andar",16,[1,2])],
+  "CG Morumbi 12º andar":gs("",18,[7,18]),
+  "CG Morumbi 14º andar":gs("",7,[7]),
+  "CG Morumbi 16º andar":gs("",16,[1,2]),
+  "Escritório 11º andar - Morumbi":[],
   "CG Tatuapé":gs("",16,[11,15]),"CG Pinheiros":gs("",29,[11,13]),
   "CG Paraíso":gs("",30,[4,26]),
   "CG Alphaville":[...gs("3° andar",20,[19,20]),...gs("9° andar",7,[5])],
@@ -530,6 +533,81 @@ const IIS=[
   {t:"Dispensers abastecidos",sub:"limpeza"},
   {t:"Sala limpa",sub:"limpeza"},
 ];
+const ESCRITORIO_11_AMBIENTES=[
+  {id:"esc11_copa",icon:"☕",titulo:"Copa",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Pia e torneira sem vazamentos",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Geladeira funcionando normalmente",sub:"mob"},
+    {t:"Micro-ondas funcionando normalmente",sub:"mob"},
+    {t:"Mobiliário em bom estado",sub:"mob"},
+    {t:"Insumos abastecidos (café, copos, etc.)",sub:"limpeza"},
+    {t:"Ambiente limpo e organizado",sub:"limpeza"},
+  ]},
+  {id:"esc11_treinamento",icon:"🎓",titulo:"Sala de Treinamento Inicial",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Projetor/TV funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário em bom estado (mesas e cadeiras)",sub:"mob"},
+    {t:"Ambiente limpo e organizado",sub:"limpeza"},
+  ]},
+  {id:"esc11_ban_fem",icon:"🚺",titulo:"Banheiro Feminino",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Torneiras sem vazamentos",sub:"infra"},
+    {t:"Descargas funcionando corretamente",sub:"infra"},
+    {t:"Ralos escoando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
+    {t:"Lixeiras presentes e funcionando",sub:"mob"},
+    {t:"Dispensers abastecidos (sabonete, papel toalha, papel higiênico e descarte absorventes)",sub:"limpeza"},
+    {t:"Ausência de sinais de mofo ou odor persistente",sub:"limpeza"},
+    {t:"Ambiente limpo",sub:"limpeza"},
+  ]},
+  {id:"esc11_ban_masc",icon:"🚹",titulo:"Banheiro Masculino",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Torneiras sem vazamentos",sub:"infra"},
+    {t:"Descargas funcionando corretamente",sub:"infra"},
+    {t:"Ralos escoando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Porta abrindo, fechando e travando corretamente",sub:"infra"},
+    {t:"Lixeiras presentes e funcionando",sub:"mob"},
+    {t:"Dispensers abastecidos (sabonete, papel toalha, papel higiênico)",sub:"limpeza"},
+    {t:"Ausência de sinais de mofo ou odor persistente",sub:"limpeza"},
+    {t:"Ambiente limpo",sub:"limpeza"},
+  ]},
+  {id:"esc11_brincar",icon:"🎨",titulo:"Sala Brincar Simbólico (Coworking)",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário em bom estado (mesas, cadeiras, estações de trabalho)",sub:"mob"},
+    {t:"Equipamentos de TI funcionando (monitores, teclados, cabos)",sub:"mob"},
+    {t:"Ambiente limpo e organizado",sub:"limpeza"},
+  ]},
+  {id:"esc11_checagem",icon:"📋",titulo:"Sala Checagem de Evolução",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Ar-condicionado funcionando normalmente",sub:"infra"},
+    {t:"Tomadas e interruptores funcionando normalmente",sub:"infra"},
+    {t:"Sem indícios de infiltração e umidade",sub:"infra"},
+    {t:"Persianas funcionando normalmente",sub:"infra"},
+    {t:"Mobiliário em bom estado (mesas e cadeiras)",sub:"mob"},
+    {t:"Equipamentos de TI funcionando",sub:"mob"},
+    {t:"Ambiente limpo e organizado",sub:"limpeza"},
+  ]},
+  {id:"esc11_acesso",icon:"🔐",titulo:"Acesso Restrito",cgs:["Escritório 11º andar - Morumbi"],itens:[
+    {t:"Iluminação funcionando normalmente",sub:"infra"},
+    {t:"Controle de acesso funcionando normalmente",sub:"infra"},
+    {t:"Câmeras de segurança funcionando normalmente",sub:"infra"},
+    {t:"Porta/cancela abrindo e fechando corretamente",sub:"infra"},
+    {t:"Ambiente limpo e organizado",sub:"limpeza"},
+  ]},
+];
+
 const AMBIENTES=[
   {id:"geral",icon:"🏢",titulo:"Geral da unidade",itens:[
     {t:"Internet funcionando normalmente",sub:"infra"},
@@ -944,12 +1022,15 @@ function setSyncDot(estado){
 // TELA LISTA — renderização
 // ════════════════════════════════════════════════════════════════
 function getAmbientesFiltrados(){
+  // Escritório 11: só mostra seus ambientes específicos
+  if(S.unidade==="Escritório 11º andar - Morumbi"){
+    return ESCRITORIO_11_AMBIENTES;
+  }
+  // Ambientes excluídos do Escritório 11 (copa família, recepção, reunião, brinquedos, almoxarifado, dml)
+  // Esses ambientes já são excluídos acima — aqui seguem as regras normais para outras unidades
   return AMBIENTES.filter(a=>{
-    // Ambientes com lista de CGs específicas
     if(a.cgs) return a.cgs.includes(S.unidade);
-    // Banheiros genérico: só para CGs sem estrutura por andar
     if(a.id==="banheiros") return !["CG Tatuapé","CG Anália Franco"].includes(S.unidade);
-    // Elevador e fachada só para CGs de rua
     if(a.id==="elevador"||a.id==="fachada") return CGs_RUA.includes(S.unidade);
     return true;
   });
