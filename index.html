@@ -602,7 +602,6 @@ const ESCRITORIO_11_AMBIENTES=[
   {id:"esc11_acesso",icon:"🔐",titulo:"Acesso Restrito",cgs:["Escritório 11º andar - Morumbi"],itens:[
     {t:"Iluminação funcionando normalmente",sub:"infra"},
     {t:"Controle de acesso funcionando normalmente",sub:"infra"},
-    {t:"Câmeras de segurança funcionando normalmente",sub:"infra"},
     {t:"Porta/cancela abrindo e fechando corretamente",sub:"infra"},
     {t:"Ambiente limpo e organizado",sub:"limpeza"},
   ]},
@@ -1110,7 +1109,7 @@ function renderSalaItem(salaId, label, badge){
 async function editarSala(salaId){
   // Buscar definição da sala
   const salaDef=(UNIDADES[S.unidade]||[]).find(s=>s.id===salaId);
-  const ambDef=AMBIENTES.find(a=>a.id===salaId);
+  const ambDef=AMBIENTES.find(a=>a.id===salaId)||ESCRITORIO_11_AMBIENTES.find(a=>a.id===salaId);
   if(!salaDef&&!ambDef){ toast("Sala não encontrada","error"); return; }
   const def=salaDef||ambDef;
   const salaLabel=def.label||def.titulo;
@@ -1187,7 +1186,7 @@ async function editarSala(salaId){
 // ════════════════════════════════════════════════════════════════
 async function abrirSala(salaId){
   const salaDef=(UNIDADES[S.unidade]||[]).find(s=>s.id===salaId);
-  const ambDef=AMBIENTES.find(a=>a.id===salaId);
+  const ambDef=AMBIENTES.find(a=>a.id===salaId)||ESCRITORIO_11_AMBIENTES.find(a=>a.id===salaId);
 
   if(!salaDef&&!ambDef){toast("Sala não encontrada","error");return;}
 
